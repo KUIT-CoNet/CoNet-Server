@@ -10,9 +10,10 @@ import com.kuit.conet.dto.request.AppleLoginRequest;
 import com.kuit.conet.dto.response.ApplePlatformUserResponse;
 import com.kuit.conet.dto.response.OAuthTokenResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {

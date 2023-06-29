@@ -2,9 +2,13 @@ package com.kuit.conet.auth.apple;
 
 import com.kuit.conet.auth.util.EncryptUtils;
 import io.jsonwebtoken.Claims;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+@Slf4j
+@Getter
 @Component
 public class AppleClaimsValidator {
     private static final String NONCE_KEY = "nonce";
@@ -26,7 +30,7 @@ public class AppleClaimsValidator {
     public boolean isValid(Claims claims) {
         return claims.getIssuer().contains(iss) &&
                 claims.getAudience().equals(clientId) &&
-                claims.get(NONCE_KEY, String.class).equals(nonce);
+                EncryptUtils.encrypt(claims.get(NONCE_KEY, String.class)).equals(nonce);
     }
 }
 
