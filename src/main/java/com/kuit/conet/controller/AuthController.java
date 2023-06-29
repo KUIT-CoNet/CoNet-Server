@@ -19,7 +19,7 @@ public class AuthController {
 
     // 애플 로그인
     @ResponseBody
-    @PostMapping("/apple")
+    @PostMapping("/login/apple")
     public BaseResponse<LoginResponse> loginApple(@RequestBody @Valid AppleLoginRequest loginRequest) {
         LoginResponse response = authService.appleOAuthLogin(loginRequest);
         return new BaseResponse<LoginResponse>(response);
