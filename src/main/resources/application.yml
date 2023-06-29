@@ -6,6 +6,11 @@ spring:
       "prod": "prodDB, prodPort, secret, web-mvc"
 
 ---
+apple:
+  team:
+    id: "com.KUIT.CoNet" # Apple Developers CoNet Bundle ID
+
+---
 
 spring:
   config:
