@@ -16,7 +16,7 @@ public class User {
     private Platform platform;
     private String platformId;
 
-    // TODO: 생성자 작성
+    // TODO: 생성자 작성 (기능 구현에 따라 필요한 경우)
     public User(String email, Platform platform, String platformId) {
         this.email = email;
         this.platform = platform;
