@@ -8,7 +8,7 @@ spring:
 ---
 oauth:
   apple:
-    iss: https://appleid.apple.com/
+    iss: "https://appleid.apple.com"
     client-id: ${OAUTH_APPLE_CLIENT_ID} # Apple Developers CoNet Bundle ID
     nonce: ${OAUTH_APPLE_NONCE}
 ---
