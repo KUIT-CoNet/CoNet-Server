@@ -2,7 +2,7 @@ package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
 import com.kuit.conet.dto.request.AppleLoginRequest;
-import com.kuit.conet.dto.response.OAuthTokenResponse;
+import com.kuit.conet.dto.response.LoginResponse;
 import com.kuit.conet.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,8 @@ public class AuthController {
     // 애플 로그인
     @ResponseBody
     @PostMapping("/apple")
-    public BaseResponse<OAuthTokenResponse> loginApple(@RequestBody @Valid AppleLoginRequest loginRequest) {
-        OAuthTokenResponse response = authService.appleOAuthLogin(loginRequest);
-        return new BaseResponse<OAuthTokenResponse>(response);
+    public BaseResponse<LoginResponse> loginApple(@RequestBody @Valid AppleLoginRequest loginRequest) {
+        LoginResponse response = authService.appleOAuthLogin(loginRequest);
+        return new BaseResponse<LoginResponse>(response);
     }
 }
