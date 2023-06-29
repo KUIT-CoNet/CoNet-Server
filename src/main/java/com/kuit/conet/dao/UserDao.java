@@ -24,7 +24,6 @@ public class UserDao {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    // TODO: 기능 별 query 작성
     public Optional<Long> findByPlatformAndPlatformId(Platform platform, String platformId) {
         String sql = "select userId from user where platform=:platform and platformId=:platformId";
         Map<String, String> param = Map.of(
@@ -60,7 +59,7 @@ public class UserDao {
         return returnUser;
     }
 
-    public User save(User oauthUser) {
+    public Optional<User> save(User oauthUser) {
         // 회원가입 -> insert 한 후, 넣은 애 반환
         String sql = "insert into user (email, password, platform, platformId) values (:email, :password, :platform, :platformId)";
         String password = oauthUser.getPassword() != null ? oauthUser.getPassword() : "";
@@ -91,6 +90,8 @@ public class UserDao {
             }
         };
 
-        return jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
+        User user = jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
+
+        return Optional.ofNullable(user);
     }
 }
