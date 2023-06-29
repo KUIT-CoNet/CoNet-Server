@@ -12,4 +12,4 @@ public class PlatformException extends RuntimeException {
         super(INVALID_PLATFORM.getMessage());
         this.exceptionStatus = INVALID_PLATFORM;
     }
-}리
+}
