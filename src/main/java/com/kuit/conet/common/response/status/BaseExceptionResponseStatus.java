@@ -32,8 +32,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     UNSUPPORTED_TOKEN_TYPE(4002, HttpStatus.BAD_REQUEST.value(), "지원되지 않는 토큰 형식입니다."),
     UNSUPPORTED_TOKEN_TYPE_FOR_APPLE(4003, HttpStatus.BAD_REQUEST.value(), "Apple OAuth Identity Token의 형식이 올바르지 않습니다."),
     INVALID_TOKEN(4007, HttpStatus.UNAUTHORIZED.value(), "유효하지 않은 토큰입니다."),
-    MALFORMED_TOKEN(4008, HttpStatus.UNAUTHORIZED.value(), "토큰이 올바르게 구성되지 않았습니다."),
-    EXPIRED_TOKEN(4009, HttpStatus.UNAUTHORIZED.value(), "만료된 토큰입니다."),
+    MALFORMED_TOKEN(4008, HttpStatus.UNAUTHORIZED.value(), "올바르지 않은 토큰입니다."),
+    EXPIRED_TOKEN(4009, HttpStatus.UNAUTHORIZED.value(), "로그인 인증 유효기간이 만료되었습니다."),
     TOKEN_MISMATCH(4010, HttpStatus.UNAUTHORIZED.value(), "로그인 정보가 토큰 정보와 일치하지 않습니다."),
 
     /**
