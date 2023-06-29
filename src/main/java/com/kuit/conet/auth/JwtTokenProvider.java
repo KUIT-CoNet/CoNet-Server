@@ -19,8 +19,8 @@ public class JwtTokenProvider {
     private final long validityInMilliseconds;
     private final JwtParser jwtParser;
 
-    public JwtTokenProvider(@Value("${security.jwt.token.secret-key}") String secretKey,
-                            @Value("${security.jwt.token.expire-length}") long validityInMilliseconds) {
+    public JwtTokenProvider(@Value("${secret.jwt-secret-key}") String secretKey,
+                            @Value("${secret.jwt-expired-in}") long validityInMilliseconds) {
         this.secretKey = secretKey;
         this.validityInMilliseconds = validityInMilliseconds;
         this.jwtParser = Jwts.parser().setSigningKey(secretKey);
