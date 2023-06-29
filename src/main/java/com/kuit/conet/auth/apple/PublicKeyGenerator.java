@@ -1,5 +1,7 @@
 package com.kuit.conet.auth.apple;
 
+import org.springframework.stereotype.Component;
+
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -9,6 +11,7 @@ import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 import java.util.Map;
 
+@Component
 public class PublicKeyGenerator {
     private static final String HEADER_SIGN_ALGORITHM = "alg";
     private static final String HEADER_KEY_ID = "kid";
