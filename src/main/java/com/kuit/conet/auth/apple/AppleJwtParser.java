@@ -3,11 +3,17 @@ package com.kuit.conet.security.apple;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuit.conet.common.exception.InvalidTokenException;
+import com.kuit.conet.common.exception.TokenExpiredException;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Base64Utils;
+
+import java.security.PublicKey;
 import java.util.Base64;
 
 import java.util.Map;
+
+import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.*;
 
 @Component
 public class AppleJwtParser {
@@ -21,7 +27,20 @@ public class AppleJwtParser {
             String decodeHeader = new String(Base64.getDecoder().decode(encodeHeader));
             return objectMapper.readValue(decodeHeader, Map.class);
         } catch (JsonProcessingException | ArrayIndexOutOfBoundsException e) {
-            throw new InvalidTokenException();
+            throw new InvalidTokenException(UNSUPPORTED_TOKEN_TYPE_FOR_APPLE);
+        }
+    }
+
+    public Claims parsePublicKeyAndGetClaims(String idToken, PublicKey publicKey) {
+        try {
+            return Jwts.parser()
+                    .setSigningKey(publicKey)
+                    .parseClaimsJws(idToken)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException(EXPIRED_TOKEN);
+        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e){
+            throw new InvalidTokenException(MALFORMED_TOKEN);
         }
     }
 }
