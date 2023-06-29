@@ -1,4 +1,4 @@
-package com.kuit.conet.security.apple;
+package com.kuit.conet.auth.apple;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

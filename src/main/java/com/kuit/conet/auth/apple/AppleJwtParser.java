@@ -1,4 +1,4 @@
-package com.kuit.conet.security.apple;
+package com.kuit.conet.auth.apple;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
