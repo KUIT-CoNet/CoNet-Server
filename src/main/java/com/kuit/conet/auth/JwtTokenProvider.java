@@ -26,12 +26,12 @@ public class JwtTokenProvider {
         this.jwtParser = Jwts.parser().setSigningKey(secretKey);
     }
 
-    public String createToken(Long memberId) {
+    public String createToken(Long userId) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setSubject(String.valueOf(memberId))
+                .setSubject(String.valueOf(userId))
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
