@@ -1,4 +1,4 @@
-package com.kuit.conet.security.apple;
+package com.kuit.conet.auth.apple;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
