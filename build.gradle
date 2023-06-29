@@ -42,8 +42,11 @@ dependencies {
 	// Bean Validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	// FeignClient
+	implementation platform("org.springframework.cloud:spring-cloud-dependencies:2022.0.3")
+	implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
 
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 }
