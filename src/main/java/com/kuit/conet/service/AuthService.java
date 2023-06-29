@@ -23,10 +23,10 @@ public class AuthService {
 
     public LoginResponse appleOAuthLogin(AppleLoginRequest loginRequest) {
         ApplePlatformUserResponse applePlatformUser = appleOAuthUserProvider.getApplePlatformUser(loginRequest.getToken());
-        return generateOAuthTokenResponse(Platform.APPLE, applePlatformUser.getEmail(), applePlatformUser.getPlatformId());
+        return generateLoginResponse(Platform.APPLE, applePlatformUser.getEmail(), applePlatformUser.getPlatformId());
     }
 
-    private LoginResponse generateOAuthTokenResponse(Platform platform, String email, String platformId) {
+    private LoginResponse generateLoginResponse(Platform platform, String email, String platformId) {
         return userDao.findByPlatformAndPlatformId(platform, platformId)
                 .map(userId -> {
                     User findUser = userDao.findById(userId).orElseThrow(NotFoundUserException::new);
