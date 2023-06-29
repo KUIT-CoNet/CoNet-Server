@@ -29,8 +29,8 @@ public class AuthService {
 
     private OAuthTokenResponse generateOAuthTokenResponse(Platform platform, String email, String platformId) {
         return userDao.findByPlatformAndPlatformId(platform, platformId)
-                .map(user -> {
-                    User findUser = userDao.findById(user.getUserId()).orElseThrow(NotFoundUserException::new);
+                .map(userId -> {
+                    User findUser = userDao.findById(userId).orElseThrow(NotFoundUserException::new);
                     String token = issueToken(findUser);
                     return new OAuthTokenResponse(token, findUser.getEmail(), true, platformId);
                 })
@@ -40,7 +40,6 @@ public class AuthService {
                     String token = issueToken(saveduser);
                     return new OAuthTokenResponse(token, email, false, platformId);
                 });
-
     }
     private String issueToken(final User findUser) {
         return jwtTokenProvider.createToken(findUser.getUserId());

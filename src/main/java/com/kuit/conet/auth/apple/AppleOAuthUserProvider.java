@@ -26,6 +26,7 @@ public class AppleOAuthUserProvider {
 
         Claims claims = appleJwtParser.parsePublicKeyAndGetClaims(identityToken, publicKey);
         validateClaims(claims);
+        // TODO: claims와 클라이언트로부터 받은 authorization code로 access token / refresh token 받기 -> Response에 포함
 
         return new ApplePlatformUserResponse(claims.getSubject(), claims.get("email", String.class));
         /*

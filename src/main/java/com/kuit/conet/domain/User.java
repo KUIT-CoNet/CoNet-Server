@@ -1,6 +1,5 @@
 package com.kuit.conet.domain;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class User {
     private Long userId;
-    private String name;
+    //private String name;
     private String email;
     private String password;
     // private String nickname;

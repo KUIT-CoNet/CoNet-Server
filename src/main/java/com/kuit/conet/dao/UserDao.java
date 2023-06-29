@@ -4,6 +4,7 @@ import com.kuit.conet.domain.Platform;
 import com.kuit.conet.domain.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -24,30 +25,16 @@ public class UserDao {
     }
 
     // TODO: 기능 별 query 작성
-    public Optional<User> findByPlatformAndPlatformId(Platform platform, String platformId) {
-        String sql = "select exists(select * from user where platform=:platform and platformId=:platformId";
+    public Optional<Long> findByPlatformAndPlatformId(Platform platform, String platformId) {
+        String sql = "select userId from user where platform=:platform and platformId=:platformId";
         Map<String, String> param = Map.of(
                 "platform", platform.getPlatform(),
-                "platform_id", platformId);
+                "platformId", platformId);
 
-        RowMapper<User> mapper = new RowMapper<User>() {
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User user = new User();
-                user.setUserId(rs.getLong("userId"));
-                user.setName(rs.getString("name"));
-                user.setEmail(rs.getString("email"));
-                user.setPassword(rs.getString("password"));
-                String platform = rs.getString("platform");
-                user.setPlatform(Platform.valueOf(platform));
-                user.setPlatformId(rs.getString("platformId"));
-                return user;
-            }
-        };
+        RowMapper<Long> mapper = new SingleColumnRowMapper<>(Long.class);
 
-        User user = jdbcTemplate.queryForObject(sql, param, mapper);
-        Optional<User> returnUser = Optional.ofNullable(user);
-
-        return returnUser;
+        List<Long> useIdList = jdbcTemplate.query(sql, param, mapper);
+        return useIdList.isEmpty() ? Optional.empty() : Optional.of(useIdList.get(0));
     }
 
     public Optional<User> findById(Long userId) {
@@ -58,7 +45,7 @@ public class UserDao {
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
                 User user = new User();
                 user.setUserId(rs.getLong("userId"));
-                user.setName(rs.getString("name"));
+                //user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
                 user.setPassword(rs.getString("password"));
                 String platform = rs.getString("platform");
@@ -75,14 +62,35 @@ public class UserDao {
 
     public User save(User oauthUser) {
         // 회원가입 -> insert 한 후, 넣은 애 반환
-        String sql = "insert into values(:name, :email, :password, :platform, :platformId)";
-        Map<String, String> param = Map.of("name", oauthUser.getName().toString(),
-                                            "email", oauthUser.getEmail().toString(),
-                                            "password", oauthUser.getPassword().toString(),
-                                            "platform", oauthUser.getPlatform().toString(),
-                                            "platformId", oauthUser.getUserId().toString());
+        String sql = "insert into user (email, password, platform, platformId) values (:email, :password, :platform, :platformId)";
+        String password = oauthUser.getPassword() != null ? oauthUser.getPassword() : "";
+        Map<String, String> param = Map.of("email", oauthUser.getEmail(),
+                "password", password,
+                "platform", oauthUser.getPlatform().toString(),
+                "platformId", oauthUser.getPlatformId());
 
         jdbcTemplate.update(sql, param);
-        return findByPlatformAndPlatformId(oauthUser.getPlatform(), oauthUser.getPlatformId()).get();
+
+        String returnSql = "select * from user where platform=:platform and platformId=:platformId";
+        Map<String, String> returnParam = Map.of(
+                "platform", oauthUser.getPlatform().toString(),
+                "platformId", oauthUser.getPlatformId());
+
+
+        RowMapper<User> returnMapper = new RowMapper<User>() {
+            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                User user = new User();
+                user.setUserId(rs.getLong("userId"));
+                //user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                String platform = rs.getString("platform");
+                user.setPlatform(Platform.valueOf(platform));
+                user.setPlatformId(rs.getString("platformId"));
+                return user;
+            }
+        };
+
+        return jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
     }
 }
