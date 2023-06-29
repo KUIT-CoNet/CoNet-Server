@@ -2,6 +2,7 @@ package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
 import com.kuit.conet.dto.request.AppleLoginRequest;
+import com.kuit.conet.dto.request.RefreshTokenRequest;
 import com.kuit.conet.dto.response.LoginResponse;
 import com.kuit.conet.service.AuthService;
 import jakarta.validation.Valid;
@@ -21,6 +22,13 @@ public class AuthController {
     @PostMapping("/apple")
     public BaseResponse<LoginResponse> loginApple(@RequestBody @Valid AppleLoginRequest loginRequest) {
         LoginResponse response = authService.appleOAuthLogin(loginRequest);
+        return new BaseResponse<LoginResponse>(response);
+    }
+
+    @ResponseBody
+    @PostMapping("/regenerate-token")
+    public BaseResponse<LoginResponse> regenerateToken(@RequestBody @Valid RefreshTokenRequest tokenRequest) {
+        LoginResponse response = authService.regenerateToken(tokenRequest);
         return new BaseResponse<LoginResponse>(response);
     }
 }

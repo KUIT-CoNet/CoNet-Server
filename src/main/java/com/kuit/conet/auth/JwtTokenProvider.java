@@ -53,6 +53,11 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public Long getUserIdFromRefreshToken(String refreshtoken) {
+        Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(refreshtoken);
+        return Long.parseLong(claims.getBody().getSubject());
+    }
+
     public void validateToken(String token) {
         try {
             jwtParser.parseClaimsJws(token);
