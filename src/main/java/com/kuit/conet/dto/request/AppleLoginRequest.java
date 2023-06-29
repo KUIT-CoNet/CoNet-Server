@@ -10,7 +10,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class AppleLoginRequest {
-    private String token;
+    private String idToken;
 }
 
 /**
