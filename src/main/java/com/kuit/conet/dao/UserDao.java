@@ -32,8 +32,8 @@ public class UserDao {
 
         RowMapper<Long> mapper = new SingleColumnRowMapper<>(Long.class);
 
-        List<Long> useIdList = jdbcTemplate.query(sql, param, mapper);
-        return useIdList.isEmpty() ? Optional.empty() : Optional.of(useIdList.get(0));
+        List<Long> userIdList = jdbcTemplate.query(sql, param, mapper);
+        return userIdList.isEmpty() ? Optional.empty() : Optional.of(userIdList.get(0));
     }
 
     public Optional<User> findById(Long userId) {
