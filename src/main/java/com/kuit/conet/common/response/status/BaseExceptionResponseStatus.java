@@ -36,6 +36,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     EXPIRED_TOKEN(4009, HttpStatus.UNAUTHORIZED.value(), "로그인 인증 유효기간이 만료되었습니다."),
     TOKEN_MISMATCH(4010, HttpStatus.UNAUTHORIZED.value(), "로그인 정보가 토큰 정보와 일치하지 않습니다."),
     INVALID_CLAIMS(4011, HttpStatus.UNAUTHORIZED.value(), "Apple OAuth Claims 값이 올바르지 않습니다."),
+    INVALID_REFRESHTOKEN(4012, HttpStatus.UNAUTHORIZED.value(), "유효하지 않은 Refresh Token입니다."),
+    IP_MISMATCH(4013, HttpStatus.UNAUTHORIZED.value(), "다른 IP에서 접속했습니다. 다시 로그인해주세요."),
 
     /**
      * 5000: 회원 정보 오류
