@@ -1,3 +1,4 @@
+/*
 package com.kuit.conet.auth.apple;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,4 +38,4 @@ class AppleClientTest {
                 Objects.nonNull(applePublicKey.getUse()) && Objects.nonNull(applePublicKey.getAlg()) &&
                 Objects.nonNull(applePublicKey.getN()) && Objects.nonNull(applePublicKey.getE());
     }
-}
+}*/

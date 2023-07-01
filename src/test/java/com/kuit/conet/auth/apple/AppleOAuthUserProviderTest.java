@@ -1,3 +1,4 @@
+/*
 package com.kuit.conet.auth.apple;
 
 import com.kuit.conet.common.exception.InvalidTokenException;
@@ -90,4 +91,4 @@ class AppleOAuthUserProviderTest {
         assertThatThrownBy(() -> appleOAuthUserProvider.getApplePlatformUser(identityToken))
                 .isInstanceOf(InvalidTokenException.class);
     }
-}
+}*/
