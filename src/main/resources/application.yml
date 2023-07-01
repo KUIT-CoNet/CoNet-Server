@@ -6,18 +6,19 @@ spring:
       "prod": "prodDB, prodPort, secret, web-mvc"
 
 ---
+
 oauth:
   apple:
     iss: "https://appleid.apple.com"
     client-id: ${OAUTH_APPLE_CLIENT_ID} # Apple Developers CoNet Bundle ID
     nonce: ${OAUTH_APPLE_NONCE}
+
 ---
 
 spring:
   config:
     activate:
       on-profile: "localDB" # MySQL ver 8
-
   datasource:
     url: ${DATASOURCE_URL_LOCAL}
     username: ${DATASOURCE_USERNAME}
@@ -28,6 +29,10 @@ spring:
   sql:
     init:
       platform: mysql
+  data:
+    redis:
+      host: ${DATA_REDIS_HOST}
+      port: ${DATA_REDIS_PORT}
 
 ---
 
@@ -46,6 +51,10 @@ spring:
   sql:
     init:
       platform: mysql
+  data:
+    redis:
+      host: ${DATA_REDIS_HOST}
+      port: ${DATA_REDIS_PORT}
 
 ---
 
@@ -64,6 +73,11 @@ spring:
   sql:
     init:
       platform: mysql
+
+  data:
+    redis:
+      host: ${DATA_REDIS_HOST}
+      port: ${DATA_REDIS_PORT}
 
 ---
 
