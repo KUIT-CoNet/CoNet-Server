@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
+import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.INVALID_PLATFORM;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,6 +25,6 @@ public enum Platform {
         return Arrays.stream(values())
                 .filter(it -> Objects.equals(it.platform, platform))
                 .findFirst()
-                .orElseThrow(PlatformException::new);
+                .orElseThrow(() -> new PlatformException(INVALID_PLATFORM));
     }
 }

@@ -4,7 +4,7 @@ import com.kuit.conet.auth.JwtTokenProvider;
 import com.kuit.conet.auth.apple.AppleUserProvider;
 import com.kuit.conet.auth.kakao.KakaoUserProvider;
 import com.kuit.conet.common.exception.InvalidTokenException;
-import com.kuit.conet.common.exception.NotFoundUserException;
+import com.kuit.conet.common.exception.UserException;
 import com.kuit.conet.dao.UserDao;
 import com.kuit.conet.domain.Platform;
 import com.kuit.conet.domain.User;
@@ -18,8 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.INVALID_REFRESHTOKEN;
-import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.IP_MISMATCH;
+import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
 @Service
@@ -44,7 +43,7 @@ public class AuthService {
     private LoginResponse generateLoginResponse(Platform platform, String email, String platformId, String clientIp) {
         return userDao.findByPlatformAndPlatformId(platform, platformId)
                 .map(userId -> { // 이미 회원가입 되어있는 유저
-                    User findUser = userDao.findById(userId).orElseThrow(NotFoundUserException::new);
+                    User findUser = userDao.findById(userId).orElseThrow(() -> new UserException(NOT_FOUND_USER));
                     return getLoginResponse(findUser, clientIp);
                 })
                 .orElseGet(() -> { // 회원가입이 필요한 멤버
