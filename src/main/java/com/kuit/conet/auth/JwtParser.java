@@ -3,7 +3,6 @@ package com.kuit.conet.auth;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuit.conet.common.exception.InvalidTokenException;
-import com.kuit.conet.common.exception.TokenExpiredException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.stereotype.Component;
@@ -37,7 +36,7 @@ public class JwtParser {
                     .parseClaimsJws(idToken)
                     .getBody();
         } catch (ExpiredJwtException e) {
-            throw new TokenExpiredException(EXPIRED_TOKEN);
+            throw new InvalidTokenException(EXPIRED_TOKEN);
         } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e){
             throw new InvalidTokenException(MALFORMED_TOKEN);
         }
