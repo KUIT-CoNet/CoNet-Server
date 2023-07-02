@@ -2,7 +2,7 @@ package com.kuit.conet.controller;
 
 import com.kuit.conet.annotation.ClientIp;
 import com.kuit.conet.common.response.BaseResponse;
-import com.kuit.conet.dto.request.AppleLoginRequest;
+import com.kuit.conet.dto.request.LoginRequest;
 import com.kuit.conet.dto.request.RefreshTokenRequest;
 import com.kuit.conet.dto.response.LoginResponse;
 import com.kuit.conet.service.AuthService;
@@ -21,8 +21,16 @@ public class AuthController {
     // 애플 로그인
     @ResponseBody
     @PostMapping("/login/apple")
-    public BaseResponse<LoginResponse> loginApple(@RequestBody @Valid AppleLoginRequest loginRequest, @ClientIp String clientIp) {
-        LoginResponse response = authService.appleOAuthLogin(loginRequest, clientIp);
+    public BaseResponse<LoginResponse> loginApple(@RequestBody @Valid LoginRequest loginRequest, @ClientIp String clientIp) {
+        LoginResponse response = authService.appleLogin(loginRequest, clientIp);
+        return new BaseResponse<LoginResponse>(response);
+    }
+
+    // 카카오 로그인
+    @ResponseBody
+    @PostMapping("/login/kakao")
+    public BaseResponse<LoginResponse> loginKakao(@RequestBody @Valid LoginRequest loginRequest, @ClientIp String clientIp) {
+        LoginResponse response = authService.kakaoLogin(loginRequest, clientIp);
         return new BaseResponse<LoginResponse>(response);
     }
 
