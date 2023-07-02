@@ -12,6 +12,9 @@ oauth:
     iss: "https://appleid.apple.com"
     client-id: ${OAUTH_APPLE_CLIENT_ID} # Apple Developers CoNet Bundle ID
     nonce: ${OAUTH_APPLE_NONCE}
+  kakao:
+    iss: "https://kauth.kakao.com"
+    client-id: ${OAUTH_APPLE_CLIENT_ID} # Kakao Developers CoNet REST API Key
 
 ---
 
