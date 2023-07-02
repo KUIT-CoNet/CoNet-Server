@@ -1,7 +1,5 @@
 package com.kuit.conet.auth;
 
-import com.kuit.conet.common.exception.InvalidTokenException;
-import com.kuit.conet.common.exception.TokenExpiredException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,9 +7,6 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 
 import java.util.Date;
-
-import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.EXPIRED_TOKEN;
-import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.MALFORMED_TOKEN;
 
 @Component
 public class JwtTokenProvider {
@@ -56,25 +51,5 @@ public class JwtTokenProvider {
     public Long getUserIdFromRefreshToken(String refreshtoken) {
         Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(refreshtoken);
         return Long.parseLong(claims.getBody().getSubject());
-    }
-
-    public void validateToken(String token) {
-        try {
-            jwtParser.parseClaimsJws(token);
-        } catch (ExpiredJwtException e) {
-            throw new TokenExpiredException(EXPIRED_TOKEN);
-        } catch (JwtException e) {
-            throw new InvalidTokenException(MALFORMED_TOKEN);
-        }
-    }
-
-    public String getPayload(String token) {
-        try {
-            return jwtParser.parseClaimsJws(token).getBody().getSubject();
-        } catch (ExpiredJwtException e) {
-            throw new TokenExpiredException(EXPIRED_TOKEN);
-        } catch (JwtException e) {
-            throw new InvalidTokenException(MALFORMED_TOKEN);
-        }
     }
 }

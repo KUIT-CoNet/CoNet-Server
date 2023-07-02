@@ -1,5 +1,7 @@
 package com.kuit.conet.auth.apple;
 
+import com.kuit.conet.auth.JwtParser;
+import com.kuit.conet.auth.PublicKeyGenerator;
 import com.kuit.conet.common.exception.InvalidTokenException;
 import com.kuit.conet.dto.response.ApplePlatformUserResponse;
 import io.jsonwebtoken.Claims;
@@ -14,17 +16,17 @@ import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.
 @Component
 @RequiredArgsConstructor
 public class AppleUserProvider {
-    private final AppleJwtParser appleJwtParser;
+    private final JwtParser jwtParser;
     private final AppleClient appleClient;
-    private final ApplePublicKeyGenerator publicKeyGenerator;
+    private final PublicKeyGenerator publicKeyGenerator;
     private final AppleClaimsValidator appleClaimsValidator;
 
     public ApplePlatformUserResponse getApplePlatformUser(String identityToken) {
-        Map<String, String> headers = appleJwtParser.parseHeaders(identityToken);
+        Map<String, String> headers = jwtParser.parseHeaders(identityToken);
         ApplePublicKeys applePublicKeys = appleClient.getApplePublicKeys();
-        PublicKey publicKey = publicKeyGenerator.generatePublicKey(headers, applePublicKeys);
+        PublicKey publicKey = publicKeyGenerator.generateApplePublicKey(headers, applePublicKeys);
 
-        Claims claims = appleJwtParser.parsePublicKeyAndGetClaims(identityToken, publicKey);
+        Claims claims = jwtParser.parsePublicKeyAndGetClaims(identityToken, publicKey);
         validateClaims(claims);
 
         return new ApplePlatformUserResponse(claims.getSubject(), claims.get("email", String.class));

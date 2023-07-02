@@ -1,5 +1,6 @@
 package com.kuit.conet.auth.apple;
 
+import com.kuit.conet.auth.CoNetPublicKey;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,9 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class ApplePublicKeys {
-    private List<ApplePublicKey> keys;
+    private List<CoNetPublicKey> keys;
 
-    public ApplePublicKey getMatchesKey(String alg, String kid) {
+    public CoNetPublicKey getMatchesKey(String alg, String kid) {
         return this.keys
                 .stream()
                 .filter(k -> k.getAlg().equals(alg) && k.getKid().equals(kid))
