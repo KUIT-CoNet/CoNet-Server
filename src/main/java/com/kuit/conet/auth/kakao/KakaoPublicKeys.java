@@ -1,6 +1,6 @@
 package com.kuit.conet.auth.kakao;
 
-import com.kuit.conet.auth.apple.ApplePublicKey;
+import com.kuit.conet.auth.CoNetPublicKey;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,9 +9,9 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class KakaoPublicKeys {
-    private List<KakaoPublicKey> keys;
+    private List<CoNetPublicKey> keys;
 
-    public KakaoPublicKey getMatchesKey(String kid) {
+    public CoNetPublicKey getMatchesKey(String kid) {
         return this.keys.stream()
                 .filter(o -> o.getKid().equals(kid))
                 .findFirst()

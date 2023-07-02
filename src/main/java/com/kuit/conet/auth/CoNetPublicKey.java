@@ -1,16 +1,12 @@
-package com.kuit.conet.auth.apple;
+package com.kuit.conet.auth;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** Apple public key
- * */
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Getter
-public class ApplePublicKey {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class CoNetPublicKey {
     private String kty;
     private String kid;
     private String use;
