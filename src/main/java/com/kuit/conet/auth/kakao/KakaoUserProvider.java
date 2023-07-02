@@ -1,8 +1,6 @@
 package com.kuit.conet.auth.kakao;
 
-import com.kuit.conet.auth.apple.ApplePublicKeys;
 import com.kuit.conet.common.exception.InvalidTokenException;
-import com.kuit.conet.dto.response.ApplePlatformUserResponse;
 import com.kuit.conet.dto.response.KakaoPlatformUserResponse;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -17,28 +15,20 @@ import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.
 @Component
 @RequiredArgsConstructor
 public class KakaoUserProvider {
+    private final KakaoOidcParser kakaoOidcParser;
+    private final KakaoPublicKeyGenerator publicKeyGenerator;
+
     private final KakaoClient kakaoClient;
     @Value("${oauth.kakao.iss}")
     private String iss;
 
-    private final KakaoOidcParser kakaoOidcParser;
     @Value("${oauth.kakao.client-id}")
     private String clientId;
 
-    // kid를 토큰에서 가져온다.
-    private String getKidFromIdToken(String identityToken, String iss, String clientId) {
-        return kakaoOidcParser.getKidFromTokenHeader(identityToken, iss, clientId);
-    }
-
     public KakaoPlatformUserResponse getPayloadFromIdToken(String identityToken) {
-        String kid = getKidFromIdToken(identityToken, iss, clientId);
+        Map<String, String> headers = kakaoOidcParser.parseHeaders(identityToken);
         KakaoPublicKeys kakaoPublicKeys = kakaoClient.getKakaoOIDCOpenKeys();
-
-        KakaoPublicKey publicKey =
-                kakaoPublicKeys.getKeys().stream()
-                        .filter(o -> o.getKid().equals(kid))
-                        .findFirst()
-                        .orElseThrow();
+        PublicKey publicKey = publicKeyGenerator.generatePublicKey(headers, kakaoPublicKeys);
 
         Claims claims = kakaoOidcParser.getOIDCClaims(identityToken, publicKey);
         validateClaims(claims);
