@@ -13,10 +13,10 @@ import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.
 
 @Component
 @RequiredArgsConstructor
-public class AppleOAuthUserProvider {
+public class AppleUserProvider {
     private final AppleJwtParser appleJwtParser;
     private final AppleClient appleClient;
-    private final PublicKeyGenerator publicKeyGenerator;
+    private final ApplePublicKeyGenerator publicKeyGenerator;
     private final AppleClaimsValidator appleClaimsValidator;
 
     public ApplePlatformUserResponse getApplePlatformUser(String identityToken) {
@@ -26,7 +26,6 @@ public class AppleOAuthUserProvider {
 
         Claims claims = appleJwtParser.parsePublicKeyAndGetClaims(identityToken, publicKey);
         validateClaims(claims);
-        // TODO: claims와 클라이언트로부터 받은 authorization code로 access token / refresh token 받기 -> Response에 포함
 
         return new ApplePlatformUserResponse(claims.getSubject(), claims.get("email", String.class));
         /*
