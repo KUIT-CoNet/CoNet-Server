@@ -9,7 +9,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class AppleLoginRequest {
+public class LoginRequest {
     private String idToken;
 }
 
