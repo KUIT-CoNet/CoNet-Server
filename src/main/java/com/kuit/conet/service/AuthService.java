@@ -1,22 +1,22 @@
 package com.kuit.conet.service;
 
 import com.kuit.conet.auth.JwtTokenProvider;
-import com.kuit.conet.auth.apple.AppleOAuthUserProvider;
+import com.kuit.conet.auth.apple.AppleUserProvider;
+import com.kuit.conet.auth.kakao.KakaoUserProvider;
 import com.kuit.conet.common.exception.InvalidTokenException;
 import com.kuit.conet.common.exception.NotFoundUserException;
 import com.kuit.conet.dao.UserDao;
 import com.kuit.conet.domain.Platform;
 import com.kuit.conet.domain.User;
-import com.kuit.conet.dto.request.AppleLoginRequest;
+import com.kuit.conet.dto.request.LoginRequest;
 import com.kuit.conet.dto.request.RefreshTokenRequest;
 import com.kuit.conet.dto.response.ApplePlatformUserResponse;
+import com.kuit.conet.dto.response.KakaoPlatformUserResponse;
 import com.kuit.conet.dto.response.LoginResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.data.redis.core.RedisTemplate;
-
-import java.lang.module.InvalidModuleDescriptorException;
 
 import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.INVALID_REFRESHTOKEN;
 import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.IP_MISMATCH;
@@ -26,22 +26,28 @@ import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.
 @RequiredArgsConstructor
 public class AuthService {
     private final UserDao userDao;
-    private final AppleOAuthUserProvider appleOAuthUserProvider;
+    private final AppleUserProvider appleUserProvider;
+    private final KakaoUserProvider kakaoUserProvider;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
 
-    public LoginResponse appleOAuthLogin(AppleLoginRequest loginRequest, String clientIp) {
-        ApplePlatformUserResponse applePlatformUser = appleOAuthUserProvider.getApplePlatformUser(loginRequest.getIdToken());
+    public LoginResponse appleLogin(LoginRequest loginRequest, String clientIp) {
+        ApplePlatformUserResponse applePlatformUser = appleUserProvider.getApplePlatformUser(loginRequest.getIdToken());
         return generateLoginResponse(Platform.APPLE, applePlatformUser.getEmail(), applePlatformUser.getPlatformId(), clientIp);
+    }
+
+    public LoginResponse kakaoLogin(LoginRequest loginRequest, String clientIp) {
+        KakaoPlatformUserResponse kakaoPlatformUser = kakaoUserProvider.getPayloadFromIdToken(loginRequest.getIdToken());
+        return generateLoginResponse(Platform.KAKAO, kakaoPlatformUser.getEmail(), kakaoPlatformUser.getPlatformId(), clientIp);
     }
 
     private LoginResponse generateLoginResponse(Platform platform, String email, String platformId, String clientIp) {
         return userDao.findByPlatformAndPlatformId(platform, platformId)
-                .map(userId -> {
+                .map(userId -> { // 이미 회원가입 되어있는 유저
                     User findUser = userDao.findById(userId).orElseThrow(NotFoundUserException::new);
                     return getLoginResponse(findUser, clientIp);
                 })
-                .orElseGet(() -> {
+                .orElseGet(() -> { // 회원가입이 필요한 멤버
                     User oauthUser = new User(email, platform, platformId);
                     User saveduser = userDao.save(oauthUser).get();
                     return getLoginResponse(saveduser, clientIp);
