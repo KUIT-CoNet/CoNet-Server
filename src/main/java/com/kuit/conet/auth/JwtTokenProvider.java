@@ -48,8 +48,8 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public Long getUserIdFromRefreshToken(String refreshtoken) {
-        Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(refreshtoken);
+    public Long getUserIdFromRefreshToken(String refreshToken) {
+        Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(refreshToken);
         return Long.parseLong(claims.getBody().getSubject());
     }
 }
