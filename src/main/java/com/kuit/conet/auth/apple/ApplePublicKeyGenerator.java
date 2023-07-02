@@ -12,7 +12,7 @@ import java.util.Base64;
 import java.util.Map;
 
 @Component
-public class PublicKeyGenerator {
+public class ApplePublicKeyGenerator {
     private static final String HEADER_SIGN_ALGORITHM = "alg";
     private static final String HEADER_KEY_ID = "kid";
     private static final int POSITIVE_SIGN_NUMBER = 1;
