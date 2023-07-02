@@ -14,7 +14,7 @@ oauth:
     nonce: ${OAUTH_APPLE_NONCE}
   kakao:
     iss: "https://kauth.kakao.com"
-    client-id: ${OAUTH_APPLE_CLIENT_ID} # Kakao Developers CoNet REST API Key
+    client-id: ${OAUTH_KAKAO_CLIENT_ID} # Kakao Developers CoNet REST API Key
 
 ---
 
