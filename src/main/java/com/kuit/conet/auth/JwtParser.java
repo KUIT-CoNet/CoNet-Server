@@ -25,10 +25,16 @@ public class JwtParser {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public String parseAccessTokenAndGetSubject(String accessToken) {
-        return Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(accessToken)
-                .getBody().getSubject();
+        try {
+            return Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(accessToken)
+                    .getBody().getSubject();
+        } catch (ExpiredJwtException e) {
+            throw new InvalidTokenException(EXPIRED_TOKEN);
+        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e){
+            throw new InvalidTokenException(MALFORMED_TOKEN);
+        }
     }
 
     public Map<String, String> parseHeaders(String identityToken) {
