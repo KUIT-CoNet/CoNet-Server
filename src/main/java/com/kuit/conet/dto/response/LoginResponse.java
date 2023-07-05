@@ -6,13 +6,15 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class LoginResponse {
+    private String email;
     private String accessToken;
     private String refreshToken;
-    private String email;
+    private Boolean isRegistered;
 
-    public LoginResponse(String accessToken, String refreshToken, String email) {
+    public LoginResponse(String email, String accessToken, String refreshToken, Boolean isRegistered) {
+        this.email = email;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        this.email = email;
+        this.isRegistered = isRegistered;
     }
 }

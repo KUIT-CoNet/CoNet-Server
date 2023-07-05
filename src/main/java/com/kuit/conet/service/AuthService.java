@@ -42,24 +42,31 @@ public class AuthService {
 
     private LoginResponse generateLoginResponse(Platform platform, String email, String platformId, String clientIp) {
         return userDao.findByPlatformAndPlatformId(platform, platformId)
-                .map(userId -> { // 이미 회원가입 되어있는 유저
+                .map(userId -> { // 이미 회원가입과 약관 동의 및 이름 입력이 모두 되어있는 유저
                     User findUser = userDao.findById(userId).orElseThrow(() -> new UserException(NOT_FOUND_USER));
-                    return getLoginResponse(findUser, clientIp);
+                    // 회원가입은 되어있는데, 약관 동의 혹은 이름 입력이 되어있지 않은 유저
+                    if(findUser.getServiceTerm() != 1 | findUser.getName() == null) {
+                        log.info("회원가입은 되어 있으나, 약관 동의 및 이름 입력이 필요합니다.");
+                        return getLoginResponse(findUser, clientIp, false);
+                    }
+                    log.info("로그인 성공쓰~");
+                    return getLoginResponse(findUser, clientIp, true);
                 })
                 .orElseGet(() -> { // 회원가입이 필요한 멤버
                     User oauthUser = new User(email, platform, platformId);
                     User saveduser = userDao.save(oauthUser).get();
-                    return getLoginResponse(saveduser, clientIp);
+                    log.info("회원가입 성공! 약관 동의 및 이름 입력이 필요합니다.");
+                    return getLoginResponse(saveduser, clientIp, false);
                 });
     }
 
-    private LoginResponse getLoginResponse(User targetUser, String clientIp) {
+    private LoginResponse getLoginResponse(User targetUser, String clientIp, Boolean isRegistered) {
         String accessToken = jwtTokenProvider.createAccessToken(targetUser.getUserId());
         String refreshToken = jwtTokenProvider.createRefreshToken(targetUser.getUserId());
         // Redis 에 refresh token 저장
         redisTemplate.opsForValue().set(refreshToken, clientIp);
 
-        return new LoginResponse(accessToken, refreshToken, targetUser.getEmail());
+        return new LoginResponse(targetUser.getEmail(), accessToken, refreshToken, isRegistered);
     }
 
     public LoginResponse regenerateToken(RefreshTokenRequest tokenRequest, String clientIp) {
@@ -81,6 +88,6 @@ public class AuthService {
         // Redis 에 재발급 받은 refresh token 저장
         redisTemplate.opsForValue().set(newRefreshToken, clientIp);
 
-        return new LoginResponse(newAccessToken, newRefreshToken, existingUser.getEmail());
+        return new LoginResponse(existingUser.getEmail(), newAccessToken, newRefreshToken, true);
     }
 }

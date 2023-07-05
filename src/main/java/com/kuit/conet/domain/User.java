@@ -1,18 +1,17 @@
 package com.kuit.conet.domain;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class User {
     private Long userId;
-    //private String name;
+    private String name;
     private String email;
-    private String password;
-    // private String nickname;
+    private int serviceTerm; // 1: 약관 동의 완료
     private Platform platform;
     private String platformId;
 
