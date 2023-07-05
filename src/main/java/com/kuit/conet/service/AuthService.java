@@ -97,12 +97,6 @@ public class AuthService {
         // 이용 약관 및 이름 입력 DB update
         User user = userDao.agreeTermAndPutName(nameRequest).get();
 
-        // accessToken, refreshToken 재발급
-        String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId());
-        String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getUserId());
-        // Redis 에 재발급 받은 refresh token 저장
-        redisTemplate.opsForValue().set(newRefreshToken, clientIp);
-
-        return new AgreeTermAndPutNameResponse(user.getName(), user.getEmail(), user.getServiceTerm(), user.getOptionTerm(), newAccessToken, newRefreshToken);
+        return new AgreeTermAndPutNameResponse(user.getName(), user.getEmail(), user.getServiceTerm(), user.getOptionTerm());
     }
 }

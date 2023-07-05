@@ -14,6 +14,4 @@ public class AgreeTermAndPutNameResponse {
     private String email;
     private Boolean serviceTerm;
     private Boolean optionTerm;
-    private String accessToken;
-    private String refreshToken;
 }
