@@ -24,12 +24,12 @@ public class JwtTokenProvider {
         this.jwtParser = Jwts.parser().setSigningKey(secretKey);
     }
 
-    public String createAccessToken(Long userId) {
+    public String createAccessToken(String email) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + ACCESS_TOKEN_EXPIRED_IN);
 
         return Jwts.builder()
-                .setSubject(String.valueOf(userId))
+                .setSubject(email)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -51,5 +51,10 @@ public class JwtTokenProvider {
     public Long getUserIdFromRefreshToken(String refreshToken) {
         Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(refreshToken);
         return Long.parseLong(claims.getBody().getSubject());
+    }
+
+    public String getEmailFromAccessToken(String accessToken) {
+        Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(accessToken);
+        return claims.getBody().getSubject();
     }
 }

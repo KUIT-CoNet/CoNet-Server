@@ -61,7 +61,7 @@ public class AuthService {
     }
 
     private LoginResponse getLoginResponse(User targetUser, String clientIp, Boolean isRegistered) {
-        String accessToken = jwtTokenProvider.createAccessToken(targetUser.getUserId());
+        String accessToken = jwtTokenProvider.createAccessToken(targetUser.getEmail());
         String refreshToken = jwtTokenProvider.createRefreshToken(targetUser.getUserId());
         // Redis 에 refresh token 저장
         redisTemplate.opsForValue().set(refreshToken, clientIp);
@@ -82,7 +82,7 @@ public class AuthService {
 
         Long userId = jwtTokenProvider.getUserIdFromRefreshToken(refreshToken);
         User existingUser = userDao.findById(userId).get();
-        String newAccessToken = jwtTokenProvider.createAccessToken(existingUser.getUserId());
+        String newAccessToken = jwtTokenProvider.createAccessToken(existingUser.getEmail());
         String newRefreshToken = jwtTokenProvider.createRefreshToken(existingUser.getUserId());
 
         // Redis 에 재발급 받은 refresh token 저장
