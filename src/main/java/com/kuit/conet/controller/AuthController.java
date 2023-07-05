@@ -3,7 +3,9 @@ package com.kuit.conet.controller;
 import com.kuit.conet.annotation.ClientIp;
 import com.kuit.conet.common.response.BaseResponse;
 import com.kuit.conet.dto.request.LoginRequest;
+import com.kuit.conet.dto.request.PutOptionTermAndNameRequest;
 import com.kuit.conet.dto.request.RefreshTokenRequest;
+import com.kuit.conet.dto.response.AgreeTermAndPutNameResponse;
 import com.kuit.conet.dto.response.LoginResponse;
 import com.kuit.conet.service.AuthService;
 import jakarta.validation.Valid;
@@ -39,5 +41,13 @@ public class AuthController {
     public BaseResponse<LoginResponse> regenerateToken(@RequestBody @Valid RefreshTokenRequest tokenRequest, @ClientIp String clientIp) {
         LoginResponse response = authService.regenerateToken(tokenRequest, clientIp);
         return new BaseResponse<LoginResponse>(response);
+    }
+
+    // 이용 약관 동의 및 이름 입력 DB 업데이트
+    @ResponseBody
+    @PostMapping("/term-and-name")
+    public BaseResponse<AgreeTermAndPutNameResponse> agreeTermAndPutName(@RequestBody @Valid PutOptionTermAndNameRequest nameRequest, @ClientIp String clientIp) {
+        AgreeTermAndPutNameResponse response = authService.agreeTermAndPutName(nameRequest, clientIp);
+        return new BaseResponse<>(response);
     }
 }
