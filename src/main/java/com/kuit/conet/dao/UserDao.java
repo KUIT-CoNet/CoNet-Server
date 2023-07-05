@@ -2,6 +2,7 @@ package com.kuit.conet.dao;
 
 import com.kuit.conet.domain.Platform;
 import com.kuit.conet.domain.User;
+import com.kuit.conet.dto.request.PutOptionTermAndNameRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -46,7 +47,8 @@ public class UserDao {
                 user.setUserId(rs.getLong("userId"));
                 user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
-                user.setServiceTerm(rs.getInt("service_term"));
+                user.setServiceTerm(rs.getBoolean("serviceTerm"));
+                user.setOptionTerm(rs.getBoolean("optionTerm"));
                 String platform = rs.getString("platform");
                 user.setPlatform(Platform.valueOf(platform));
                 user.setPlatformId(rs.getString("platformId"));
@@ -79,7 +81,40 @@ public class UserDao {
                 user.setUserId(rs.getLong("userId"));
                 user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
-                user.setServiceTerm(rs.getInt("service_term"));
+                user.setServiceTerm(rs.getBoolean("serviceTerm"));
+                user.setOptionTerm(rs.getBoolean("optionTerm"));
+                String platform = rs.getString("platform");
+                user.setPlatform(Platform.valueOf(platform));
+                user.setPlatformId(rs.getString("platformId"));
+                return user;
+            }
+        };
+
+        User user = jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
+
+        return Optional.ofNullable(user);
+    }
+
+    public Optional<User> agreeTermAndPutName(PutOptionTermAndNameRequest nameRequest) {
+        String sql = "update user set name=:name, serviceTerm=1, optionTerm=:optionTerm where userId=:userId";
+        Map<String, Object> param = Map.of(
+                "name", nameRequest.getName(),
+                "optionTerm", nameRequest.getOptionTerm(),
+                "userId", nameRequest.getAccessToken()); // AuthService에서 accessToken을 파싱하여 userId를 저장해둠
+
+        jdbcTemplate.update(sql, param);
+
+        String returnSql = "select * from user where userId=:userId";
+        Map<String, String> returnParam = Map.of("userId", nameRequest.getAccessToken());
+
+        RowMapper<User> returnMapper = new RowMapper<User>() {
+            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                User user = new User();
+                user.setUserId(rs.getLong("userId"));
+                user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                user.setServiceTerm(rs.getBoolean("serviceTerm"));
+                user.setOptionTerm(rs.getBoolean("optionTerm"));
                 String platform = rs.getString("platform");
                 user.setPlatform(Platform.valueOf(platform));
                 user.setPlatformId(rs.getString("platformId"));
