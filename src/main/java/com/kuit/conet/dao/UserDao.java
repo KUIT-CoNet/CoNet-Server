@@ -44,9 +44,9 @@ public class UserDao {
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
                 User user = new User();
                 user.setUserId(rs.getLong("userId"));
-                //user.setName(rs.getString("name"));
+                user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
-                user.setPassword(rs.getString("password"));
+                user.setServiceTerm(rs.getInt("service_term"));
                 String platform = rs.getString("platform");
                 user.setPlatform(Platform.valueOf(platform));
                 user.setPlatformId(rs.getString("platformId"));
@@ -61,10 +61,8 @@ public class UserDao {
 
     public Optional<User> save(User oauthUser) {
         // 회원가입 -> insert 한 후, 넣은 애 반환
-        String sql = "insert into user (email, password, platform, platformId) values (:email, :password, :platform, :platformId)";
-        String password = oauthUser.getPassword() != null ? oauthUser.getPassword() : "";
+        String sql = "insert into user (email, platform, platformId) values (:email, :platform, :platformId)";
         Map<String, String> param = Map.of("email", oauthUser.getEmail(),
-                "password", password,
                 "platform", oauthUser.getPlatform().toString(),
                 "platformId", oauthUser.getPlatformId());
 
@@ -75,14 +73,13 @@ public class UserDao {
                 "platform", oauthUser.getPlatform().toString(),
                 "platformId", oauthUser.getPlatformId());
 
-
         RowMapper<User> returnMapper = new RowMapper<User>() {
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
                 User user = new User();
                 user.setUserId(rs.getLong("userId"));
-                //user.setName(rs.getString("name"));
+                user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
-                user.setPassword(rs.getString("password"));
+                user.setServiceTerm(rs.getInt("service_term"));
                 String platform = rs.getString("platform");
                 user.setPlatform(Platform.valueOf(platform));
                 user.setPlatformId(rs.getString("platformId"));
