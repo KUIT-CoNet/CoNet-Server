@@ -15,7 +15,7 @@ public class JwtTokenProvider {
     private final JwtParser jwtParser;
 
     private static final long ACCESS_TOKEN_EXPIRED_IN = 24 * 60 * 60 * 1000; // 24시간
-    private static final long REFRESH_TOKEN_EXPIRED_IN = 15L * 24 * 60 * 60 * 1000; // 30일
+    private static final long REFRESH_TOKEN_EXPIRED_IN = 15L * 24 * 60 * 60 * 1000; // 15일
 
     public JwtTokenProvider(@Value("${secret.jwt-secret-key}") String secretKey,
                             @Value("${secret.jwt-expired-in}") long validityInMilliseconds) {
