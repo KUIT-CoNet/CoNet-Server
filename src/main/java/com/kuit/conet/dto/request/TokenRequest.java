@@ -1,14 +1,12 @@
 package com.kuit.conet.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 public class TokenRequest {
-    private String refreshToken;
+    private String token;
 }
