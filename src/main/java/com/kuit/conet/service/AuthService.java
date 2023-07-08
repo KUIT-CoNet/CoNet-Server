@@ -53,7 +53,7 @@ public class AuthService {
                         log.info("회원가입은 되어 있으나, 약관 동의 및 이름 입력이 필요합니다.");
                         return getLoginResponse(findUser, clientIp, false);
                     }
-                    log.info("로그인 성공쓰~");
+                    log.info("로그인에 성공하였습니다.");
                     return getLoginResponse(findUser, clientIp, true);
                 })
                 .orElseGet(() -> { // 회원가입이 필요한 멤버
