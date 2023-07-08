@@ -21,7 +21,6 @@ public class AuthController {
     private final AuthService authService;
 
     // 애플 로그인
-    @ResponseBody
     @PostMapping("/login/apple")
     public BaseResponse<LoginResponse> loginApple(@RequestBody @Valid LoginRequest loginRequest, @ClientIp String clientIp) {
         LoginResponse response = authService.appleLogin(loginRequest, clientIp);
@@ -29,14 +28,12 @@ public class AuthController {
     }
 
     // 카카오 로그인
-    @ResponseBody
     @PostMapping("/login/kakao")
     public BaseResponse<LoginResponse> loginKakao(@RequestBody @Valid LoginRequest loginRequest, @ClientIp String clientIp) {
         LoginResponse response = authService.kakaoLogin(loginRequest, clientIp);
         return new BaseResponse<LoginResponse>(response);
     }
 
-    @ResponseBody
     @PostMapping("/regenerate-token")
     public BaseResponse<LoginResponse> regenerateToken(@RequestBody @Valid TokenRequest tokenRequest, @ClientIp String clientIp) {
         LoginResponse response = authService.regenerateToken(tokenRequest, clientIp);
@@ -44,7 +41,6 @@ public class AuthController {
     }
 
     // 이용 약관 동의 및 이름 입력 DB 업데이트
-    @ResponseBody
     @PostMapping("/term-and-name")
     public BaseResponse<AgreeTermAndPutNameResponse> agreeTermAndPutName(@RequestBody @Valid PutOptionTermAndNameRequest nameRequest, @ClientIp String clientIp) {
         AgreeTermAndPutNameResponse response = authService.agreeTermAndPutName(nameRequest, clientIp);
