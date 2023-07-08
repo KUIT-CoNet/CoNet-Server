@@ -11,7 +11,7 @@ import com.kuit.conet.domain.Platform;
 import com.kuit.conet.domain.User;
 import com.kuit.conet.dto.request.LoginRequest;
 import com.kuit.conet.dto.request.PutOptionTermAndNameRequest;
-import com.kuit.conet.dto.request.RefreshTokenRequest;
+import com.kuit.conet.dto.request.TokenRequest;
 import com.kuit.conet.dto.response.AgreeTermAndPutNameResponse;
 import com.kuit.conet.dto.response.ApplePlatformUserResponse;
 import com.kuit.conet.dto.response.KakaoPlatformUserResponse;
@@ -73,7 +73,7 @@ public class AuthService {
         return new LoginResponse(targetUser.getEmail(), accessToken, refreshToken, isRegistered);
     }
 
-    public LoginResponse regenerateToken(RefreshTokenRequest tokenRequest, String clientIp) {
+    public LoginResponse regenerateToken(TokenRequest tokenRequest, String clientIp) {
         String refreshToken = tokenRequest.getRefreshToken();
         // Redis 에서 해당 refresh token 찾기
         String existingIp = redisTemplate.opsForValue().get(refreshToken);

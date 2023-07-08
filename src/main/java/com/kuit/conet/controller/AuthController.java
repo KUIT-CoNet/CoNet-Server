@@ -4,7 +4,7 @@ import com.kuit.conet.annotation.ClientIp;
 import com.kuit.conet.common.response.BaseResponse;
 import com.kuit.conet.dto.request.LoginRequest;
 import com.kuit.conet.dto.request.PutOptionTermAndNameRequest;
-import com.kuit.conet.dto.request.RefreshTokenRequest;
+import com.kuit.conet.dto.request.TokenRequest;
 import com.kuit.conet.dto.response.AgreeTermAndPutNameResponse;
 import com.kuit.conet.dto.response.LoginResponse;
 import com.kuit.conet.service.AuthService;
@@ -38,7 +38,7 @@ public class AuthController {
 
     @ResponseBody
     @PostMapping("/regenerate-token")
-    public BaseResponse<LoginResponse> regenerateToken(@RequestBody @Valid RefreshTokenRequest tokenRequest, @ClientIp String clientIp) {
+    public BaseResponse<LoginResponse> regenerateToken(@RequestBody @Valid TokenRequest tokenRequest, @ClientIp String clientIp) {
         LoginResponse response = authService.regenerateToken(tokenRequest, clientIp);
         return new BaseResponse<LoginResponse>(response);
     }
