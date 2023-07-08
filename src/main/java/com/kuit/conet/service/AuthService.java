@@ -1,6 +1,6 @@
 package com.kuit.conet.service;
 
-import com.kuit.conet.auth.JwtParser;
+import com.kuit.conet.utils.JwtParser;
 import com.kuit.conet.auth.JwtTokenProvider;
 import com.kuit.conet.auth.apple.AppleUserProvider;
 import com.kuit.conet.auth.kakao.KakaoUserProvider;
@@ -74,7 +74,7 @@ public class AuthService {
     }
 
     public LoginResponse regenerateToken(TokenRequest tokenRequest, String clientIp) {
-        String refreshToken = tokenRequest.getRefreshToken();
+        String refreshToken = tokenRequest.getToken();
         // Redis 에서 해당 refresh token 찾기
         String existingIp = redisTemplate.opsForValue().get(refreshToken);
         // 찾은 값의 validation 처리
@@ -90,7 +90,6 @@ public class AuthService {
     }
 
     public AgreeTermAndPutNameResponse agreeTermAndPutName(PutOptionTermAndNameRequest nameRequest, String clientIp) {
-        // accessToken 파싱해서 userId 가져와 nameRequest에 setting
         String userId = jwtParser.parseAccessTokenAndGetSubject(nameRequest.getAccessToken());
         nameRequest.setAccessToken(userId);
 

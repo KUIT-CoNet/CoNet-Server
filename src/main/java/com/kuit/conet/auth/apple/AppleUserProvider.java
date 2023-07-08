@@ -1,6 +1,6 @@
 package com.kuit.conet.auth.apple;
 
-import com.kuit.conet.auth.JwtParser;
+import com.kuit.conet.utils.JwtParser;
 import com.kuit.conet.auth.PublicKeyGenerator;
 import com.kuit.conet.common.exception.InvalidTokenException;
 import com.kuit.conet.dto.response.ApplePlatformUserResponse;
