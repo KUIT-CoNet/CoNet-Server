@@ -33,7 +33,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     UNSUPPORTED_ID_TOKEN_TYPE(4003, HttpStatus.BAD_REQUEST.value(), "OAuth Identity Token의 형식이 올바르지 않습니다."),
     INVALID_TOKEN(4007, HttpStatus.UNAUTHORIZED.value(), "유효하지 않은 토큰입니다."),
     MALFORMED_TOKEN(4008, HttpStatus.UNAUTHORIZED.value(), "올바르지 않은 토큰입니다."),
-    EXPIRED_TOKEN(4009, HttpStatus.UNAUTHORIZED.value(), "로그인 인증 유효기간이 만료되었습니다."),
+    EXPIRED_TOKEN(4009, HttpStatus.UNAUTHORIZED.value(), "로그인 인증 유효 기간이 만료되었습니다."),
     TOKEN_MISMATCH(4010, HttpStatus.UNAUTHORIZED.value(), "로그인 정보가 토큰 정보와 일치하지 않습니다."),
     INVALID_CLAIMS(4011, HttpStatus.UNAUTHORIZED.value(), "OAuth Claims 값이 올바르지 않습니다."),
     INVALID_REFRESHTOKEN(4012, HttpStatus.UNAUTHORIZED.value(), "유효하지 않은 Refresh Token입니다."),
@@ -43,7 +43,16 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
      * 5000: 회원 정보 오류
      * */
     INVALID_PLATFORM(5001, HttpStatus.BAD_REQUEST.value(),"플랫폼 정보가 올바르지 않습니다."),
-    NOT_FOUND_USER(5002, HttpStatus.BAD_REQUEST.value(),"사용자를 찾을 수 없습니다.");
+    NOT_FOUND_USER(5002, HttpStatus.BAD_REQUEST.value(),"사용자를 찾을 수 없습니다."),
+
+    /**
+     * 5500: 모임(Team) 정보 오류
+     * */
+
+    NOT_FOUND_INVITE_CODE(5501, HttpStatus.BAD_REQUEST.value(),"존재하지 않는 초대 코드입니다."),
+    EXPIRED_INVITE_CODE(5502, HttpStatus.BAD_REQUEST.value(),"초대 코드 유효 기간이 만료되었습니다."),
+    EXIST_USER_IN_TEAM(5503, HttpStatus.BAD_REQUEST.value(),"모임에 이미 참여 중입니다.");
+
 
     private final int code;
     private final int status;

@@ -2,8 +2,11 @@ package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
 import com.kuit.conet.dto.request.team.MakeTeamRequest;
+import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
 import com.kuit.conet.dto.response.team.MakeTeamResponse;
+import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
 import com.kuit.conet.service.TeamService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -22,5 +25,11 @@ public class TeamController {
     public BaseResponse<MakeTeamResponse> makeTeam(@RequestBody @Validated MakeTeamRequest request) {
         MakeTeamResponse response = teamService.makeTeam(request);
         return new BaseResponse<MakeTeamResponse>(response);
+    }
+
+    @PostMapping("/participation")
+    public BaseResponse<ParticipateTeamResponse> participateTeam(@RequestBody @Valid ParticipateTeamRequest participateRequest) {
+        ParticipateTeamResponse response = teamService.participateTeam(participateRequest);
+        return new BaseResponse<ParticipateTeamResponse>(response);
     }
 }

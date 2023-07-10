@@ -15,6 +15,7 @@ public class Team {
     private String teamImgUrl;
     private String inviteCode;
     private Timestamp codeGeneratedTime;
+    private Boolean status;
 
     public Team(String teamName, String teamImgUrl, String inviteCode, Timestamp codeGeneratedTime) {
         this.teamName = teamName;
