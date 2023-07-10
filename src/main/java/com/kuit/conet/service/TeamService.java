@@ -78,8 +78,8 @@ public class TeamService {
             throw new TeamException(NOT_FOUND_INVITE_CODE);
         }
 
-        //String userId = jwtParser.getUserIdFromToken(participateRequest.getToken());
-        //participateRequest.setToken(userId);
+        String userId = jwtParser.getUserIdFromToken(participateRequest.getToken());
+        participateRequest.setToken(userId);
 
         String userName = userDao.findById(Long.parseLong(participateRequest.getToken())).get().getName();
 
