@@ -47,9 +47,4 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
-
-    public Long getUserIdFromRefreshToken(String refreshToken) {
-        Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(refreshToken);
-        return Long.parseLong(claims.getBody().getSubject());
-    }
 }
