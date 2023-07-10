@@ -1,7 +1,7 @@
 package com.kuit.conet.auth.kakao;
 
 import com.kuit.conet.utils.JwtParser;
-import com.kuit.conet.auth.PublicKeyGenerator;
+import com.kuit.conet.utils.auth.PublicKeyGenerator;
 import com.kuit.conet.common.exception.InvalidTokenException;
 import com.kuit.conet.dto.response.KakaoPlatformUserResponse;
 import io.jsonwebtoken.Claims;

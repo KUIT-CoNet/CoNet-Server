@@ -13,5 +13,4 @@ public class MakeTeamRequest {
     private Long userId;
     private String teamName;
     private String teamImgUrl;
-
 }

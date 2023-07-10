@@ -1,5 +1,6 @@
-package com.kuit.conet.auth;
+package com.kuit.conet.utils.auth;
 
+import com.kuit.conet.auth.CoNetPublicKey;
 import com.kuit.conet.auth.apple.ApplePublicKeys;
 import com.kuit.conet.auth.kakao.KakaoPublicKeys;
 import org.springframework.stereotype.Component;
@@ -44,8 +45,5 @@ public class PublicKeyGenerator {
         }catch (NoSuchAlgorithmException | InvalidKeySpecException exception){
             throw new IllegalStateException("OAuth 로그인 중 public key 생성에 문제가 발생했습니다.");
         }
-
     }
 }
-
-

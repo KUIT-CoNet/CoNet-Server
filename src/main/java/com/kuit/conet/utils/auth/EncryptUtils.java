@@ -1,4 +1,4 @@
-package com.kuit.conet.auth.util;
+package com.kuit.conet.utils.auth;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

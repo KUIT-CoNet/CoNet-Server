@@ -1,7 +1,7 @@
 package com.kuit.conet.service;
 
 import com.kuit.conet.utils.JwtParser;
-import com.kuit.conet.auth.JwtTokenProvider;
+import com.kuit.conet.utils.auth.JwtTokenProvider;
 import com.kuit.conet.auth.apple.AppleUserProvider;
 import com.kuit.conet.auth.kakao.KakaoUserProvider;
 import com.kuit.conet.common.exception.InvalidTokenException;

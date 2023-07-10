@@ -9,10 +9,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @ToString
 public class MakeTeamResponse {
-
-    private Long groupId;
+    private Long teamId;
     private String inviteCode;
-
     private Timestamp codeGeneratedTime;
-
 }

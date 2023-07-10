@@ -1,4 +1,4 @@
-package com.kuit.conet.auth;
+package com.kuit.conet.utils.auth;
 
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
