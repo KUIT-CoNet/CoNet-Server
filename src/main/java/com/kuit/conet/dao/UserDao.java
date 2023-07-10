@@ -137,8 +137,8 @@ public class UserDao {
 
         jdbcTemplate.update(sql, param);
 
-        // user가 참여한 모든 group 나가기
-        sql = "update groupMember set status=0 where userId=:userId";
+        // user가 참여한 모든 모임(team) 나가기
+        sql = "update teamMember set status=0 where userId=:userId";
         jdbcTemplate.update(sql, param);
     }
 }
