@@ -1,6 +1,6 @@
 package com.kuit.conet.service;
 
-import com.kuit.conet.auth.JwtParser;
+import com.kuit.conet.utils.JwtParser;
 import com.kuit.conet.auth.JwtTokenProvider;
 import com.kuit.conet.auth.apple.AppleUserProvider;
 import com.kuit.conet.auth.kakao.KakaoUserProvider;
@@ -11,7 +11,7 @@ import com.kuit.conet.domain.Platform;
 import com.kuit.conet.domain.User;
 import com.kuit.conet.dto.request.LoginRequest;
 import com.kuit.conet.dto.request.PutOptionTermAndNameRequest;
-import com.kuit.conet.dto.request.RefreshTokenRequest;
+import com.kuit.conet.dto.request.TokenRequest;
 import com.kuit.conet.dto.response.AgreeTermAndPutNameResponse;
 import com.kuit.conet.dto.response.ApplePlatformUserResponse;
 import com.kuit.conet.dto.response.KakaoPlatformUserResponse;
@@ -53,7 +53,7 @@ public class AuthService {
                         log.info("회원가입은 되어 있으나, 약관 동의 및 이름 입력이 필요합니다.");
                         return getLoginResponse(findUser, clientIp, false);
                     }
-                    log.info("로그인 성공쓰~");
+                    log.info("로그인에 성공하였습니다.");
                     return getLoginResponse(findUser, clientIp, true);
                 })
                 .orElseGet(() -> { // 회원가입이 필요한 멤버
@@ -73,8 +73,8 @@ public class AuthService {
         return new LoginResponse(targetUser.getEmail(), accessToken, refreshToken, isRegistered);
     }
 
-    public LoginResponse regenerateToken(RefreshTokenRequest tokenRequest, String clientIp) {
-        String refreshToken = tokenRequest.getRefreshToken();
+    public LoginResponse regenerateToken(TokenRequest tokenRequest, String clientIp) {
+        String refreshToken = tokenRequest.getToken();
         // Redis 에서 해당 refresh token 찾기
         String existingIp = redisTemplate.opsForValue().get(refreshToken);
         // 찾은 값의 validation 처리
@@ -90,7 +90,6 @@ public class AuthService {
     }
 
     public AgreeTermAndPutNameResponse agreeTermAndPutName(PutOptionTermAndNameRequest nameRequest, String clientIp) {
-        // accessToken 파싱해서 userId 가져와 nameRequest에 setting
         String userId = jwtParser.parseAccessTokenAndGetSubject(nameRequest.getAccessToken());
         nameRequest.setAccessToken(userId);
 

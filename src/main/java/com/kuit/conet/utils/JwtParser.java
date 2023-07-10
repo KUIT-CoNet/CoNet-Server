@@ -1,8 +1,7 @@
-package com.kuit.conet.auth;
+package com.kuit.conet.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kuit.conet.auth.kakao.KakaoClient;
 import com.kuit.conet.common.exception.InvalidTokenException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;

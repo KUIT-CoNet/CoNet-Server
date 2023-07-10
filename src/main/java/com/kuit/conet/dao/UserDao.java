@@ -3,6 +3,7 @@ package com.kuit.conet.dao;
 import com.kuit.conet.domain.Platform;
 import com.kuit.conet.domain.User;
 import com.kuit.conet.dto.request.PutOptionTermAndNameRequest;
+import com.kuit.conet.dto.request.TokenRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -125,5 +126,19 @@ public class UserDao {
         User user = jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
 
         return Optional.ofNullable(user);
+    }
+
+
+    public void deleteUser(Long userId) {
+        // user의 platform, platformId 초기화
+        String sql = "update user set platform='', platformId='', serviceTerm=0 where userId=:userId";
+        Map<String, Object> param = Map.of(
+                "userId", userId);
+
+        jdbcTemplate.update(sql, param);
+
+        // user가 참여한 모든 모임(team) 나가기
+        sql = "update teamMember set status=0 where userId=:userId";
+        jdbcTemplate.update(sql, param);
     }
 }
