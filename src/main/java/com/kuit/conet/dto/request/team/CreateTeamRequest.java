@@ -1,17 +1,15 @@
 package com.kuit.conet.dto.request.team;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Setter
 public class CreateTeamRequest {
     // TODO: userId -> accessToken
-    private Long userId;
+    private String accessToken;
     private String teamName;
     private String teamImgUrl;
 }
