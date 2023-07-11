@@ -7,6 +7,7 @@ import com.kuit.conet.domain.Team;
 import com.kuit.conet.domain.TeamMember;
 import com.kuit.conet.dto.request.team.MakeTeamRequest;
 import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
+import com.kuit.conet.dto.request.team.RegenerateCodeRequest;
 import com.kuit.conet.dto.response.team.MakeTeamResponse;
 import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
 import com.kuit.conet.utils.JwtParser;
@@ -45,12 +46,34 @@ public class TeamService {
         Team newTeam = new Team(request.getTeamName(), request.getTeamImgUrl(), inviteCode, codeGeneratedTime);
         Long teamId = teamDao.saveTeam(newTeam);
 
-        // teamMembers 에 userId 추가
-        // TODO: teamMemberId 가져올 필요 X
+        // teamMember 에 user 추가
         TeamMember newTeamMember = new TeamMember(teamId, request.getUserId());
         TeamMember savedTeamMember = teamDao.saveTeamMember(newTeamMember);
 
-        return new MakeTeamResponse(teamId, inviteCode, codeGeneratedTime);
+        return new MakeTeamResponse(savedTeamMember.getTeamId(), inviteCode);
+    }
+
+    public MakeTeamResponse regenerateCode(RegenerateCodeRequest request) {
+        // 초대 코드 생성
+        String inviteCode;
+
+        // 코드 중복 확인
+        do {
+            inviteCode = generateInviteCode();
+        } while(teamDao.validateDuplicateCode(inviteCode));  // 중복되면 true 반환
+
+        // 모임 생성 시간 찍기
+        Timestamp codeGeneratedTime = Timestamp.valueOf(LocalDateTime.now());
+
+        // TODO: 모임 존재 여부 확인
+//        if (teamDao.isExistTeam(request.getTeamId())) {
+//
+//        }
+
+        // 초대 코드, 생성시간 update
+        String newCode = teamDao.codeUpdate(request.getTeamId(), inviteCode, codeGeneratedTime);
+
+        return new MakeTeamResponse(request.getTeamId(), newCode);
     }
 
     public String generateInviteCode() {

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Map;
 import java.util.Optional;
 
@@ -67,6 +68,20 @@ public class TeamDao {
         return jdbcTemplate.queryForObject(returnSql, returnParam, mapper);
     }
 
+    public String codeUpdate(Long teamId, String newCode, Timestamp regeneratedtime) {
+        String sql = "update team set inviteCode=:inviteCode, codeGeneratedTime=:codeGeneratedTime where teamId=:teamId";
+        Map<String, String> param = Map.of("inviteCode", newCode,
+                "teamId", teamId.toString(),
+                "codeGeneratedTime", regeneratedtime.toString());
+
+        jdbcTemplate.update(sql, param);
+
+        String returnSql = "select inviteCode from team where teamId=:teamId";
+        Map<String, String> returnParam = Map.of("teamId", teamId.toString());
+
+        return jdbcTemplate.queryForObject(returnSql, returnParam, String.class);
+    }
+
     public Boolean validateDuplicateCode(String inviteCode) {
         String sql = "select EXISTS( SELECT * FROM team WHERE inviteCode=:inviteCode and status=1);";
         Map<String, String> param = Map.of("inviteCode", inviteCode);
@@ -97,9 +112,16 @@ public class TeamDao {
     }
 
     public Boolean isExistingUser(Long teamId, ParticipateTeamRequest participateRequest) {
-        String sql = "select EXISTS(SELECT * FROM teamMember WHERE userId=:userId and teamId=:teamId and status=1);";
-        Map<String, Object> param = Map.of("userId", participateRequest.getToken(),
-                "teamId", teamId);
+            String sql = "select EXISTS(SELECT * FROM teamMember WHERE userId=:userId and teamId=:teamId and status=1);";
+            Map<String, Object> param = Map.of("userId", participateRequest.getToken(),
+                    "teamId", teamId);
+
+            return jdbcTemplate.queryForObject(sql, param, Boolean.class);
+    }
+
+    public Boolean isExistTeam(Long teamId) {
+        String sql = "select exists(select * from team where teamId=:teamId);";
+        Map<String, Object> param = Map.of("teamId", teamId);
 
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }

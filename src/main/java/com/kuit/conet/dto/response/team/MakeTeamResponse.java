@@ -11,5 +11,4 @@ import java.sql.Timestamp;
 public class MakeTeamResponse {
     private Long teamId;
     private String inviteCode;
-    private Timestamp codeGeneratedTime;
 }
