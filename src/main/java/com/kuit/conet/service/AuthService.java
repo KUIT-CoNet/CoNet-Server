@@ -84,13 +84,13 @@ public class AuthService {
             throw new InvalidTokenException(IP_MISMATCH);
         }
 
-        Long userId = jwtTokenProvider.getUserIdFromRefreshToken(refreshToken);
+        Long userId = Long.parseLong(jwtParser.getUserIdFromToken(refreshToken));
         User existingUser = userDao.findById(userId).get();
         return getLoginResponse(existingUser, clientIp, true);
     }
 
     public AgreeTermAndPutNameResponse agreeTermAndPutName(PutOptionTermAndNameRequest nameRequest, String clientIp) {
-        String userId = jwtParser.parseAccessTokenAndGetSubject(nameRequest.getAccessToken());
+        String userId = jwtParser.getUserIdFromToken(nameRequest.getAccessToken());
         nameRequest.setAccessToken(userId);
 
         // 이용 약관 및 이름 입력 DB update

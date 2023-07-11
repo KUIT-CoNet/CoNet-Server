@@ -1,4 +1,4 @@
-package com.kuit.conet.dto.request.team;
+package com.kuit.conet.dto.response.team;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +9,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class MakeTeamRequest {
-    // TODO: userId -> accessToken
-    private Long userId;
+public class ParticipateTeamResponse {
+    private String userName;
     private String teamName;
-    private String teamImgUrl;
+    private Boolean status;
 }
