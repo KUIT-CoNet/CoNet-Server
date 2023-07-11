@@ -45,8 +45,11 @@ public class TeamService {
         Team newTeam = new Team(request.getTeamName(), request.getTeamImgUrl(), inviteCode, codeGeneratedTime);
         Long teamId = teamDao.saveTeam(newTeam);
 
+//        Long userId = Long.parseLong(jwtParser.getUserIdFromToken(request.getAccessToken()));
+        Long userId = Long.parseLong(request.getAccessToken());
+
         // teamMember 에 user 추가
-        TeamMember newTeamMember = new TeamMember(teamId, request.getUserId());
+        TeamMember newTeamMember = new TeamMember(teamId, userId);
         TeamMember savedTeamMember = teamDao.saveTeamMember(newTeamMember);
 
         return new CreateTeamResponse(savedTeamMember.getTeamId(), inviteCode);
@@ -64,10 +67,10 @@ public class TeamService {
         // 모임 생성 시간 찍기
         Timestamp codeGeneratedTime = Timestamp.valueOf(LocalDateTime.now());
 
-        // TODO: 모임 존재 여부 확인
-//        if (teamDao.isExistTeam(request.getTeamId())) {
-//
-//        }
+        // 모임 존재 여부 확인
+        if (!teamDao.isExistTeam(request.getTeamId())) {
+            throw new TeamException(NOT_FOUND_TEAM);
+        }
 
         // 초대 코드, 생성시간 update
         String newCode = teamDao.codeUpdate(request.getTeamId(), inviteCode, codeGeneratedTime);
