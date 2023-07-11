@@ -9,8 +9,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class MakeTeamRequest {
-    private Long userId;
-    private String teamName;
-    private String teamImgUrl;
+public class RegenerateCodeRequest {
+    private Long teamId;
 }
