@@ -9,7 +9,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class MakeTeamRequest {
+public class CreateTeamRequest {
     // TODO: userId -> accessToken
     private Long userId;
     private String teamName;

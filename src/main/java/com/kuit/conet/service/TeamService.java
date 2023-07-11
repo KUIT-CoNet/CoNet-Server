@@ -5,10 +5,10 @@ import com.kuit.conet.dao.TeamDao;
 import com.kuit.conet.dao.UserDao;
 import com.kuit.conet.domain.Team;
 import com.kuit.conet.domain.TeamMember;
-import com.kuit.conet.dto.request.team.MakeTeamRequest;
+import com.kuit.conet.dto.request.team.CreateTeamRequest;
 import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
 import com.kuit.conet.dto.request.team.RegenerateCodeRequest;
-import com.kuit.conet.dto.response.team.MakeTeamResponse;
+import com.kuit.conet.dto.response.team.CreateTeamResponse;
 import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
 import com.kuit.conet.utils.JwtParser;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -30,7 +29,7 @@ public class TeamService {
     private final UserDao userDao;
     private final JwtParser jwtParser;
 
-    public MakeTeamResponse makeTeam(MakeTeamRequest request) {
+    public CreateTeamResponse createTeam(CreateTeamRequest request) {
         // 초대 코드 생성
         String inviteCode;
 
@@ -50,10 +49,10 @@ public class TeamService {
         TeamMember newTeamMember = new TeamMember(teamId, request.getUserId());
         TeamMember savedTeamMember = teamDao.saveTeamMember(newTeamMember);
 
-        return new MakeTeamResponse(savedTeamMember.getTeamId(), inviteCode);
+        return new CreateTeamResponse(savedTeamMember.getTeamId(), inviteCode);
     }
 
-    public MakeTeamResponse regenerateCode(RegenerateCodeRequest request) {
+    public CreateTeamResponse regenerateCode(RegenerateCodeRequest request) {
         // 초대 코드 생성
         String inviteCode;
 
@@ -73,7 +72,7 @@ public class TeamService {
         // 초대 코드, 생성시간 update
         String newCode = teamDao.codeUpdate(request.getTeamId(), inviteCode, codeGeneratedTime);
 
-        return new MakeTeamResponse(request.getTeamId(), newCode);
+        return new CreateTeamResponse(request.getTeamId(), newCode);
     }
 
     public String generateInviteCode() {

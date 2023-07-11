@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/deletion")
+    @PostMapping("/delete")
     public BaseResponse<String> userDelete(@RequestBody @Valid TokenRequest tokenRequest) {
         userService.userDelete(tokenRequest);
         return new BaseResponse<>("유저 삭제에 성공하였습니다.");

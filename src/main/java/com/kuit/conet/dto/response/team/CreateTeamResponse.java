@@ -2,13 +2,11 @@ package com.kuit.conet.dto.response.team;
 
 import lombok.*;
 
-import java.sql.Timestamp;
-
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class MakeTeamResponse {
+public class CreateTeamResponse {
     private Long teamId;
     private String inviteCode;
 }
