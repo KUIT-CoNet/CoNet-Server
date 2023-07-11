@@ -34,7 +34,7 @@ public class TeamDao {
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select teamId from team where teamName=:teamName and teamImgUrl=:teamImgUrl and inviteCode=:inviteCode";
+        String returnSql = "select teamId from team where teamName=:teamName and teamImgUrl=:teamImgUrl and inviteCode=:inviteCode and status=1";
         Map<String, String> returnParam = Map.of("teamName", team.getTeamName(),
                 "teamImgUrl", team.getTeamImgUrl(),
                 "inviteCode", team.getInviteCode());
@@ -49,7 +49,7 @@ public class TeamDao {
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select * from teammember where teamId=:teamId and userId=:userId";
+        String returnSql = "select * from teammember where teamId=:teamId and userId=:userId and status=1";
         Map<String, Object> returnParam = Map.of("teamId", teamMember.getTeamId(),
                 "userId", teamMember.getUserId());
 
@@ -68,14 +68,14 @@ public class TeamDao {
     }
 
     public Boolean validateDuplicateCode(String inviteCode) {
-        String sql = "select EXISTS( SELECT * FROM team WHERE inviteCode = :inviteCode );";
+        String sql = "select EXISTS( SELECT * FROM team WHERE inviteCode=:inviteCode and status=1);";
         Map<String, String> param = Map.of("inviteCode", inviteCode);
 
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 
     public Team getTeamFromInviteCode(ParticipateTeamRequest participateRequest) {
-        String sql = "select * from team where inviteCode=:invitedCode";
+        String sql = "select * from team where inviteCode=:invitedCode and status=1";
         Map<String, String> param = Map.of("invitedCode", participateRequest.getInviteCode());
 
         RowMapper<Team> mapper = new RowMapper<>() {
@@ -97,7 +97,7 @@ public class TeamDao {
     }
 
     public Boolean isExistingUser(Long teamId, ParticipateTeamRequest participateRequest) {
-        String sql = "select EXISTS( SELECT * FROM teamMember WHERE userId=:userId and teamId=:teamId);";
+        String sql = "select EXISTS(SELECT * FROM teamMember WHERE userId=:userId and teamId=:teamId and status=1);";
         Map<String, Object> param = Map.of("userId", participateRequest.getToken(),
                 "teamId", teamId);
 
