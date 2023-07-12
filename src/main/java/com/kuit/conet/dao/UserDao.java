@@ -13,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @Repository
@@ -24,7 +23,7 @@ public class UserDao {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public Optional<Long> findByPlatformAndPlatformId(Platform platform, String platformId) {
+    public List<Long> findByPlatformAndPlatformId(Platform platform, String platformId) {
         String sql = "select user_id from user where platform=:platform and platform_id=:platform_id";
         Map<String, String> param = Map.of(
                 "platform", platform.getPlatform(),
@@ -32,11 +31,10 @@ public class UserDao {
 
         RowMapper<Long> mapper = new SingleColumnRowMapper<>(Long.class);
 
-        List<Long> userIdList = jdbcTemplate.query(sql, param, mapper);
-        return userIdList.isEmpty() ? Optional.empty() : Optional.of(userIdList.get(0));
+        return jdbcTemplate.query(sql, param, mapper);
     }
 
-    public Optional<User> findById(Long userId) {
+    public User findById(Long userId) {
         String sql = "select * from user where user_id=:user_id";
         Map<String, Long> param = Map.of("user_id", userId);
 
@@ -54,13 +52,11 @@ public class UserDao {
                 return user;
             }
         };
-        User user = jdbcTemplate.queryForObject(sql, param, mapper);
-        Optional<User> returnUser = Optional.ofNullable(user);
 
-        return returnUser;
+        return jdbcTemplate.queryForObject(sql, param, mapper);
     }
 
-    public Optional<User> save(User oauthUser) {
+    public User save(User oauthUser) {
         // 회원가입 -> insert 한 후, 넣은 애 반환
         String sql = "insert into user (email, platform, platform_id) values (:email, :platform, :platform_id)";
         Map<String, String> param = Map.of("email", oauthUser.getEmail(),
@@ -89,12 +85,10 @@ public class UserDao {
             }
         };
 
-        User user = jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
-
-        return Optional.ofNullable(user);
+        return jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
     }
 
-    public Optional<User> agreeTermAndPutName(String name, Boolean optionTerm, Long userId) {
+    public User agreeTermAndPutName(String name, Boolean optionTerm, Long userId) {
         String sql = "update user set name=:name, service_term=1, option_term=:option_term where user_id=:user_id";
         Map<String, Object> param = Map.of(
                 "name", name,
@@ -121,9 +115,7 @@ public class UserDao {
             }
         };
 
-        User user = jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
-
-        return Optional.ofNullable(user);
+        return jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
     }
 
 

@@ -106,7 +106,7 @@ public class TeamService {
 
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
-        String userName = userDao.findById(userId).get().getName();
+        String userName = userDao.findById(userId).getName();
 
         Team team = teamDao.getTeamFromInviteCode(inviteCode);
 
