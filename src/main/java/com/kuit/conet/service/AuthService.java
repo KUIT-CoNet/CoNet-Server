@@ -79,7 +79,7 @@ public class AuthService {
         String existingIp = redisTemplate.opsForValue().get(refreshToken);
         // 찾은 값의 validation 처리
         if (existingIp == null) {
-            throw new InvalidTokenException(INVALID_REFRESHTOKEN);
+            throw new InvalidTokenException(INVALID_REFRESH_TOKEN);
         } else if (!existingIp.equals(clientIp)) {
             throw new InvalidTokenException(IP_MISMATCH);
         }
