@@ -11,6 +11,7 @@ import com.kuit.conet.dto.request.team.RegenerateCodeRequest;
 import com.kuit.conet.dto.response.team.CreateTeamResponse;
 import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
 import com.kuit.conet.utils.JwtParser;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class TeamService {
     private final UserDao userDao;
     private final JwtParser jwtParser;
 
-    public CreateTeamResponse createTeam(CreateTeamRequest request) {
+    public CreateTeamResponse createTeam(CreateTeamRequest createTeamRequest, HttpServletRequest httpRequest) {
         // 초대 코드 생성
         String inviteCode;
 
@@ -42,11 +43,10 @@ public class TeamService {
         Timestamp codeGeneratedTime = Timestamp.valueOf(LocalDateTime.now());
 
         // team table에 새로운 team insert하고 teamId 얻기
-        Team newTeam = new Team(request.getTeamName(), request.getTeamImgUrl(), inviteCode, codeGeneratedTime);
+        Team newTeam = new Team(createTeamRequest.getTeamName(), createTeamRequest.getTeamImgUrl(), inviteCode, codeGeneratedTime);
         Long teamId = teamDao.saveTeam(newTeam);
 
-//        Long userId = Long.parseLong(jwtParser.getUserIdFromToken(request.getAccessToken()));
-        Long userId = Long.parseLong(request.getAccessToken());
+        Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
         // teamMember 에 user 추가
         TeamMember newTeamMember = new TeamMember(teamId, userId);
@@ -94,24 +94,24 @@ public class TeamService {
         return generatedString;
     }
 
-    public ParticipateTeamResponse participateTeam(ParticipateTeamRequest participateRequest) {
+    public ParticipateTeamResponse participateTeam(ParticipateTeamRequest participateRequest, HttpServletRequest httpRequest) {
         // 모임 참가 요청 시간 찍기
         LocalDateTime participateRequestTime = LocalDateTime.now();
 
         // 초대 코드 존재 확인
-        if (!teamDao.validateDuplicateCode(participateRequest.getInviteCode())) {
+        String inviteCode = participateRequest.getInviteCode();
+        if (!teamDao.validateDuplicateCode(inviteCode)) {
             throw new TeamException(NOT_FOUND_INVITE_CODE);
         }
 
-        String userId = jwtParser.getUserIdFromToken(participateRequest.getToken());
-        participateRequest.setToken(userId);
+        Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
-        String userName = userDao.findById(Long.parseLong(participateRequest.getToken())).get().getName();
+        String userName = userDao.findById(userId).get().getName();
 
-        Team team = teamDao.getTeamFromInviteCode(participateRequest);
+        Team team = teamDao.getTeamFromInviteCode(inviteCode);
 
         // 모임에 이미 존재하는 회원인지 확인
-        if (teamDao.isExistingUser(team.getTeamId(), participateRequest)) {
+        if (teamDao.isExistingUser(team.getTeamId(), userId)) {
             throw new TeamException(EXIST_USER_IN_TEAM);
         }
 
@@ -130,7 +130,7 @@ public class TeamService {
         }
 
         // teamMember 에 userId 추가
-        TeamMember newTeamMember = new TeamMember(team.getTeamId(), Long.parseLong(participateRequest.getToken()));
+        TeamMember newTeamMember = new TeamMember(team.getTeamId(), userId);
         TeamMember savedTeamMember = teamDao.saveTeamMember(newTeamMember);
 
         return new ParticipateTeamResponse(userName, team.getTeamName(), savedTeamMember.getStatus());

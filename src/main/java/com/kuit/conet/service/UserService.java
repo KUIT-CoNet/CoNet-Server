@@ -2,7 +2,7 @@ package com.kuit.conet.service;
 
 import com.kuit.conet.utils.JwtParser;
 import com.kuit.conet.dao.UserDao;
-import com.kuit.conet.dto.request.TokenRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,8 @@ public class UserService {
     private final UserDao userDao;
     private final JwtParser jwtParser;
 
-    public void userDelete(TokenRequest tokenRequest) {
-        userDao.deleteUser(Long.parseLong(jwtParser.getUserIdFromToken(tokenRequest.getToken())));
+    public void userDelete(HttpServletRequest httpRequest) {
+        Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
+        userDao.deleteUser(userId);
     }
 }

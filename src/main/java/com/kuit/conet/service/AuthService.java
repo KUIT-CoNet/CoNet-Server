@@ -11,11 +11,11 @@ import com.kuit.conet.domain.Platform;
 import com.kuit.conet.domain.User;
 import com.kuit.conet.dto.request.LoginRequest;
 import com.kuit.conet.dto.request.PutOptionTermAndNameRequest;
-import com.kuit.conet.dto.request.TokenRequest;
 import com.kuit.conet.dto.response.AgreeTermAndPutNameResponse;
 import com.kuit.conet.dto.response.ApplePlatformUserResponse;
 import com.kuit.conet.dto.response.KakaoPlatformUserResponse;
 import com.kuit.conet.dto.response.LoginResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -73,10 +73,10 @@ public class AuthService {
         return new LoginResponse(targetUser.getEmail(), accessToken, refreshToken, isRegistered);
     }
 
-    public LoginResponse regenerateToken(TokenRequest tokenRequest, String clientIp) {
-        String refreshToken = tokenRequest.getToken();
+    public LoginResponse regenerateToken(String refreshToken,  String clientIp) {
         // Redis 에서 해당 refresh token 찾기
         String existingIp = redisTemplate.opsForValue().get(refreshToken);
+
         // 찾은 값의 validation 처리
         if (existingIp == null) {
             throw new InvalidTokenException(INVALID_REFRESH_TOKEN);
@@ -89,12 +89,11 @@ public class AuthService {
         return getLoginResponse(existingUser, clientIp, true);
     }
 
-    public AgreeTermAndPutNameResponse agreeTermAndPutName(PutOptionTermAndNameRequest nameRequest, String clientIp) {
-        String userId = jwtParser.getUserIdFromToken(nameRequest.getAccessToken());
-        nameRequest.setAccessToken(userId);
+    public AgreeTermAndPutNameResponse agreeTermAndPutName(PutOptionTermAndNameRequest nameRequest, HttpServletRequest httpRequest, String clientIp) {
+        Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
         // 이용 약관 및 이름 입력 DB update
-        User user = userDao.agreeTermAndPutName(nameRequest).get();
+        User user = userDao.agreeTermAndPutName(nameRequest.getName(), nameRequest.getOptionTerm(), userId).get();
 
         return new AgreeTermAndPutNameResponse(user.getName(), user.getEmail(), user.getServiceTerm(), user.getOptionTerm());
     }
