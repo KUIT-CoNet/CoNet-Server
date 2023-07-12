@@ -7,6 +7,7 @@ import com.kuit.conet.dto.request.team.RegenerateCodeRequest;
 import com.kuit.conet.dto.response.team.CreateTeamResponse;
 import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
 import com.kuit.conet.service.TeamService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,14 +20,14 @@ import org.springframework.web.bind.annotation.*;
 public class TeamController {
     private final TeamService teamService;
     @PostMapping("/create")
-    public BaseResponse<CreateTeamResponse> createTeam(@RequestBody @Valid CreateTeamRequest request) {
-        CreateTeamResponse response = teamService.createTeam(request);
+    public BaseResponse<CreateTeamResponse> createTeam(@RequestBody @Valid CreateTeamRequest createTeamRequest, HttpServletRequest httpRequest) {
+        CreateTeamResponse response = teamService.createTeam(createTeamRequest, httpRequest);
         return new BaseResponse<CreateTeamResponse>(response);
     }
 
     @PostMapping("/participate")
-    public BaseResponse<ParticipateTeamResponse> participateTeam(@RequestBody @Valid ParticipateTeamRequest participateRequest) {
-        ParticipateTeamResponse response = teamService.participateTeam(participateRequest);
+    public BaseResponse<ParticipateTeamResponse> participateTeam(@RequestBody @Valid ParticipateTeamRequest participateRequest, HttpServletRequest httpRequest) {
+        ParticipateTeamResponse response = teamService.participateTeam(participateRequest, httpRequest);
         return new BaseResponse<ParticipateTeamResponse>(response);
     }
 

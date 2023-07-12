@@ -89,9 +89,9 @@ public class TeamDao {
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 
-    public Team getTeamFromInviteCode(ParticipateTeamRequest participateRequest) {
+    public Team getTeamFromInviteCode(String inviteCode) {
         String sql = "select * from team where inviteCode=:invitedCode and status=1";
-        Map<String, String> param = Map.of("invitedCode", participateRequest.getInviteCode());
+        Map<String, String> param = Map.of("invitedCode", inviteCode);
 
         RowMapper<Team> mapper = new RowMapper<>() {
             public Team mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -111,9 +111,9 @@ public class TeamDao {
         return team;
     }
 
-    public Boolean isExistingUser(Long teamId, ParticipateTeamRequest participateRequest) {
+    public Boolean isExistingUser(Long teamId, Long userId) {
             String sql = "select EXISTS(SELECT * FROM teamMember WHERE userId=:userId and teamId=:teamId and status=1);";
-            Map<String, Object> param = Map.of("userId", participateRequest.getToken(),
+            Map<String, Object> param = Map.of("userId", userId,
                     "teamId", teamId);
 
             return jdbcTemplate.queryForObject(sql, param, Boolean.class);

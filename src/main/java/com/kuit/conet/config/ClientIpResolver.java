@@ -32,16 +32,16 @@ public class ClientIpResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        HttpServletRequest httpRequest = (HttpServletRequest) webRequest.getNativeRequest();
 
         for (String header : IP_HEADER_CANDIDATES) {
-            String ip = request.getHeader(header);
+            String ip = httpRequest.getHeader(header);
 
             if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
                 return ip;
             }
         }
 
-        return request.getRemoteAddr();
+        return httpRequest.getRemoteAddr();
     }
 }
