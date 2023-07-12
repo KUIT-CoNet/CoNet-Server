@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.util.List;
+
 import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
@@ -45,23 +47,29 @@ public class AuthService {
     }
 
     private LoginResponse generateLoginResponse(Platform platform, String email, String platformId, String clientIp) {
-        return userDao.findByPlatformAndPlatformId(platform, platformId)
-                .map(userId -> { // 이미 회원가입과 약관 동의 및 이름 입력이 모두 되어있는 유저
-                    User findUser = userDao.findById(userId).orElseThrow(() -> new UserException(NOT_FOUND_USER));
-                    // 회원가입은 되어있는데, 약관 동의 혹은 이름 입력이 되어있지 않은 유저
-                    if(!findUser.getOptionTerm() | findUser.getName() == null) {
-                        log.info("회원가입은 되어 있으나, 약관 동의 및 이름 입력이 필요합니다.");
-                        return getLoginResponse(findUser, clientIp, false);
-                    }
-                    log.info("로그인에 성공하였습니다.");
-                    return getLoginResponse(findUser, clientIp, true);
-                })
-                .orElseGet(() -> { // 회원가입이 필요한 멤버
-                    User oauthUser = new User(email, platform, platformId);
-                    User saveduser = userDao.save(oauthUser).get();
-                    log.info("회원가입 성공! 약관 동의 및 이름 입력이 필요합니다.");
-                    return getLoginResponse(saveduser, clientIp, false);
-                });
+        List<Long> findUserId = userDao.findByPlatformAndPlatformId(platform, platformId);
+        if (!findUserId.isEmpty()) {
+            User findUser = userDao.findById(findUserId.get(0));
+            if (findUser == null) {
+                throw new UserException(NOT_FOUND_USER);
+            }
+
+            // 회원가입은 되어있는데, 약관 동의 혹은 이름 입력이 되어있지 않은 유저
+            if (!findUser.getOptionTerm() || findUser.getName() == null) {
+                log.info("회원가입은 되어 있으나, 약관 동의 및 이름 입력이 필요합니다.");
+                return getLoginResponse(findUser, clientIp, false);
+            } else {
+                // 이미 회원가입과 약관 동의 및 이름 입력이 모두 되어있는 유저
+                log.info("로그인에 성공하였습니다.");
+                return getLoginResponse(findUser, clientIp, true);
+            }
+        } else {
+            // 회원가입이 필요한 멤버
+            User oauthUser = new User(email, platform, platformId);
+            User savedUser = userDao.save(oauthUser);
+            log.info("회원가입 성공! 약관 동의 및 이름 입력이 필요합니다.");
+            return getLoginResponse(savedUser, clientIp, false);
+        }
     }
 
     private LoginResponse getLoginResponse(User targetUser, String clientIp, Boolean isRegistered) {
@@ -85,7 +93,7 @@ public class AuthService {
         }
 
         Long userId = Long.parseLong(jwtParser.getUserIdFromToken(refreshToken));
-        User existingUser = userDao.findById(userId).get();
+        User existingUser = userDao.findById(userId);
         return getLoginResponse(existingUser, clientIp, true);
     }
 
@@ -93,7 +101,7 @@ public class AuthService {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
         // 이용 약관 및 이름 입력 DB update
-        User user = userDao.agreeTermAndPutName(nameRequest.getName(), nameRequest.getOptionTerm(), userId).get();
+        User user = userDao.agreeTermAndPutName(nameRequest.getName(), nameRequest.getOptionTerm(), userId);
 
         return new AgreeTermAndPutNameResponse(user.getName(), user.getEmail(), user.getServiceTerm(), user.getOptionTerm());
     }
