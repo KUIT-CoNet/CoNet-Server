@@ -2,8 +2,6 @@ package com.kuit.conet.dao;
 
 import com.kuit.conet.domain.Platform;
 import com.kuit.conet.domain.User;
-import com.kuit.conet.dto.request.PutOptionTermAndNameRequest;
-import com.kuit.conet.dto.request.TokenRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -96,17 +94,17 @@ public class UserDao {
         return Optional.ofNullable(user);
     }
 
-    public Optional<User> agreeTermAndPutName(PutOptionTermAndNameRequest nameRequest) {
+    public Optional<User> agreeTermAndPutName(String name, Boolean optionTerm, Long userId) {
         String sql = "update user set name=:name, serviceTerm=1, optionTerm=:optionTerm where userId=:userId";
         Map<String, Object> param = Map.of(
-                "name", nameRequest.getName(),
-                "optionTerm", nameRequest.getOptionTerm(),
-                "userId", nameRequest.getAccessToken()); // AuthService에서 accessToken을 파싱하여 userId를 저장해둠
+                "name", name,
+                "optionTerm", optionTerm,
+                "userId", userId);
 
         jdbcTemplate.update(sql, param);
 
         String returnSql = "select * from user where userId=:userId";
-        Map<String, String> returnParam = Map.of("userId", nameRequest.getAccessToken());
+        Map<String, Object> returnParam = Map.of("userId", userId);
 
         RowMapper<User> returnMapper = new RowMapper<User>() {
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {

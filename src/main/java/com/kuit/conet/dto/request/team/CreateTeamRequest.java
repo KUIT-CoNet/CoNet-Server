@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 public class CreateTeamRequest {
     // TODO: userId -> accessToken
-    private String accessToken;
+    // private String accessToken;
     private String teamName;
     private String teamImgUrl;
 }

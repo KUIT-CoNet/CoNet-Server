@@ -8,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class ParticipateTeamRequest {
-    private String token;
+    // private String token;
     private String inviteCode;
 }
