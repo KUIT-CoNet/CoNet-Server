@@ -74,8 +74,6 @@ public class AuthService {
     }
 
     public LoginResponse regenerateToken(String refreshToken,  String clientIp) {
-        //String refreshToken = tokenRequest.getToken();
-
         // Redis 에서 해당 refresh token 찾기
         String existingIp = redisTemplate.opsForValue().get(refreshToken);
 
@@ -92,8 +90,6 @@ public class AuthService {
     }
 
     public AgreeTermAndPutNameResponse agreeTermAndPutName(PutOptionTermAndNameRequest nameRequest, HttpServletRequest httpRequest, String clientIp) {
-//        String userId = jwtParser.getUserIdFromToken(nameRequest.getAccessToken());
-//        nameRequest.setAccessToken(userId);
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
         // 이용 약관 및 이름 입력 DB update

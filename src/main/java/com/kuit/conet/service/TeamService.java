@@ -46,7 +46,6 @@ public class TeamService {
         Team newTeam = new Team(createTeamRequest.getTeamName(), createTeamRequest.getTeamImgUrl(), inviteCode, codeGeneratedTime);
         Long teamId = teamDao.saveTeam(newTeam);
 
-//        Long userId = Long.parseLong(jwtParser.getUserIdFromToken(request.getAccessToken()));
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
         // teamMember 에 user 추가
@@ -105,8 +104,6 @@ public class TeamService {
             throw new TeamException(NOT_FOUND_INVITE_CODE);
         }
 
-//        String userId = jwtParser.getUserIdFromToken(participateRequest.getToken());
-//        participateRequest.setToken(userId);
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
         String userName = userDao.findById(userId).get().getName();

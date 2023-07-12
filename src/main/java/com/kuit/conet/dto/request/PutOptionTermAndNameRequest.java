@@ -10,7 +10,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class PutOptionTermAndNameRequest {
-    //private String accessToken;
     private String name;
     private Boolean optionTerm; // 선택 약관이 1개 -> 0이면 동의 X, 1이면 동의 O
 }
