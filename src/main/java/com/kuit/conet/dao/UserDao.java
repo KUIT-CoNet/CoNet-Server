@@ -25,10 +25,10 @@ public class UserDao {
     }
 
     public Optional<Long> findByPlatformAndPlatformId(Platform platform, String platformId) {
-        String sql = "select userId from user where platform=:platform and platformId=:platformId";
+        String sql = "select user_id from user where platform=:platform and platform_id=:platform_id";
         Map<String, String> param = Map.of(
                 "platform", platform.getPlatform(),
-                "platformId", platformId);
+                "platform_id", platformId);
 
         RowMapper<Long> mapper = new SingleColumnRowMapper<>(Long.class);
 
@@ -37,20 +37,20 @@ public class UserDao {
     }
 
     public Optional<User> findById(Long userId) {
-        String sql = "select * from user where userId=:userId";
-        Map<String, Long> param = Map.of("userId", userId);
+        String sql = "select * from user where user_id=:user_id";
+        Map<String, Long> param = Map.of("user_id", userId);
 
         RowMapper<User> mapper = new RowMapper<User>() {
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
                 User user = new User();
-                user.setUserId(rs.getLong("userId"));
+                user.setUserId(rs.getLong("user_id"));
                 user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
-                user.setServiceTerm(rs.getBoolean("serviceTerm"));
-                user.setOptionTerm(rs.getBoolean("optionTerm"));
+                user.setServiceTerm(rs.getBoolean("service_term"));
+                user.setOptionTerm(rs.getBoolean("option_term"));
                 String platform = rs.getString("platform");
                 user.setPlatform(Platform.valueOf(platform));
-                user.setPlatformId(rs.getString("platformId"));
+                user.setPlatformId(rs.getString("platform_id"));
                 return user;
             }
         };
@@ -62,29 +62,29 @@ public class UserDao {
 
     public Optional<User> save(User oauthUser) {
         // 회원가입 -> insert 한 후, 넣은 애 반환
-        String sql = "insert into user (email, platform, platformId) values (:email, :platform, :platformId)";
+        String sql = "insert into user (email, platform, platform_id) values (:email, :platform, :platform_id)";
         Map<String, String> param = Map.of("email", oauthUser.getEmail(),
                 "platform", oauthUser.getPlatform().toString(),
-                "platformId", oauthUser.getPlatformId());
+                "platform_id", oauthUser.getPlatformId());
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select * from user where platform=:platform and platformId=:platformId";
+        String returnSql = "select * from user where platform=:platform and platform_id=:platform_id";
         Map<String, String> returnParam = Map.of(
                 "platform", oauthUser.getPlatform().toString(),
-                "platformId", oauthUser.getPlatformId());
+                "platform_id", oauthUser.getPlatformId());
 
         RowMapper<User> returnMapper = new RowMapper<User>() {
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
                 User user = new User();
-                user.setUserId(rs.getLong("userId"));
+                user.setUserId(rs.getLong("user_id"));
                 user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
-                user.setServiceTerm(rs.getBoolean("serviceTerm"));
-                user.setOptionTerm(rs.getBoolean("optionTerm"));
+                user.setServiceTerm(rs.getBoolean("service_term"));
+                user.setOptionTerm(rs.getBoolean("option_term"));
                 String platform = rs.getString("platform");
                 user.setPlatform(Platform.valueOf(platform));
-                user.setPlatformId(rs.getString("platformId"));
+                user.setPlatformId(rs.getString("platform_id"));
                 return user;
             }
         };
@@ -95,28 +95,28 @@ public class UserDao {
     }
 
     public Optional<User> agreeTermAndPutName(String name, Boolean optionTerm, Long userId) {
-        String sql = "update user set name=:name, serviceTerm=1, optionTerm=:optionTerm where userId=:userId";
+        String sql = "update user set name=:name, service_term=1, option_term=:option_term where user_id=:user_id";
         Map<String, Object> param = Map.of(
                 "name", name,
-                "optionTerm", optionTerm,
-                "userId", userId);
+                "option_term", optionTerm,
+                "user_id", userId);
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select * from user where userId=:userId";
-        Map<String, Object> returnParam = Map.of("userId", userId);
+        String returnSql = "select * from user where user_id=:user_id";
+        Map<String, Object> returnParam = Map.of("user_id", userId);
 
         RowMapper<User> returnMapper = new RowMapper<User>() {
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
                 User user = new User();
-                user.setUserId(rs.getLong("userId"));
+                user.setUserId(rs.getLong("user_id"));
                 user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
-                user.setServiceTerm(rs.getBoolean("serviceTerm"));
-                user.setOptionTerm(rs.getBoolean("optionTerm"));
+                user.setServiceTerm(rs.getBoolean("service_term"));
+                user.setOptionTerm(rs.getBoolean("option_term"));
                 String platform = rs.getString("platform");
                 user.setPlatform(Platform.valueOf(platform));
-                user.setPlatformId(rs.getString("platformId"));
+                user.setPlatformId(rs.getString("option_term"));
                 return user;
             }
         };
@@ -129,14 +129,14 @@ public class UserDao {
 
     public void deleteUser(Long userId) {
         // user의 platform, platformId 초기화
-        String sql = "update user set platform='', platformId='', serviceTerm=0 where userId=:userId";
+        String sql = "update user set platform='', platform_id='', service_term=0 where user_id=:user_id";
         Map<String, Object> param = Map.of(
-                "userId", userId);
+                "user_id", userId);
 
         jdbcTemplate.update(sql, param);
 
         // user가 참여한 모든 모임(team) 나가기
-        sql = "update teamMember set status=0 where userId=:userId";
+        sql = "update team_member set status=0 where user_id=:user_id";
         jdbcTemplate.update(sql, param);
     }
 }

@@ -27,39 +27,39 @@ public class TeamDao {
     }
 
     public Long saveTeam(Team team) {
-        String sql = "insert into team (teamName, teamImgUrl, inviteCode, codeGeneratedTime) values (:teamName, :teamImgUrl, :inviteCode, :codeGeneratedTime)";
-        Map<String, String> param = Map.of("teamName", team.getTeamName(),
-                "teamImgUrl", team.getTeamImgUrl(),
-                "inviteCode", team.getInviteCode(),
-                "codeGeneratedTime", team.getCodeGeneratedTime().toString());
+        String sql = "insert into team (team_name, team_image_url, invite_code, code_generated_time) values (:team_name, :team_image_url, :invite_code, :code_generated_time)";
+        Map<String, String> param = Map.of("team_name", team.getTeamName(),
+                "team_image_url", team.getTeamImgUrl(),
+                "invite_code", team.getInviteCode(),
+                "code_generated_time", team.getCodeGeneratedTime().toString());
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select teamId from team where teamName=:teamName and teamImgUrl=:teamImgUrl and inviteCode=:inviteCode and status=1";
-        Map<String, String> returnParam = Map.of("teamName", team.getTeamName(),
-                "teamImgUrl", team.getTeamImgUrl(),
-                "inviteCode", team.getInviteCode());
+        String returnSql = "select team_id from team where team_name=:team_name and team_image_url=:team_image_url and invite_code=:invite_code and status=1";
+        Map<String, String> returnParam = Map.of("team_name", team.getTeamName(),
+                "team_image_url", team.getTeamImgUrl(),
+                "invite_code", team.getInviteCode());
 
         return jdbcTemplate.queryForObject(returnSql, returnParam, Long.class);
     }
 
     public TeamMember saveTeamMember(TeamMember teamMember) {
-        String sql = "insert into teammember (teamId, userId) values (:teamId , :userId)";
-        Map<String, Object> param = Map.of("teamId", teamMember.getTeamId(),
-                "userId", teamMember.getUserId());
+        String sql = "insert into team_member (team_id, user_id) values (:team_id , :user_id)";
+        Map<String, Object> param = Map.of("team_id", teamMember.getTeamId(),
+                "user_id", teamMember.getUserId());
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select * from teammember where teamId=:teamId and userId=:userId and status=1";
-        Map<String, Object> returnParam = Map.of("teamId", teamMember.getTeamId(),
-                "userId", teamMember.getUserId());
+        String returnSql = "select * from team_member where team_id=:team_id and user_id=:user_id and status=1";
+        Map<String, Object> returnParam = Map.of("team_id", teamMember.getTeamId(),
+                "user_id", teamMember.getUserId());
 
         RowMapper<TeamMember> mapper = new RowMapper<>() {
             public TeamMember mapRow(ResultSet rs, int rowNum) throws SQLException {
                 TeamMember member = new TeamMember();
-                member.setTeamMemberId(rs.getLong("teamMemberId"));
-                member.setTeamId(rs.getLong("teamId"));
-                member.setUserId(rs.getLong("userId"));
+                member.setTeamMemberId(rs.getLong("team_member_id"));
+                member.setTeamId(rs.getLong("team_id"));
+                member.setUserId(rs.getLong("user_id"));
                 member.setStatus(rs.getBoolean("status"));
                 return member;
             }
@@ -69,38 +69,38 @@ public class TeamDao {
     }
 
     public String codeUpdate(Long teamId, String newCode, Timestamp regeneratedtime) {
-        String sql = "update team set inviteCode=:inviteCode, codeGeneratedTime=:codeGeneratedTime where teamId=:teamId";
-        Map<String, String> param = Map.of("inviteCode", newCode,
-                "teamId", teamId.toString(),
-                "codeGeneratedTime", regeneratedtime.toString());
+        String sql = "update team set invite_code=:invite_code, code_generated_time=:code_generated_time where team_id=:team_id";
+        Map<String, String> param = Map.of("invite_code", newCode,
+                "team_id", teamId.toString(),
+                "code_generated_time", regeneratedtime.toString());
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select inviteCode from team where teamId=:teamId";
-        Map<String, String> returnParam = Map.of("teamId", teamId.toString());
+        String returnSql = "select invite_code from team where team_id=:team_id";
+        Map<String, String> returnParam = Map.of("team_id", teamId.toString());
 
         return jdbcTemplate.queryForObject(returnSql, returnParam, String.class);
     }
 
     public Boolean validateDuplicateCode(String inviteCode) {
-        String sql = "select EXISTS( SELECT * FROM team WHERE inviteCode=:inviteCode and status=1);";
-        Map<String, String> param = Map.of("inviteCode", inviteCode);
+        String sql = "select exists(select * from team where invite_code=:invite_code and status=1);";
+        Map<String, String> param = Map.of("invite_code", inviteCode);
 
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 
     public Team getTeamFromInviteCode(String inviteCode) {
-        String sql = "select * from team where inviteCode=:invitedCode and status=1";
-        Map<String, String> param = Map.of("invitedCode", inviteCode);
+        String sql = "select * from team where invite_code=:invite_code and status=1";
+        Map<String, String> param = Map.of("invite_code", inviteCode);
 
         RowMapper<Team> mapper = new RowMapper<>() {
             public Team mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Team team = new Team();
-                team.setTeamId(rs.getLong("teamId"));
-                team.setTeamName(rs.getString("teamName"));
-                team.setTeamImgUrl(rs.getString("teamImgUrl"));
-                team.setInviteCode(rs.getString("inviteCode"));
-                team.setCodeGeneratedTime(rs.getTimestamp("codeGeneratedTime"));
+                team.setTeamId(rs.getLong("team_id"));
+                team.setTeamName(rs.getString("team_name"));
+                team.setTeamImgUrl(rs.getString("team_image_url"));
+                team.setInviteCode(rs.getString("invite_code"));
+                team.setCodeGeneratedTime(rs.getTimestamp("code_generated_time"));
                 team.setStatus(rs.getBoolean("status"));
                 return team;
             }
@@ -112,16 +112,16 @@ public class TeamDao {
     }
 
     public Boolean isExistingUser(Long teamId, Long userId) {
-            String sql = "select EXISTS(SELECT * FROM teamMember WHERE userId=:userId and teamId=:teamId and status=1);";
-            Map<String, Object> param = Map.of("userId", userId,
-                    "teamId", teamId);
+            String sql = "select exists(select * from team_member where user_id=:user_id and team_id=:team_id and status=1);";
+            Map<String, Object> param = Map.of("user_id", userId,
+                    "team_id", teamId);
 
             return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 
     public Boolean isExistTeam(Long teamId) {
-        String sql = "select exists(select * from team where teamId=:teamId);";
-        Map<String, Object> param = Map.of("teamId", teamId);
+        String sql = "select exists(select * from team where team_id=:team_id);";
+        Map<String, Object> param = Map.of("team_id", teamId);
 
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
