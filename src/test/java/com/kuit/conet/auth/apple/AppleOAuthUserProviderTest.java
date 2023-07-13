@@ -2,7 +2,7 @@
 package com.kuit.conet.auth.apple;
 
 import com.kuit.conet.common.exception.InvalidTokenException;
-import com.kuit.conet.dto.response.ApplePlatformUserResponse;
+import com.kuit.conet.dto.response.auth.ApplePlatformUserResponse;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.DisplayName;
