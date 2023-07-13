@@ -1,5 +1,6 @@
 package com.kuit.conet.service;
 
+import com.kuit.conet.dto.response.user.UserResponse;
 import com.kuit.conet.utils.JwtParser;
 import com.kuit.conet.dao.UserDao;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,5 +18,10 @@ public class UserService {
     public void userDelete(HttpServletRequest httpRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
         userDao.deleteUser(userId);
+    }
+
+    public UserResponse getUser(HttpServletRequest httpRequest) {
+        Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
+        return userDao.getUser(userId);
     }
 }

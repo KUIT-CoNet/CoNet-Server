@@ -1,6 +1,7 @@
 package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
+import com.kuit.conet.dto.response.user.UserResponse;
 import com.kuit.conet.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +22,11 @@ public class UserController {
     public BaseResponse<String> userDelete(HttpServletRequest httpRequest) {
         userService.userDelete(httpRequest);
         return new BaseResponse<>("유저 삭제에 성공하였습니다.");
+    }
+
+    @GetMapping
+    public BaseResponse<UserResponse> getUser(HttpServletRequest httpRequest) {
+        UserResponse response = userService.getUser(httpRequest);
+        return new BaseResponse<UserResponse>(response);
     }
 }
