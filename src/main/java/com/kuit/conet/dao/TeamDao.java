@@ -71,14 +71,14 @@ public class TeamDao {
     }
 
     public String codeUpdate(Long teamId, String newCode, Timestamp regeneratedtime) {
-        String sql = "update team set invite_code=:invite_code, code_generated_time=:code_generated_time where team_id=:team_id";
+        String sql = "update team set invite_code=:invite_code, code_generated_time=:code_generated_time where team_id=:team_id and status=1";
         Map<String, String> param = Map.of("invite_code", newCode,
                 "team_id", teamId.toString(),
                 "code_generated_time", regeneratedtime.toString());
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select invite_code from team where team_id=:team_id";
+        String returnSql = "select invite_code from team where team_id=:team_id and status=1";
         Map<String, String> returnParam = Map.of("team_id", teamId.toString());
 
         return jdbcTemplate.queryForObject(returnSql, returnParam, String.class);
