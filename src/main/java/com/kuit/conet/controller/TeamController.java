@@ -35,7 +35,7 @@ public class TeamController {
     }
 
     @PostMapping("/code")
-    public BaseResponse<CreateTeamResponse> createTeam(@RequestBody @Valid TeamIdRequest request) {
+    public BaseResponse<CreateTeamResponse> regenerateCode(@RequestBody @Valid TeamIdRequest request) {
         CreateTeamResponse response = teamService.regenerateCode(request);
         return new BaseResponse<CreateTeamResponse>(response);
     }
