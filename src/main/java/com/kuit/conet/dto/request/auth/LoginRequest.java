@@ -1,4 +1,4 @@
-package com.kuit.conet.dto.request;
+package com.kuit.conet.dto.request.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

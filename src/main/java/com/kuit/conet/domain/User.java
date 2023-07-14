@@ -11,6 +11,7 @@ public class User {
     private Long userId;
     private String name;
     private String email;
+    private String userImgUrl;
     private Boolean serviceTerm;
     private Boolean optionTerm; // 1: 선택 약관 동의 완료
     private Platform platform;

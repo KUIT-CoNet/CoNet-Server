@@ -2,6 +2,7 @@ package com.kuit.conet.dao;
 
 import com.kuit.conet.domain.Platform;
 import com.kuit.conet.domain.User;
+import com.kuit.conet.dto.response.user.UserResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -44,6 +45,7 @@ public class UserDao {
                 user.setUserId(rs.getLong("user_id"));
                 user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
+                user.setUserImgUrl(rs.getString("img_url"));
                 user.setServiceTerm(rs.getBoolean("service_term"));
                 user.setOptionTerm(rs.getBoolean("option_term"));
                 String platform = rs.getString("platform");
@@ -76,6 +78,7 @@ public class UserDao {
                 user.setUserId(rs.getLong("user_id"));
                 user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
+                user.setUserImgUrl(rs.getString("img_url"));
                 user.setServiceTerm(rs.getBoolean("service_term"));
                 user.setOptionTerm(rs.getBoolean("option_term"));
                 String platform = rs.getString("platform");
@@ -106,6 +109,7 @@ public class UserDao {
                 user.setUserId(rs.getLong("user_id"));
                 user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
+                user.setUserImgUrl(rs.getString("img_url"));
                 user.setServiceTerm(rs.getBoolean("service_term"));
                 user.setOptionTerm(rs.getBoolean("option_term"));
                 String platform = rs.getString("platform");
@@ -122,13 +126,30 @@ public class UserDao {
     public void deleteUser(Long userId) {
         // user의 platform, platformId 초기화
         String sql = "update user set platform='', platform_id='', service_term=0 where user_id=:user_id";
-        Map<String, Object> param = Map.of(
-                "user_id", userId);
+        Map<String, Object> param = Map.of("user_id", userId);
 
         jdbcTemplate.update(sql, param);
 
         // user가 참여한 모든 모임(team) 나가기
         sql = "update team_member set status=0 where user_id=:user_id";
         jdbcTemplate.update(sql, param);
+    }
+
+    public UserResponse getUser(Long userId) {
+        String sql = "select name, img_url, platform from user where user_id=:user_id";
+        Map<String, Object> param = Map.of("user_id", userId);
+
+        RowMapper<UserResponse> mapper = new RowMapper<UserResponse>() {
+            public UserResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
+                UserResponse user = new UserResponse();
+                user.setName(rs.getString("name"));
+                user.setUserImgUrl(rs.getString("img_url"));
+                String platform = rs.getString("platform");
+                user.setPlatform(Platform.valueOf(platform));
+                return user;
+            }
+        };
+
+        return jdbcTemplate.queryForObject(sql, param, mapper);
     }
 }

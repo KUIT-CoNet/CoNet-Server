@@ -2,10 +2,10 @@ package com.kuit.conet.controller;
 
 import com.kuit.conet.annotation.ClientIp;
 import com.kuit.conet.common.response.BaseResponse;
-import com.kuit.conet.dto.request.LoginRequest;
-import com.kuit.conet.dto.request.PutOptionTermAndNameRequest;
-import com.kuit.conet.dto.response.AgreeTermAndPutNameResponse;
-import com.kuit.conet.dto.response.LoginResponse;
+import com.kuit.conet.dto.request.auth.LoginRequest;
+import com.kuit.conet.dto.request.auth.PutOptionTermAndNameRequest;
+import com.kuit.conet.dto.response.auth.AgreeTermAndPutNameResponse;
+import com.kuit.conet.dto.response.auth.LoginResponse;
 import com.kuit.conet.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
