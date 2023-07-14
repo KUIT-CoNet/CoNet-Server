@@ -9,6 +9,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class RegenerateCodeRequest {
+public class TeamIdRequest {
     private Long teamId;
 }

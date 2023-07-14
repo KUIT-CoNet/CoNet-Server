@@ -3,7 +3,7 @@ package com.kuit.conet.controller;
 import com.kuit.conet.common.response.BaseResponse;
 import com.kuit.conet.dto.request.team.CreateTeamRequest;
 import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
-import com.kuit.conet.dto.request.team.RegenerateCodeRequest;
+import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.response.team.CreateTeamResponse;
 import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
 import com.kuit.conet.service.TeamService;
@@ -32,8 +32,14 @@ public class TeamController {
     }
 
     @PostMapping("/code")
-    public BaseResponse<CreateTeamResponse> createTeam(@RequestBody @Valid RegenerateCodeRequest request) {
+    public BaseResponse<CreateTeamResponse> createTeam(@RequestBody @Valid TeamIdRequest request) {
         CreateTeamResponse response = teamService.regenerateCode(request);
         return new BaseResponse<CreateTeamResponse>(response);
+    }
+
+    @PostMapping("/leave")
+    public BaseResponse<String> leaveTeam(@RequestBody @Valid TeamIdRequest request, HttpServletRequest httpRequest) {
+        String response = teamService.leaveTeam(request, httpRequest);
+        return new BaseResponse<String>(response);
     }
 }
