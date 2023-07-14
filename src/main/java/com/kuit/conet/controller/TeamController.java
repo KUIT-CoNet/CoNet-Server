@@ -5,7 +5,6 @@ import com.kuit.conet.dto.request.team.CreateTeamRequest;
 import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
 import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.response.team.CreateTeamResponse;
-import com.kuit.conet.dto.response.team.LeaveTeamResponse;
 import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
 import com.kuit.conet.service.TeamService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,8 +38,8 @@ public class TeamController {
     }
 
     @PostMapping("/leave")
-    public BaseResponse<LeaveTeamResponse> leaveTeam(@RequestBody @Valid TeamIdRequest request, HttpServletRequest httpRequest) {
-        LeaveTeamResponse response = teamService.leaveTeam(request, httpRequest);
-        return new BaseResponse<LeaveTeamResponse>(response);
+    public BaseResponse<String> leaveTeam(@RequestBody @Valid TeamIdRequest request, HttpServletRequest httpRequest) {
+        String response = teamService.leaveTeam(request, httpRequest);
+        return new BaseResponse<String>(response);
     }
 }

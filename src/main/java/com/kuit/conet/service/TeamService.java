@@ -9,7 +9,6 @@ import com.kuit.conet.dto.request.team.CreateTeamRequest;
 import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
 import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.response.team.CreateTeamResponse;
-import com.kuit.conet.dto.response.team.LeaveTeamResponse;
 import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
 import com.kuit.conet.utils.JwtParser;
 import jakarta.servlet.http.HttpServletRequest;
@@ -137,7 +136,7 @@ public class TeamService {
         return new ParticipateTeamResponse(userName, team.getTeamName(), savedTeamMember.getStatus());
     }
 
-    public LeaveTeamResponse leaveTeam(TeamIdRequest teamIdRequest, HttpServletRequest httpRequest) {
+    public String leaveTeam(TeamIdRequest teamIdRequest, HttpServletRequest httpRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
         // 모임 존재 여부 확인
@@ -146,9 +145,9 @@ public class TeamService {
         }
 
         if (teamDao.leaveTeam(teamIdRequest.getTeamId(), userId)) {
-             return new LeaveTeamResponse("모임 탈퇴에 실패하였습니다.");
+             return "모임 탈퇴에 실패하였습니다.";
         }
 
-        return new LeaveTeamResponse("모임 탈퇴에 성공하였습니다.");
+        return "모임 탈퇴에 성공하였습니다.";
     }
 }

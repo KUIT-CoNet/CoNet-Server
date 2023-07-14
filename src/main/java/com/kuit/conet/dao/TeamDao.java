@@ -112,13 +112,13 @@ public class TeamDao {
     }
 
     public Boolean leaveTeam(Long teamId, Long userId) {
-        String sql = "update teammember set status=0 where teamId=:teamId and userId=:userId";
+        String sql = "update team_member set status=0 where team_id=:team_id and user_id=:user_id";
         Map<String, Object> param = Map.of("user_id", userId,
                 "team_id", teamId);
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select status from teammember where team_id=:team_id and userId=:userId";
+        String returnSql = "select status from team_member where team_id=:team_id and user_id=:user_id";
         Map<String, Object> returnParam = Map.of("user_id", userId,
                 "team_id", teamId);
 
