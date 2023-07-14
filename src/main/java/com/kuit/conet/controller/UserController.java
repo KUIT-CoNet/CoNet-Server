@@ -27,6 +27,6 @@ public class UserController {
     @GetMapping
     public BaseResponse<UserResponse> getUser(HttpServletRequest httpRequest) {
         UserResponse response = userService.getUser(httpRequest);
-        return new BaseResponse<UserResponse>(response);
+        return new BaseResponse<>(response);
     }
 }

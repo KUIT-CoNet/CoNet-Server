@@ -146,7 +146,7 @@ public class UserDao {
                 user.setUserImgUrl(rs.getString("img_url"));
                 String platform = rs.getString("platform");
                 user.setPlatform(Platform.valueOf(platform));
-                return null;
+                return user;
             }
         };
 
