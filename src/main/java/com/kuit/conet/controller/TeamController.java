@@ -51,4 +51,10 @@ public class TeamController {
         String response = teamService.leaveTeam(request, httpRequest);
         return new BaseResponse<String>(response);
     }
+
+    @PostMapping("/delete")
+    public BaseResponse<String> deleteTeam(@RequestBody @Valid TeamIdRequest request) {
+        String response = teamService.deleteTeam(request);
+        return new BaseResponse<String>(response);
+    }
 }

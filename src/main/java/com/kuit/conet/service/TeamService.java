@@ -158,4 +158,17 @@ public class TeamService {
 
         return "모임 탈퇴에 성공하였습니다.";
     }
+
+    public String deleteTeam(TeamIdRequest teamIdRequest) {
+        // 모임 존재 여부 확인
+        if (!teamDao.isExistTeam(teamIdRequest.getTeamId())) {
+            throw new TeamException(NOT_FOUND_TEAM);
+        }
+
+        if (teamDao.deleteTeam(teamIdRequest.getTeamId())) {
+            return "모임 삭제에 실패하였습니다.";
+        }
+
+        return "모임 삭제에 성공하였습니다.";
+    }
 }
