@@ -7,8 +7,9 @@ import com.kuit.conet.domain.Team;
 import com.kuit.conet.domain.TeamMember;
 import com.kuit.conet.dto.request.team.CreateTeamRequest;
 import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
-import com.kuit.conet.dto.request.team.RegenerateCodeRequest;
+import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.response.team.CreateTeamResponse;
+import com.kuit.conet.dto.response.team.LeaveTeamResponse;
 import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
 import com.kuit.conet.utils.JwtParser;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,7 +56,7 @@ public class TeamService {
         return new CreateTeamResponse(savedTeamMember.getTeamId(), inviteCode);
     }
 
-    public CreateTeamResponse regenerateCode(RegenerateCodeRequest request) {
+    public CreateTeamResponse regenerateCode(TeamIdRequest request) {
         // 초대 코드 생성
         String inviteCode;
 
@@ -134,5 +135,20 @@ public class TeamService {
         TeamMember savedTeamMember = teamDao.saveTeamMember(newTeamMember);
 
         return new ParticipateTeamResponse(userName, team.getTeamName(), savedTeamMember.getStatus());
+    }
+
+    public LeaveTeamResponse leaveTeam(TeamIdRequest teamIdRequest, HttpServletRequest httpRequest) {
+        Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
+
+        // 모임 존재 여부 확인
+        if (!teamDao.isExistTeam(teamIdRequest.getTeamId())) {
+            throw new TeamException(NOT_FOUND_TEAM);
+        }
+
+        if (teamDao.leaveTeam(teamIdRequest.getTeamId(), userId)) {
+             return new LeaveTeamResponse("모임 탈퇴에 실패하였습니다.");
+        }
+
+        return new LeaveTeamResponse("모임 탈퇴에 성공하였습니다.");
     }
 }
