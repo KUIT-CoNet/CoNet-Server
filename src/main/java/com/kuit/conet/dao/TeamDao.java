@@ -145,6 +145,23 @@ public class TeamDao {
         return jdbcTemplate.queryForObject(returnSql, returnParam, Boolean.class);
     }
 
+    public Boolean deleteTeam(Long teamId) {
+        String teamUpdateSql = "update team set status=0 where team_id=:team_id";
+        Map<String, Object> teamUpdateParam = Map.of("team_id", teamId);
+
+        jdbcTemplate.update(teamUpdateSql, teamUpdateParam);
+
+        String teamMemberUpdateSql = "update team_member set status=0 where team_id=:team_id";
+        Map<String, Object> teamMemberUpdateParam = Map.of("team_id", teamId);
+
+        jdbcTemplate.update(teamMemberUpdateSql, teamMemberUpdateParam);
+
+        String returnSql = "select status from team where team_id=:team_id";
+        Map<String, Object> returnParam = Map.of("team_id", teamId);
+
+        return jdbcTemplate.queryForObject(returnSql, returnParam, Boolean.class);
+    }
+
     public Boolean isExistingUser(Long teamId, Long userId) {
             String sql = "select exists(select * from team_member where user_id=:user_id and team_id=:team_id and status=1);";
             Map<String, Object> param = Map.of("user_id", userId,
