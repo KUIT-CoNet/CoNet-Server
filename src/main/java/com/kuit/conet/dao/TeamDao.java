@@ -5,6 +5,7 @@ import com.kuit.conet.domain.Team;
 import com.kuit.conet.domain.TeamMember;
 import com.kuit.conet.domain.User;
 import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
+import com.kuit.conet.dto.response.team.GetTeamResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -14,6 +15,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -111,6 +113,24 @@ public class TeamDao {
         return team;
     }
 
+    public List<GetTeamResponse> getTeam(Long userId) {
+        String sql = "select t.team_name, t.team_image_url " +
+                "from team_member as tm join team as t on tm.team_id=t.team_id " +
+                "where tm.user_id=:user_id and tm.status=1";
+        Map<String, Object> param = Map.of("user_id", userId);
+
+        RowMapper<GetTeamResponse> mapper = new RowMapper<GetTeamResponse>() {
+            public GetTeamResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
+                GetTeamResponse response = new GetTeamResponse();
+                response.setTeam_name(rs.getString("team_name"));
+                response.setTeam_image_url(rs.getString("team_image_url"));
+                return response;
+            }
+        };
+
+        return jdbcTemplate.query(sql, param, mapper);
+    }
+
     public Boolean leaveTeam(Long teamId, Long userId) {
         String sql = "update team_member set status=0 where team_id=:team_id and user_id=:user_id";
         Map<String, Object> param = Map.of("user_id", userId,
@@ -134,7 +154,7 @@ public class TeamDao {
     }
 
     public Boolean isExistTeam(Long teamId) {
-        String sql = "select exists(select * from team where team_id=:team_id);";
+        String sql = "select exists(select * from team where team_id=:team_id and status=1);";
         Map<String, Object> param = Map.of("team_id", teamId);
 
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);

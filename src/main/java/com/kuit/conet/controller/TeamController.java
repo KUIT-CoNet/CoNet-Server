@@ -5,6 +5,7 @@ import com.kuit.conet.dto.request.team.CreateTeamRequest;
 import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
 import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.response.team.CreateTeamResponse;
+import com.kuit.conet.dto.response.team.GetTeamResponse;
 import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
 import com.kuit.conet.service.TeamService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +13,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -35,6 +38,12 @@ public class TeamController {
     public BaseResponse<CreateTeamResponse> createTeam(@RequestBody @Valid TeamIdRequest request) {
         CreateTeamResponse response = teamService.regenerateCode(request);
         return new BaseResponse<CreateTeamResponse>(response);
+    }
+
+    @GetMapping("/get")
+    public BaseResponse<List<GetTeamResponse>> getTeam(HttpServletRequest httpRequest) {
+        List<GetTeamResponse> responses = teamService.getTeam(httpRequest);
+        return new BaseResponse<List<GetTeamResponse>>(responses);
     }
 
     @PostMapping("/leave")
