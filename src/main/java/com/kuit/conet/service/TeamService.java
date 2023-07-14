@@ -9,6 +9,7 @@ import com.kuit.conet.dto.request.team.CreateTeamRequest;
 import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
 import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.response.team.CreateTeamResponse;
+import com.kuit.conet.dto.response.team.GetTeamResponse;
 import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
 import com.kuit.conet.utils.JwtParser;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
 
 import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.*;
@@ -134,6 +136,12 @@ public class TeamService {
         TeamMember savedTeamMember = teamDao.saveTeamMember(newTeamMember);
 
         return new ParticipateTeamResponse(userName, team.getTeamName(), savedTeamMember.getStatus());
+    }
+
+    public List<GetTeamResponse> getTeam(HttpServletRequest httpRequest) {
+        Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
+        List<GetTeamResponse> responses = teamDao.getTeam(userId);
+        return responses;
     }
 
     public String leaveTeam(TeamIdRequest teamIdRequest, HttpServletRequest httpRequest) {
