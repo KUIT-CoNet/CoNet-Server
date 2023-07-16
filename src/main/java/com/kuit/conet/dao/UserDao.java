@@ -136,13 +136,14 @@ public class UserDao {
     }
 
     public UserResponse getUser(Long userId) {
-        String sql = "select name, img_url, platform from user where user_id=:user_id";
+        String sql = "select name, email, img_url, platform from user where user_id=:user_id";
         Map<String, Object> param = Map.of("user_id", userId);
 
         RowMapper<UserResponse> mapper = new RowMapper<UserResponse>() {
             public UserResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
                 UserResponse user = new UserResponse();
                 user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
                 user.setUserImgUrl(rs.getString("img_url"));
                 String platform = rs.getString("platform");
                 user.setPlatform(Platform.valueOf(platform));
