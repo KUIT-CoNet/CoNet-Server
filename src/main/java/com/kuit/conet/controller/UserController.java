@@ -1,15 +1,15 @@
 package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
+import com.kuit.conet.dto.request.user.ImgRequest;
+import com.kuit.conet.dto.request.user.NameRequest;
 import com.kuit.conet.dto.response.user.UserResponse;
 import com.kuit.conet.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -28,5 +28,17 @@ public class UserController {
     public BaseResponse<UserResponse> getUser(HttpServletRequest httpRequest) {
         UserResponse response = userService.getUser(httpRequest);
         return new BaseResponse<>(response);
+    }
+
+    @PostMapping("/image")
+    public BaseResponse<String> updateImg(HttpServletRequest httpRequest, @RequestBody @Valid ImgRequest imgRequest) {
+        userService.updateImg(httpRequest, imgRequest);
+        return new BaseResponse<>("이미지 변경에 성공하였습니다.");
+    }
+
+    @PostMapping("/name")
+    public BaseResponse<String> updateName(HttpServletRequest httpRequest, @RequestBody @Valid NameRequest nameRequest) {
+        userService.updateName(httpRequest, nameRequest);
+        return new BaseResponse<>("이름 변경에 성공하였습니다.");
     }
 }

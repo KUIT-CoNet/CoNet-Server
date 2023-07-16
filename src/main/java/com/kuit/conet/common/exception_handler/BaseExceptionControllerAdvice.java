@@ -1,5 +1,6 @@
 package com.kuit.conet.common.exception_handler;
 
+import com.kuit.conet.common.exception.BaseException;
 import com.kuit.conet.common.response.BaseErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.
 @RestControllerAdvice
 public class BaseExceptionControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({NoHandlerFoundException.class, TypeMismatchException.class})
+    @ExceptionHandler({BaseException.class, NoHandlerFoundException.class, TypeMismatchException.class})
     public BaseErrorResponse handle_BadRequest(Exception e) {
         log.error("[handle_BadRequest]", e);
         return new BaseErrorResponse(URL_NOT_FOUND);

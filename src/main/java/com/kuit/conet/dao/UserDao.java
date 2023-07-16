@@ -136,13 +136,14 @@ public class UserDao {
     }
 
     public UserResponse getUser(Long userId) {
-        String sql = "select name, img_url, platform from user where user_id=:user_id";
+        String sql = "select name, email, img_url, platform from user where user_id=:user_id and status=1";
         Map<String, Object> param = Map.of("user_id", userId);
 
         RowMapper<UserResponse> mapper = new RowMapper<UserResponse>() {
             public UserResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
                 UserResponse user = new UserResponse();
                 user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
                 user.setUserImgUrl(rs.getString("img_url"));
                 String platform = rs.getString("platform");
                 user.setPlatform(Platform.valueOf(platform));
@@ -151,5 +152,26 @@ public class UserDao {
         };
 
         return jdbcTemplate.queryForObject(sql, param, mapper);
+    }
+
+    public Boolean isExistUser(Long userId) {
+        String sql = "select exists(select * from user where user_id=:user_id and status=1)";
+        Map<String, Object> param = Map.of("user_id", userId);
+
+        return jdbcTemplate.queryForObject(sql, param, Boolean.class);
+    }
+
+    public void updateImg(Long userId, String imgUrl) {
+        String sql = "update user set img_url=:img_url where user_id=:user_id and status=1";
+        Map<String, Object> param = Map.of("user_id", userId,
+                "img_url", imgUrl);
+        jdbcTemplate.update(sql, param);
+    }
+
+    public void updateName(Long userId, String name) {
+        String sql = "update user set name=:name where user_id=:user_id and status=1";
+        Map<String, Object> param = Map.of("user_id", userId,
+                "name", name);
+        jdbcTemplate.update(sql, param);
     }
 }

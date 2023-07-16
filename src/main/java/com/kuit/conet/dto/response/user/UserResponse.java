@@ -10,6 +10,7 @@ import lombok.*;
 @ToString
 public class UserResponse {
     private String name;
+    private String email;
     private String userImgUrl;
     private Platform platform;
 }
