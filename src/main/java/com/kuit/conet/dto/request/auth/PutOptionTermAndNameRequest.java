@@ -1,4 +1,4 @@
-package com.kuit.conet.dto.request;
+package com.kuit.conet.dto.request.auth;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -6,7 +6,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @ToString
 public class PutOptionTermAndNameRequest {

@@ -3,7 +3,7 @@ package com.kuit.conet.auth.kakao;
 import com.kuit.conet.utils.JwtParser;
 import com.kuit.conet.utils.auth.PublicKeyGenerator;
 import com.kuit.conet.common.exception.InvalidTokenException;
-import com.kuit.conet.dto.response.KakaoPlatformUserResponse;
+import com.kuit.conet.dto.response.auth.KakaoPlatformUserResponse;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

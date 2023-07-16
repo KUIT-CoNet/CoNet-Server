@@ -6,7 +6,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Setter
 public class CreateTeamRequest {
     private String teamName;
     private String teamImgUrl;

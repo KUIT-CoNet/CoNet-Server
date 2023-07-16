@@ -14,10 +14,8 @@ import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.
 @NoArgsConstructor
 @AllArgsConstructor
 public enum Platform {
-    APPLE("apple"),
-    GOOGLE("google"),
-    KAKAO("kakao"),
-    NAVER("naver");
+    APPLE("APPLE"),
+    KAKAO("KAKAO");
 
     private String platform;
 

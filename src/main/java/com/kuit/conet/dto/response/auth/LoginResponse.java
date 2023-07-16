@@ -1,4 +1,4 @@
-package com.kuit.conet.dto.response;
+package com.kuit.conet.dto.response.auth;
 
 import lombok.*;
 
