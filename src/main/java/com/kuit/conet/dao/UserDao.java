@@ -136,7 +136,7 @@ public class UserDao {
     }
 
     public UserResponse getUser(Long userId) {
-        String sql = "select name, email, img_url, platform from user where user_id=:user_id";
+        String sql = "select name, email, img_url, platform from user where user_id=:user_id and status=1";
         Map<String, Object> param = Map.of("user_id", userId);
 
         RowMapper<UserResponse> mapper = new RowMapper<UserResponse>() {
@@ -152,5 +152,12 @@ public class UserDao {
         };
 
         return jdbcTemplate.queryForObject(sql, param, mapper);
+    }
+
+    public Boolean isExistUser(Long userId) {
+        String sql = "select exists(select * from user where user_id=:user_id and status=1)";
+        Map<String, Object> param = Map.of("user_id", userId);
+
+        return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 }

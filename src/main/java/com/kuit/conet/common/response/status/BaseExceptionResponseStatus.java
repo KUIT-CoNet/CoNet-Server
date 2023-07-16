@@ -43,7 +43,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
      * 5000: 회원 정보 오류
      * */
     INVALID_PLATFORM(5001, HttpStatus.BAD_REQUEST.value(),"플랫폼 정보가 올바르지 않습니다."),
-    NOT_FOUND_USER(5002, HttpStatus.BAD_REQUEST.value(),"사용자를 찾을 수 없습니다."),
+    NOT_FOUND_USER(5002, HttpStatus.BAD_REQUEST.value(),"존재하지 않는 사용자입니다."),
 
     /**
      * 5500: 모임(Team) 정보 오류
