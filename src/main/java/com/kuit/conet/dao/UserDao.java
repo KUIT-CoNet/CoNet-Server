@@ -160,4 +160,18 @@ public class UserDao {
 
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
+
+    public void updateImg(Long userId, String imgUrl) {
+        String sql = "update user set img_url=:img_url where user_id=:user_id and status=1";
+        Map<String, Object> param = Map.of("user_id", userId,
+                "img_url", imgUrl);
+        jdbcTemplate.update(sql, param);
+    }
+
+    public void updateName(Long userId, String name) {
+        String sql = "update user set name=:name where user_id=:user_id and status=1";
+        Map<String, Object> param = Map.of("user_id", userId,
+                "name", name);
+        jdbcTemplate.update(sql, param);
+    }
 }
