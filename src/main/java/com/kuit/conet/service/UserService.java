@@ -1,7 +1,6 @@
 package com.kuit.conet.service;
 
 import com.kuit.conet.dto.response.user.UserResponse;
-import com.kuit.conet.utils.JwtParser;
 import com.kuit.conet.dao.UserDao;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
