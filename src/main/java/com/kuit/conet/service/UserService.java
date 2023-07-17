@@ -1,15 +1,22 @@
 package com.kuit.conet.service;
 
+import com.kuit.conet.common.exception.BaseException;
 import com.kuit.conet.common.exception.UserException;
+import com.kuit.conet.domain.StorageDomain;
 import com.kuit.conet.dto.request.user.ImgRequest;
 import com.kuit.conet.dto.request.user.NameRequest;
+import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.user.UserResponse;
 import com.kuit.conet.dao.UserDao;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
+import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
 import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.NOT_FOUND_USER;
 
 @Slf4j
@@ -17,6 +24,8 @@ import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.
 @RequiredArgsConstructor
 public class UserService {
     private final UserDao userDao;
+    private final StorageService storageService;
+    private final String  URL_SPLITER = "/";
 
     public void userDelete(HttpServletRequest httpRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
@@ -30,11 +39,22 @@ public class UserService {
         return userDao.getUser(userId);
     }
 
-    public void updateImg(HttpServletRequest httpRequest, ImgRequest imgRequest) {
+    public StorageImgResponse updateImg(HttpServletRequest httpRequest, MultipartFile file) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
         isExistUser(userId);
 
-        userDao.updateImg(userId, imgRequest.getImgUrl());
+        // 유저의 프로필 이미지가 기본 프로필 이미지인지 확인 -> 기본 이미지가 아니면 기존 이미지를 S3에서 이미지 삭제
+        if (!userDao.isDefaultImage(userId)) {
+            String imgUrl = userDao.getUserImgUrl(userId);
+            String fileName = imgUrl.split(URL_SPLITER)[3];
+            log.info("delete fileName: {}", fileName);
+            storageService.deleteImage(fileName);
+        }
+
+        // 새로운 이미지 S3에 업로드
+        String imgUrl = storageService.uploadImage(file, StorageDomain.USER, userId);
+
+        return userDao.updateImg(userId, imgUrl);
     }
 
     public void updateName(HttpServletRequest httpRequest, NameRequest nameRequest) {

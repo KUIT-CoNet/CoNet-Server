@@ -2,6 +2,7 @@ package com.kuit.conet.dao;
 
 import com.kuit.conet.domain.Platform;
 import com.kuit.conet.domain.User;
+import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.user.UserResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
@@ -161,11 +162,25 @@ public class UserDao {
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 
-    public void updateImg(Long userId, String imgUrl) {
+    public StorageImgResponse updateImg(Long userId, String imgUrl) {
         String sql = "update user set img_url=:img_url where user_id=:user_id and status=1";
         Map<String, Object> param = Map.of("user_id", userId,
                 "img_url", imgUrl);
         jdbcTemplate.update(sql, param);
+
+        String returnSql = "select name, img_url from user where user_id=:user_id";
+        Map<String, Object> returnParam = Map.of("user_id", userId);
+
+        RowMapper<StorageImgResponse> returnMapper = new RowMapper<StorageImgResponse>() {
+            public StorageImgResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
+                StorageImgResponse storageImgResponse = new StorageImgResponse();
+                storageImgResponse.setName(rs.getString("name"));
+                storageImgResponse.setImgUrl(rs.getString("img_url"));
+                return storageImgResponse;
+            }
+        };
+
+        return jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
     }
 
     public void updateName(Long userId, String name) {
@@ -173,5 +188,19 @@ public class UserDao {
         Map<String, Object> param = Map.of("user_id", userId,
                 "name", name);
         jdbcTemplate.update(sql, param);
+    }
+
+    public Boolean isDefaultImage(Long userId) {
+        String sql = "select if((select img_url from user where user_id=:user_id) = (select COLUMN_DEFAULT from information_schema.`COLUMNS` C where table_schema='conet' and table_name='user' and column_name='img_url'), 1, 0)";
+        Map<String, Object> param = Map.of("user_id", userId);
+
+        return jdbcTemplate.queryForObject(sql, param, Boolean.class);
+    }
+
+    public String getUserImgUrl(Long userId) {
+        String sql = "select img_url from user where user_id=:user_id";
+        Map<String, Object> param = Map.of("user_id", userId);
+
+        return jdbcTemplate.queryForObject(sql, param, String.class);
     }
 }

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.io.IOException;
+
 import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
@@ -49,6 +51,13 @@ public class BaseExceptionControllerAdvice {
     @ExceptionHandler(IllegalStateException.class)
     public BaseErrorResponse handle_IllegalStatusException(IllegalStateException e) {
         log.error("[handle_IllegalStatusException]", e);
+        return new BaseErrorResponse(BAD_REQUEST, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IOException.class)
+    public BaseErrorResponse handle_IOException(IOException e) {
+        log.error("[handle_IOException]", e);
         return new BaseErrorResponse(BAD_REQUEST, e.getMessage());
     }
 

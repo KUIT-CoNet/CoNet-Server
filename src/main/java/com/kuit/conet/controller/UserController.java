@@ -3,6 +3,7 @@ package com.kuit.conet.controller;
 import com.kuit.conet.common.response.BaseResponse;
 import com.kuit.conet.dto.request.user.ImgRequest;
 import com.kuit.conet.dto.request.user.NameRequest;
+import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.user.UserResponse;
 import com.kuit.conet.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +11,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Slf4j
 @RestController
@@ -31,9 +35,9 @@ public class UserController {
     }
 
     @PostMapping("/image")
-    public BaseResponse<String> updateImg(HttpServletRequest httpRequest, @RequestBody @Valid ImgRequest imgRequest) {
-        userService.updateImg(httpRequest, imgRequest);
-        return new BaseResponse<>("이미지 변경에 성공하였습니다.");
+    public BaseResponse<StorageImgResponse> updateImg(HttpServletRequest httpRequest, @RequestParam(value = "file") MultipartFile file){
+        StorageImgResponse response = userService.updateImg(httpRequest, file);
+        return new BaseResponse<>(response);
     }
 
     @PostMapping("/name")
