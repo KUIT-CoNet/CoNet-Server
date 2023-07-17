@@ -31,8 +31,10 @@ public class JwtParser {
                     .getBody().getSubject();
         } catch (ExpiredJwtException e) {
             throw new InvalidTokenException(EXPIRED_TOKEN);
-        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e){
-            throw new InvalidTokenException(MALFORMED_TOKEN);
+        } catch (UnsupportedJwtException | SignatureException | MalformedJwtException  e){
+            throw new InvalidTokenException(MALFORMED_TOKEN, e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException();
         }
     }
 
@@ -42,7 +44,7 @@ public class JwtParser {
             String decodeHeader = new String(Base64.getDecoder().decode(encodeHeader));
             return objectMapper.readValue(decodeHeader, Map.class);
         } catch (JsonProcessingException | ArrayIndexOutOfBoundsException e) {
-            throw new InvalidTokenException(UNSUPPORTED_ID_TOKEN_TYPE);
+            throw new InvalidTokenException(UNSUPPORTED_ID_TOKEN_TYPE, e.getMessage());
         }
     }
 
@@ -55,7 +57,7 @@ public class JwtParser {
         } catch (ExpiredJwtException e) {
             throw new InvalidTokenException(EXPIRED_TOKEN);
         } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e){
-            throw new InvalidTokenException(MALFORMED_TOKEN);
+            throw new InvalidTokenException(MALFORMED_TOKEN, e.getMessage());
         }
     }
 }

@@ -11,4 +11,9 @@ public class InvalidTokenException extends RuntimeException {
         super(responseStatus.getMessage());
         this.exceptionStatus = responseStatus;
     }
+
+    public InvalidTokenException(ResponseStatus responseStatus, String message) {
+        super(message);
+        this.exceptionStatus = responseStatus;
+    }
 }
