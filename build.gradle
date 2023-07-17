@@ -47,6 +47,9 @@ dependencies {
 	implementation platform("org.springframework.cloud:spring-cloud-dependencies:2022.0.3")
 	implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
 
+	// for AWS S3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	//testImplementation 'org.springframework.security:spring-security-test'
