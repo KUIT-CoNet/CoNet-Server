@@ -36,6 +36,21 @@ spring:
     redis:
       host: ${DATA_REDIS_HOST}
       port: ${DATA_REDIS_PORT}
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET_NAME}
+    stack.auto: false
+    region:
+      static: ap-northeast-2
+      auto: false
+    credentials:
+      accessKey: ${AWS_S3_ACCESS_KEY}
+      secretKey: ${AWS_S3_SECRET_KEY}
 
 ---
 
@@ -58,6 +73,21 @@ spring:
     redis:
       host: ${DATA_REDIS_HOST}
       port: ${DATA_REDIS_PORT}
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET_NAME}
+    stack.auto: false
+    region:
+      static: ap-northeast-2
+      auto: false
+    credentials:
+      accessKey: ${AWS_S3_ACCESS_KEY}
+      secretKey: ${AWS_S3_SECRET_KEY}
 
 ---
 
@@ -81,6 +111,21 @@ spring:
     redis:
       host: ${DATA_REDIS_HOST}
       port: ${DATA_REDIS_PORT}
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET_NAME}
+    stack.auto: false
+    region:
+      static: ap-northeast-2
+      auto: false
+    credentials:
+      accessKey: ${AWS_S3_ACCESS_KEY}
+      secretKey: ${AWS_S3_SECRET_KEY}
 
 ---
 
