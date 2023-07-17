@@ -4,16 +4,17 @@ import com.kuit.conet.common.response.status.ResponseStatus;
 import lombok.Getter;
 
 @Getter
-public class BaseException extends RuntimeException {
+public class StorageException extends RuntimeException {
+
     private final ResponseStatus exceptionStatus;
 
-    public BaseException(ResponseStatus exceptionStatus) {
+    public StorageException(ResponseStatus exceptionStatus) {
         super(exceptionStatus.getMessage());
         this.exceptionStatus = exceptionStatus;
     }
 
-    public BaseException(ResponseStatus exceptionStatus, String exceptionMessage) {
-        super(exceptionMessage);
+    public StorageException(ResponseStatus exceptionStatus, String message) {
+        super(message);
         this.exceptionStatus = exceptionStatus;
     }
 }
