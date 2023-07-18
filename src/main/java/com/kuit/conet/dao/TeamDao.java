@@ -5,11 +5,13 @@ import com.kuit.conet.domain.Team;
 import com.kuit.conet.domain.TeamMember;
 import com.kuit.conet.domain.User;
 import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
+import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.team.GetTeamResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -29,17 +31,15 @@ public class TeamDao {
     }
 
     public Long saveTeam(Team team) {
-        String sql = "insert into team (team_name, team_image_url, invite_code, code_generated_time) values (:team_name, :team_image_url, :invite_code, :code_generated_time)";
+        String sql = "insert into team (team_name, invite_code, code_generated_time) values (:team_name, :invite_code, :code_generated_time)";
         Map<String, String> param = Map.of("team_name", team.getTeamName(),
-                "team_image_url", team.getTeamImgUrl(),
                 "invite_code", team.getInviteCode(),
                 "code_generated_time", team.getCodeGeneratedTime().toString());
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select team_id from team where team_name=:team_name and team_image_url=:team_image_url and invite_code=:invite_code and status=1";
+        String returnSql = "select team_id from team where team_name=:team_name and invite_code=:invite_code and status=1";
         Map<String, String> returnParam = Map.of("team_name", team.getTeamName(),
-                "team_image_url", team.getTeamImgUrl(),
                 "invite_code", team.getInviteCode());
 
         return jdbcTemplate.queryForObject(returnSql, returnParam, Long.class);
@@ -175,5 +175,27 @@ public class TeamDao {
         Map<String, Object> param = Map.of("team_id", teamId);
 
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
+    }
+
+    public StorageImgResponse updateImg(Long teamId, String imgUrl) {
+        String sql = "update team set team_image_url=:team_image_url where team_id=:team_id and status=1";
+        Map<String, Object> param = Map.of("team_image_url", imgUrl,
+                "team_id", teamId);
+
+        jdbcTemplate.update(sql, param);
+
+        String returnSql = "select team_name, team_image_url from team where team_id=:team_id";
+        Map<String, Object> returnParam = Map.of("team_id", teamId);
+
+        RowMapper<StorageImgResponse> returnMapper = new RowMapper<StorageImgResponse>() {
+            public StorageImgResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
+                StorageImgResponse storageImgResponse = new StorageImgResponse();
+                storageImgResponse.setName(rs.getString("team_name"));
+                storageImgResponse.setImgUrl(rs.getString("team_image_url"));
+                return storageImgResponse;
+            }
+        };
+
+        return jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
     }
 }
