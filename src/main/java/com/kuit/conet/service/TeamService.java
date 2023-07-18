@@ -3,11 +3,13 @@ package com.kuit.conet.service;
 import com.kuit.conet.common.exception.TeamException;
 import com.kuit.conet.dao.TeamDao;
 import com.kuit.conet.dao.UserDao;
+import com.kuit.conet.domain.StorageDomain;
 import com.kuit.conet.domain.Team;
 import com.kuit.conet.domain.TeamMember;
 import com.kuit.conet.dto.request.team.CreateTeamRequest;
 import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
 import com.kuit.conet.dto.request.team.TeamIdRequest;
+import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.team.CreateTeamResponse;
 import com.kuit.conet.dto.response.team.GetTeamResponse;
 import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
@@ -16,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -28,11 +31,12 @@ import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.
 @Service
 @RequiredArgsConstructor
 public class TeamService {
+    private final StorageService storageService;
     private final TeamDao teamDao;
     private final UserDao userDao;
     private final JwtParser jwtParser;
 
-    public CreateTeamResponse createTeam(CreateTeamRequest createTeamRequest, HttpServletRequest httpRequest) {
+    public CreateTeamResponse createTeam(CreateTeamRequest createTeamRequest, HttpServletRequest httpRequest, MultipartFile file) {
         // 초대 코드 생성
         String inviteCode;
 
@@ -45,8 +49,15 @@ public class TeamService {
         Timestamp codeGeneratedTime = Timestamp.valueOf(LocalDateTime.now());
 
         // team table에 새로운 team insert하고 teamId 얻기
-        Team newTeam = new Team(createTeamRequest.getTeamName(), createTeamRequest.getTeamImgUrl(), inviteCode, codeGeneratedTime);
+        Team newTeam = new Team(createTeamRequest.getTeamName(), null, inviteCode, codeGeneratedTime);
         Long teamId = teamDao.saveTeam(newTeam);
+
+        // 새로운 이미지 S3에 업로드
+        String imgUrl = storageService.uploadImage(file, StorageDomain.TEAM, teamId);
+
+        StorageImgResponse response = teamDao.updateImg(teamId, imgUrl);
+        log.info("imgUrl: {}", response.getImgUrl());
+        log.info("name: {}", response.getName());
 
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 

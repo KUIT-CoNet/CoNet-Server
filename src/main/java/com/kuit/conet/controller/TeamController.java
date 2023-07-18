@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,8 +24,8 @@ import java.util.List;
 public class TeamController {
     private final TeamService teamService;
     @PostMapping("/create")
-    public BaseResponse<CreateTeamResponse> createTeam(@RequestBody @Valid CreateTeamRequest createTeamRequest, HttpServletRequest httpRequest) {
-        CreateTeamResponse response = teamService.createTeam(createTeamRequest, httpRequest);
+    public BaseResponse<CreateTeamResponse> createTeam(@RequestPart(value = "request") @Valid CreateTeamRequest createTeamRequest, HttpServletRequest httpRequest, @RequestParam(value = "file") MultipartFile file) {
+        CreateTeamResponse response = teamService.createTeam(createTeamRequest, httpRequest, file);
         return new BaseResponse<CreateTeamResponse>(response);
     }
 

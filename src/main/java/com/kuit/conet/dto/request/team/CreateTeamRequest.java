@@ -8,5 +8,4 @@ import lombok.*;
 @ToString
 public class CreateTeamRequest {
     private String teamName;
-    private String teamImgUrl;
 }
