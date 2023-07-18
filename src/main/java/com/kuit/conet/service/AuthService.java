@@ -54,8 +54,8 @@ public class AuthService {
                 throw new UserException(NOT_FOUND_USER);
             }
 
-            // 회원가입은 되어있는데, 약관 동의 혹은 이름 입력이 되어있지 않은 유저
-            if (!findUser.getOptionTerm() || findUser.getName() == null) {
+            // 회원가입은 되어있는데, 필수 약관 동의 혹은 이름 입력이 되어있지 않은 유저
+            if (!findUser.getServiceTerm() || findUser.getName() == null) {
                 log.info("회원가입은 되어 있으나, 약관 동의 및 이름 입력이 필요합니다.");
                 return getLoginResponse(findUser, clientIp, false);
             } else {
