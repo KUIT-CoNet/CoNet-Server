@@ -11,8 +11,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -40,20 +38,18 @@ public class UserDao {
         String sql = "select * from user where user_id=:user_id";
         Map<String, Long> param = Map.of("user_id", userId);
 
-        RowMapper<User> mapper = new RowMapper<User>() {
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User user = new User();
-                user.setUserId(rs.getLong("user_id"));
-                user.setName(rs.getString("name"));
-                user.setEmail(rs.getString("email"));
-                user.setUserImgUrl(rs.getString("img_url"));
-                user.setServiceTerm(rs.getBoolean("service_term"));
-                user.setOptionTerm(rs.getBoolean("option_term"));
-                String platform = rs.getString("platform");
-                user.setPlatform(Platform.valueOf(platform));
-                user.setPlatformId(rs.getString("platform_id"));
-                return user;
-            }
+        RowMapper<User> mapper = (rs, rowNum) -> {
+            User user = new User();
+            user.setUserId(rs.getLong("user_id"));
+            user.setName(rs.getString("name"));
+            user.setEmail(rs.getString("email"));
+            user.setUserImgUrl(rs.getString("img_url"));
+            user.setServiceTerm(rs.getBoolean("service_term"));
+            user.setOptionTerm(rs.getBoolean("option_term"));
+            String platform = rs.getString("platform");
+            user.setPlatform(Platform.valueOf(platform));
+            user.setPlatformId(rs.getString("platform_id"));
+            return user;
         };
 
         return jdbcTemplate.queryForObject(sql, param, mapper);
@@ -73,20 +69,18 @@ public class UserDao {
                 "platform", oauthUser.getPlatform().toString(),
                 "platform_id", oauthUser.getPlatformId());
 
-        RowMapper<User> returnMapper = new RowMapper<User>() {
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User user = new User();
-                user.setUserId(rs.getLong("user_id"));
-                user.setName(rs.getString("name"));
-                user.setEmail(rs.getString("email"));
-                user.setUserImgUrl(rs.getString("img_url"));
-                user.setServiceTerm(rs.getBoolean("service_term"));
-                user.setOptionTerm(rs.getBoolean("option_term"));
-                String platform = rs.getString("platform");
-                user.setPlatform(Platform.valueOf(platform));
-                user.setPlatformId(rs.getString("platform_id"));
-                return user;
-            }
+        RowMapper<User> returnMapper = (rs, rowNum) -> {
+            User user = new User();
+            user.setUserId(rs.getLong("user_id"));
+            user.setName(rs.getString("name"));
+            user.setEmail(rs.getString("email"));
+            user.setUserImgUrl(rs.getString("img_url"));
+            user.setServiceTerm(rs.getBoolean("service_term"));
+            user.setOptionTerm(rs.getBoolean("option_term"));
+            String platform = rs.getString("platform");
+            user.setPlatform(Platform.valueOf(platform));
+            user.setPlatformId(rs.getString("platform_id"));
+            return user;
         };
 
         return jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
@@ -104,20 +98,18 @@ public class UserDao {
         String returnSql = "select * from user where user_id=:user_id";
         Map<String, Object> returnParam = Map.of("user_id", userId);
 
-        RowMapper<User> returnMapper = new RowMapper<User>() {
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User user = new User();
-                user.setUserId(rs.getLong("user_id"));
-                user.setName(rs.getString("name"));
-                user.setEmail(rs.getString("email"));
-                user.setUserImgUrl(rs.getString("img_url"));
-                user.setServiceTerm(rs.getBoolean("service_term"));
-                user.setOptionTerm(rs.getBoolean("option_term"));
-                String platform = rs.getString("platform");
-                user.setPlatform(Platform.valueOf(platform));
-                user.setPlatformId(rs.getString("option_term"));
-                return user;
-            }
+        RowMapper<User> returnMapper = (rs, rowNum) -> {
+            User user = new User();
+            user.setUserId(rs.getLong("user_id"));
+            user.setName(rs.getString("name"));
+            user.setEmail(rs.getString("email"));
+            user.setUserImgUrl(rs.getString("img_url"));
+            user.setServiceTerm(rs.getBoolean("service_term"));
+            user.setOptionTerm(rs.getBoolean("option_term"));
+            String platform = rs.getString("platform");
+            user.setPlatform(Platform.valueOf(platform));
+            user.setPlatformId(rs.getString("option_term"));
+            return user;
         };
 
         return jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
@@ -125,13 +117,13 @@ public class UserDao {
 
 
     public void deleteUser(Long userId) {
-        // user의 platform, platformId 초기화
+        // user 의 platform, platformId 초기화
         String sql = "update user set platform='', platform_id='', service_term=0, status=0 where user_id=:user_id";
         Map<String, Object> param = Map.of("user_id", userId);
 
         jdbcTemplate.update(sql, param);
 
-        // user가 참여한 모든 모임(team) 나가기
+        // user 가 참여한 모든 모임(team) 나가기
         sql = "update team_member set status=0 where user_id=:user_id";
         jdbcTemplate.update(sql, param);
     }
@@ -140,16 +132,14 @@ public class UserDao {
         String sql = "select name, email, img_url, platform from user where user_id=:user_id and status=1";
         Map<String, Object> param = Map.of("user_id", userId);
 
-        RowMapper<UserResponse> mapper = new RowMapper<UserResponse>() {
-            public UserResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
-                UserResponse user = new UserResponse();
-                user.setName(rs.getString("name"));
-                user.setEmail(rs.getString("email"));
-                user.setUserImgUrl(rs.getString("img_url"));
-                String platform = rs.getString("platform");
-                user.setPlatform(Platform.valueOf(platform));
-                return user;
-            }
+        RowMapper<UserResponse> mapper = (rs, rowNum) -> {
+            UserResponse user = new UserResponse();
+            user.setName(rs.getString("name"));
+            user.setEmail(rs.getString("email"));
+            user.setUserImgUrl(rs.getString("img_url"));
+            String platform = rs.getString("platform");
+            user.setPlatform(Platform.valueOf(platform));
+            return user;
         };
 
         return jdbcTemplate.queryForObject(sql, param, mapper);
@@ -171,13 +161,11 @@ public class UserDao {
         String returnSql = "select name, img_url from user where user_id=:user_id";
         Map<String, Object> returnParam = Map.of("user_id", userId);
 
-        RowMapper<StorageImgResponse> returnMapper = new RowMapper<StorageImgResponse>() {
-            public StorageImgResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
-                StorageImgResponse storageImgResponse = new StorageImgResponse();
-                storageImgResponse.setName(rs.getString("name"));
-                storageImgResponse.setImgUrl(rs.getString("img_url"));
-                return storageImgResponse;
-            }
+        RowMapper<StorageImgResponse> returnMapper = (rs, rowNum) -> {
+            StorageImgResponse storageImgResponse = new StorageImgResponse();
+            storageImgResponse.setName(rs.getString("name"));
+            storageImgResponse.setImgUrl(rs.getString("img_url"));
+            return storageImgResponse;
         };
 
         return jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
@@ -202,5 +190,11 @@ public class UserDao {
         Map<String, Object> param = Map.of("user_id", userId);
 
         return jdbcTemplate.queryForObject(sql, param, String.class);
+    }
+
+    public void setImageUrlDefault(Long userId) {
+        String sql = "update user set img_url=default where user_id=:user_id and status=1";
+        Map<String, Object> param = Map.of("user_id", userId);
+        jdbcTemplate.update(sql, param);
     }
 }

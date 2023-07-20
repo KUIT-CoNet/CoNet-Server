@@ -1,9 +1,7 @@
 package com.kuit.conet.service;
 
-import com.kuit.conet.common.exception.BaseException;
 import com.kuit.conet.common.exception.UserException;
 import com.kuit.conet.domain.StorageDomain;
-import com.kuit.conet.dto.request.user.ImgRequest;
 import com.kuit.conet.dto.request.user.NameRequest;
 import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.user.UserResponse;
@@ -14,9 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
-import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
 import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.NOT_FOUND_USER;
 
 @Slf4j
@@ -36,6 +31,14 @@ public class UserService {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
         isExistUser(userId);
 
+        // S3에 없는 객체에 대한 유효성 검사
+        String imgUrl = userDao.getUserImgUrl(userId);
+        String fileName = imgUrl.split(URL_SPLITER)[3];
+        if(!storageService.isExistImage(fileName)) {
+            log.warn("S3 버킷에 존재하지 않는 이미지입니다. 기본 이미지로 변경하겠습니다.");
+            userDao.setImageUrlDefault(userId);
+        }
+
         return userDao.getUser(userId);
     }
 
@@ -43,16 +46,18 @@ public class UserService {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
         isExistUser(userId);
 
-        // 유저의 프로필 이미지가 기본 프로필 이미지인지 확인 -> 기본 이미지가 아니면 기존 이미지를 S3에서 이미지 삭제
-        if (!userDao.isDefaultImage(userId)) {
-            String imgUrl = userDao.getUserImgUrl(userId);
-            String fileName = imgUrl.split(URL_SPLITER)[3];
+        /*
+        유저의 프로필 이미지가 기본 프로필 이미지인지 확인 -> 기본 이미지가 아니면 기존 이미지를 S3에서 이미지 삭제
+        S3 버킷에 존재하지 않는 객체인 경우 삭제를 생략 */
+        String imgUrl = userDao.getUserImgUrl(userId);
+        String fileName = imgUrl.split(URL_SPLITER)[3];
+        if (!userDao.isDefaultImage(userId) | storageService.isExistImage(fileName)) {
             log.info("delete fileName: {}", fileName);
             storageService.deleteImage(fileName);
         }
 
         // 새로운 이미지 S3에 업로드
-        String imgUrl = storageService.uploadImage(file, StorageDomain.USER, userId);
+        imgUrl = storageService.uploadImage(file, StorageDomain.USER, userId);
 
         return userDao.updateImg(userId, imgUrl);
     }
