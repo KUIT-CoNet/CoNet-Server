@@ -1,9 +1,7 @@
 package com.kuit.conet.service;
 
-import com.kuit.conet.common.exception.BaseException;
 import com.kuit.conet.common.exception.UserException;
 import com.kuit.conet.domain.StorageDomain;
-import com.kuit.conet.dto.request.user.ImgRequest;
 import com.kuit.conet.dto.request.user.NameRequest;
 import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.user.UserResponse;
@@ -14,9 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
-import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
 import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.NOT_FOUND_USER;
 
 @Slf4j
@@ -35,6 +30,14 @@ public class UserService {
     public UserResponse getUser(HttpServletRequest httpRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
         isExistUser(userId);
+
+        // S3에 없는 객체에 대한 유효성 검사
+        String imgUrl = userDao.getUserImgUrl(userId);
+        String fileName = imgUrl.split(URL_SPLITER)[3];
+        if(!storageService.isExistImage(fileName)) {
+            log.warn("S3 버킷에 존재하지 않는 이미지입니다. 기본 이미지로 변경하겠습니다.");
+            userDao.setImageUrlDefault(userId);
+        }
 
         return userDao.getUser(userId);
     }

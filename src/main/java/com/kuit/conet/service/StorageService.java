@@ -2,14 +2,12 @@ package com.kuit.conet.service;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.kuit.conet.common.exception.BaseException;
 import com.kuit.conet.common.exception.StorageException;
 import com.kuit.conet.domain.StorageDomain;
-import com.kuit.conet.dto.response.StorageImgResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,5 +66,9 @@ public class StorageService {
         } catch (AmazonServiceException e) {
             throw new StorageException(BAD_REQUEST, e.getMessage());
         }
+    }
+
+    public Boolean isExistImage(String fileName) {
+        return amazonS3Client.doesObjectExist(bucketName, fileName);
     }
 }

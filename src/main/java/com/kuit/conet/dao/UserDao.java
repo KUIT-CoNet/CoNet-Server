@@ -203,4 +203,10 @@ public class UserDao {
 
         return jdbcTemplate.queryForObject(sql, param, String.class);
     }
+
+    public void setImageUrlDefault(Long userId) {
+        String sql = "update user set img_url=default where user_id=:user_id and status=1";
+        Map<String, Object> param = Map.of("user_id", userId);
+        jdbcTemplate.update(sql, param);
+    }
 }
