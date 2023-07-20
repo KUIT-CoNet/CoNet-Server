@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Date;
-import java.sql.Timestamp;
+import java.sql.Time;
 
 @Getter
 @Setter
@@ -16,7 +16,8 @@ public class Plan {
     private String planName;
     private Date planStartPeriod;
     private Date planEndPeriod;
-    private Timestamp fixedTime;
+    private Date fixedDate;
+    private Time fixedTime;
     private Boolean status;
 
     public Plan(Long teamId, String planName, Date planStartPeriod, Date planEndPeriod) {
