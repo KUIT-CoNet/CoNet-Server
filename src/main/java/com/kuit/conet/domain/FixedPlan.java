@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class FixedPlan {
-    private String date; // yy-MM-dd
+    private String date; // yyyy-MM-dd
     private String time; // hh-mm
     private String teamName;
     private String planName;
