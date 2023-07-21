@@ -1,7 +1,9 @@
 package com.kuit.conet.service;
 
 import com.kuit.conet.dao.HomeDao;
-import com.kuit.conet.dto.request.MonthPlanRequest;
+import com.kuit.conet.domain.FixedPlan;
+import com.kuit.conet.dto.request.PlanRequest;
+import com.kuit.conet.dto.response.DayPlanResponse;
 import com.kuit.conet.dto.response.MonthPlanResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +19,7 @@ import java.util.List;
 public class HomeService {
     private final HomeDao homeDao;
 
-    public MonthPlanResponse getPlanOnMonth(HttpServletRequest httpRequest, MonthPlanRequest planRequest) {
+    public MonthPlanResponse getPlanOnMonth(HttpServletRequest httpRequest, PlanRequest planRequest) {
         List<Integer> planDates = new ArrayList<>();
 
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
@@ -30,5 +32,14 @@ public class HomeService {
         }
 
         return new MonthPlanResponse(planDates.size(), planDates);
+    }
+
+    public DayPlanResponse getPlanOnDay(HttpServletRequest httpRequest, PlanRequest planRequest) {
+        Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
+        String searchDate = planRequest.getSearchDate(); // yyyy-MM-dd
+
+        List<FixedPlan> plans = homeDao.getPlanOnDay(userId, searchDate);
+
+        return new DayPlanResponse(plans.size(), plans);
     }
 }
