@@ -20,7 +20,7 @@ import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.
 public class UserService {
     private final UserDao userDao;
     private final StorageService storageService;
-    private final String  URL_SPLITER = "/";
+    private final String URL_SPLITER = "/";
 
     public void userDelete(HttpServletRequest httpRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
@@ -46,18 +46,21 @@ public class UserService {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
         isExistUser(userId);
 
+        // 저장할 파일명 만들기
+        // 받은 파일이 이미지 타입이 아닌 경우에 대한 유효성 검사 진행
+        String fileName = storageService.getFileName(file, StorageDomain.USER, userId);
+
         /*
         유저의 프로필 이미지가 기본 프로필 이미지인지 확인 -> 기본 이미지가 아니면 기존 이미지를 S3에서 이미지 삭제
         S3 버킷에 존재하지 않는 객체인 경우 삭제를 생략 */
         String imgUrl = userDao.getUserImgUrl(userId);
-        String fileName = imgUrl.split(URL_SPLITER)[3];
-        if (!userDao.isDefaultImage(userId) | storageService.isExistImage(fileName)) {
-            log.info("delete fileName: {}", fileName);
-            storageService.deleteImage(fileName);
+        String deleteFileName = imgUrl.split(URL_SPLITER)[3];
+        if (!userDao.isDefaultImage(userId)) {
+            storageService.deleteImage(deleteFileName);
         }
 
         // 새로운 이미지 S3에 업로드
-        imgUrl = storageService.uploadImage(file, StorageDomain.USER, userId);
+        imgUrl = storageService.uploadToS3(file, fileName);
 
         return userDao.updateImg(userId, imgUrl);
     }

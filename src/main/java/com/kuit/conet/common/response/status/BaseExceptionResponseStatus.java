@@ -57,7 +57,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     /**
      * 9000: 기타 오류
      */
-    INVALID_STORAGE_DOMAIN(9000, HttpStatus.BAD_REQUEST.value(), "업로드할 이미지의 도메인이 올바르지 않습니다.");
+    INVALID_STORAGE_DOMAIN(9000, HttpStatus.BAD_REQUEST.value(), "업로드할 이미지의 도메인이 올바르지 않습니다."),
+    INVALID_FILE_EXTENSION(3002, HttpStatus.BAD_REQUEST.value(), "파일의 형식이 올바르지 않습니다.");
 
 
     private final int code;
