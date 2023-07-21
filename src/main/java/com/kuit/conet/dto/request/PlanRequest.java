@@ -6,7 +6,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class MonthPlanRequest {
+public class PlanRequest {
     String searchDate;
-    // yyyy-MM
+    // 특정 달의 조회: "yyyy-MM"
+    // 특정 날짜 조회: "yyyy-MM-dd"
 }

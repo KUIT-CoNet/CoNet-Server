@@ -1,7 +1,8 @@
 package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
-import com.kuit.conet.dto.request.MonthPlanRequest;
+import com.kuit.conet.dto.request.PlanRequest;
+import com.kuit.conet.dto.response.DayPlanResponse;
 import com.kuit.conet.dto.response.MonthPlanResponse;
 import com.kuit.conet.service.HomeService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,9 +21,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
     private final HomeService homeService;
 
+    /**
+     * 홈 - 날짜 (dd)
+     * */
     @GetMapping("/month")
-    public BaseResponse<MonthPlanResponse> getPlanOnMonth(HttpServletRequest httpRequest, @RequestBody @Valid MonthPlanRequest planRequest) {
+    public BaseResponse<MonthPlanResponse> getPlanOnMonth(HttpServletRequest httpRequest, @RequestBody @Valid PlanRequest planRequest) {
         MonthPlanResponse response = homeService.getPlanOnMonth(httpRequest, planRequest);
+        return new BaseResponse<>(response);
+    }
+
+    /**
+     * 홈 - 날짜(yyyy-MM-dd) / 시각(hh-mm) / 모임 명 / 약속 명
+     * - '나'의 직접적인 참여 여부와 무관
+     * */
+    @GetMapping("/day")
+    public BaseResponse<DayPlanResponse> getPlanOnDay(HttpServletRequest httpRequest, @RequestBody @Valid PlanRequest planRequest) {
+        DayPlanResponse response = homeService.getPlanOnDay(httpRequest, planRequest);
         return new BaseResponse<>(response);
     }
 }
