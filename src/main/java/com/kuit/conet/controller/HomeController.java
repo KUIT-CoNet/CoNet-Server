@@ -1,7 +1,6 @@
 package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
-import com.kuit.conet.domain.WaitingPlan;
 import com.kuit.conet.dto.request.PlanRequest;
 import com.kuit.conet.dto.response.DayPlanResponse;
 import com.kuit.conet.dto.response.MonthPlanResponse;
