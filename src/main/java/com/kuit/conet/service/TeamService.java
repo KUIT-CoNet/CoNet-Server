@@ -53,7 +53,8 @@ public class TeamService {
         Long teamId = teamDao.saveTeam(newTeam);
 
         // 새로운 이미지 S3에 업로드
-        String imgUrl = storageService.uploadImage(file, StorageDomain.TEAM, teamId);
+        String fileName = storageService.getFileName(file, StorageDomain.TEAM, teamId);
+        String imgUrl = storageService.uploadToS3(file, fileName);
 
         StorageImgResponse response = teamDao.updateImg(teamId, imgUrl);
         log.info("imgUrl: {}", response.getImgUrl());
