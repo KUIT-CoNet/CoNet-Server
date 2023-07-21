@@ -37,5 +37,6 @@ public class MvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(bearerAuthInterceptor).addPathPatterns("/plan/user-time");
         registry.addInterceptor(bearerAuthInterceptor).addPathPatterns("/home/month");
         registry.addInterceptor(bearerAuthInterceptor).addPathPatterns("/home/day");
+        registry.addInterceptor(bearerAuthInterceptor).addPathPatterns("/home/waiting");
     }
 }
