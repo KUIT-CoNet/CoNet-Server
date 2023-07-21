@@ -2,12 +2,16 @@ package com.kuit.conet.dao;
 
 import com.kuit.conet.domain.Plan;
 import com.kuit.conet.domain.PlanMemberTime;
+import com.kuit.conet.dto.response.plan.PossibleTimeResponse;
+import com.kuit.conet.dto.response.plan.UserTimeResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -45,6 +49,31 @@ public class PlanDao {
                 "possible_time", planMemberTime.getPossibleTime());
 
         jdbcTemplate.update(sql, param);
+    }
+
+    public Boolean isExistingUserTime(Long planId, Long userId) {
+        String isExistingSql = "select exists(select * from plan_member_time where plan_id=:plan_id and user_id=:user_id)";
+        Map<String, Object> isExistingParam = Map.of("plan_id", planId,
+                "user_id", userId);
+
+        return jdbcTemplate.queryForObject(isExistingSql, isExistingParam, Boolean.class);
+    }
+
+    public UserTimeResponse getUserTime(Long planId, Long userId) {
+        String sql = "select * from plan_member_time where plan_id=:plan_id and user_id=:user_id";
+        Map<String, Object> param = Map.of("plan_id", planId,
+                "user_id", userId);
+
+        RowMapper<PossibleTimeResponse> mapper = ((rs, rowNum) -> {
+            PossibleTimeResponse possibleTime = new PossibleTimeResponse();
+            possibleTime.setDate(rs.getDate("possible_date"));
+            possibleTime.setTime(rs.getString("possible_time"));
+            return possibleTime;
+        });
+
+        List<PossibleTimeResponse> response = jdbcTemplate.query(sql, param, mapper);
+
+        return new UserTimeResponse(planId, userId, response);
     }
 
 }
