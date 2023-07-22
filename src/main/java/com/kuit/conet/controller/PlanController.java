@@ -3,8 +3,9 @@ package com.kuit.conet.controller;
 import com.kuit.conet.common.response.BaseResponse;
 import com.kuit.conet.dto.request.plan.CreatePlanRequest;
 import com.kuit.conet.dto.request.plan.PossibleTimeRequest;
-import com.kuit.conet.dto.request.plan.UserTimeRequest;
+import com.kuit.conet.dto.request.plan.PlanIdRequest;
 import com.kuit.conet.dto.response.plan.CreatePlanResponse;
+import com.kuit.conet.dto.response.plan.MemberPossibleTimeResponse;
 import com.kuit.conet.dto.response.plan.UserTimeResponse;
 import com.kuit.conet.service.PlanService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,8 +34,14 @@ public class PlanController {
     }
 
     @GetMapping("/user-time")
-    public BaseResponse<UserTimeResponse> getUserTime(@RequestBody @Valid UserTimeRequest request, HttpServletRequest httpRequest) {
+    public BaseResponse<UserTimeResponse> getUserTime(@RequestBody @Valid PlanIdRequest request, HttpServletRequest httpRequest) {
         UserTimeResponse response = planService.getUserTime(request, httpRequest);
+        return new BaseResponse<>(response);
+    }
+
+    @GetMapping("/member-time")
+    public BaseResponse<MemberPossibleTimeResponse> getMemberTime(@RequestBody @Valid PlanIdRequest request) {
+        MemberPossibleTimeResponse response = planService.getMemberTime(request);
         return new BaseResponse<>(response);
     }
 

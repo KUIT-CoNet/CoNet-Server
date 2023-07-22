@@ -7,6 +7,6 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 @Setter
-public class UserTimeRequest {
+public class PlanIdRequest {
     private Long planId;
 }

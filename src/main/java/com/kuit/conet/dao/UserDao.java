@@ -197,4 +197,11 @@ public class UserDao {
         Map<String, Object> param = Map.of("user_id", userId);
         jdbcTemplate.update(sql, param);
     }
+
+    public String getUserName(Long userId) {
+        String sql = "select name from user where user_id=:user_id and status=1";
+        Map<String, Object> param = Map.of("user_id", userId);
+
+        return jdbcTemplate.queryForObject(sql, param, String.class);
+    }
 }

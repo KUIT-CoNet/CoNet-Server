@@ -12,5 +12,5 @@ import java.util.List;
 public class UserTimeResponse {
     private Long planId;
     private Long userId;
-    private List<PossibleTimeResponse> possibleTime;
+    private List<UserPossibleTimeResponse> possibleTime;
 }
