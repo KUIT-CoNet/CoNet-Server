@@ -1,25 +1,18 @@
 package com.kuit.conet.dao;
 
-import com.kuit.conet.domain.Platform;
 import com.kuit.conet.domain.Team;
 import com.kuit.conet.domain.TeamMember;
-import com.kuit.conet.domain.User;
-import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
 import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.team.GetTeamResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @Repository
@@ -56,15 +49,13 @@ public class TeamDao {
         Map<String, Object> returnParam = Map.of("team_id", teamMember.getTeamId(),
                 "user_id", teamMember.getUserId());
 
-        RowMapper<TeamMember> mapper = new RowMapper<>() {
-            public TeamMember mapRow(ResultSet rs, int rowNum) throws SQLException {
-                TeamMember member = new TeamMember();
-                member.setTeamMemberId(rs.getLong("team_member_id"));
-                member.setTeamId(rs.getLong("team_id"));
-                member.setUserId(rs.getLong("user_id"));
-                member.setStatus(rs.getBoolean("status"));
-                return member;
-            }
+        RowMapper<TeamMember> mapper = (rs, rowNum) -> {
+            TeamMember member = new TeamMember();
+            member.setTeamMemberId(rs.getLong("team_member_id"));
+            member.setTeamId(rs.getLong("team_id"));
+            member.setUserId(rs.getLong("user_id"));
+            member.setStatus(rs.getBoolean("status"));
+            return member;
         };
 
         return jdbcTemplate.queryForObject(returnSql, returnParam, mapper);
@@ -95,17 +86,15 @@ public class TeamDao {
         String sql = "select * from team where invite_code=:invite_code and status=1";
         Map<String, String> param = Map.of("invite_code", inviteCode);
 
-        RowMapper<Team> mapper = new RowMapper<>() {
-            public Team mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Team team = new Team();
-                team.setTeamId(rs.getLong("team_id"));
-                team.setTeamName(rs.getString("team_name"));
-                team.setTeamImgUrl(rs.getString("team_image_url"));
-                team.setInviteCode(rs.getString("invite_code"));
-                team.setCodeGeneratedTime(rs.getTimestamp("code_generated_time"));
-                team.setStatus(rs.getBoolean("status"));
-                return team;
-            }
+        RowMapper<Team> mapper = (rs, rowNum) -> {
+            Team team = new Team();
+            team.setTeamId(rs.getLong("team_id"));
+            team.setTeamName(rs.getString("team_name"));
+            team.setTeamImgUrl(rs.getString("team_image_url"));
+            team.setInviteCode(rs.getString("invite_code"));
+            team.setCodeGeneratedTime(rs.getTimestamp("code_generated_time"));
+            team.setStatus(rs.getBoolean("status"));
+            return team;
         };
 
         Team team = jdbcTemplate.queryForObject(sql, param, mapper);
@@ -119,13 +108,11 @@ public class TeamDao {
                 "where tm.user_id=:user_id and tm.status=1";
         Map<String, Object> param = Map.of("user_id", userId);
 
-        RowMapper<GetTeamResponse> mapper = new RowMapper<GetTeamResponse>() {
-            public GetTeamResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
-                GetTeamResponse response = new GetTeamResponse();
-                response.setTeam_name(rs.getString("team_name"));
-                response.setTeam_image_url(rs.getString("team_image_url"));
-                return response;
-            }
+        RowMapper<GetTeamResponse> mapper = (rs, rowNum) -> {
+            GetTeamResponse response = new GetTeamResponse();
+            response.setTeam_name(rs.getString("team_name"));
+            response.setTeam_image_url(rs.getString("team_image_url"));
+            return response;
         };
 
         return jdbcTemplate.query(sql, param, mapper);
@@ -137,6 +124,14 @@ public class TeamDao {
                 "team_id", teamId);
 
         jdbcTemplate.update(sql, param);
+
+        String planMemberSql = "update plan_member pm " +
+                "inner join plan p on pm.plan_id=p.plan_id " +
+                "set pm.status=0 where p.team_id=:team_id and pm.user_id=:user_id";
+        Map<String, Object> planMemberParam = Map.of("user_id", userId,
+                "team_id", teamId);
+
+        jdbcTemplate.update(planMemberSql, planMemberParam);
 
         String returnSql = "select status from team_member where team_id=:team_id and user_id=:user_id";
         Map<String, Object> returnParam = Map.of("user_id", userId,
@@ -155,6 +150,18 @@ public class TeamDao {
         Map<String, Object> teamMemberUpdateParam = Map.of("team_id", teamId);
 
         jdbcTemplate.update(teamMemberUpdateSql, teamMemberUpdateParam);
+
+        String planUpdateSql = "update plan set status=0 where team_id=:team_id";
+        Map<String, Object> planUpdateParam = Map.of("team_id", teamId);
+
+        jdbcTemplate.update(planUpdateSql, planUpdateParam);
+
+        String planMemberSql = "update plan_member pm " +
+                "inner join plan p on pm.plan_id=p.plan_id " +
+                "set pm.status=0 where p.team_id=:team_id";
+        Map<String, Object> planMemberParam = Map.of("team_id", teamId);
+
+        jdbcTemplate.update(planMemberSql, planMemberParam);
 
         String returnSql = "select status from team where team_id=:team_id";
         Map<String, Object> returnParam = Map.of("team_id", teamId);
@@ -187,13 +194,11 @@ public class TeamDao {
         String returnSql = "select team_name, team_image_url from team where team_id=:team_id and status=1";
         Map<String, Object> returnParam = Map.of("team_id", teamId);
 
-        RowMapper<StorageImgResponse> returnMapper = new RowMapper<StorageImgResponse>() {
-            public StorageImgResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
-                StorageImgResponse storageImgResponse = new StorageImgResponse();
-                storageImgResponse.setName(rs.getString("team_name"));
-                storageImgResponse.setImgUrl(rs.getString("team_image_url"));
-                return storageImgResponse;
-            }
+        RowMapper<StorageImgResponse> returnMapper = (rs, rowNum) -> {
+            StorageImgResponse storageImgResponse = new StorageImgResponse();
+            storageImgResponse.setName(rs.getString("team_name"));
+            storageImgResponse.setImgUrl(rs.getString("team_image_url"));
+            return storageImgResponse;
         };
 
         return jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);

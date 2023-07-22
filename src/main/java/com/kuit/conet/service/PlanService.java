@@ -8,6 +8,7 @@ import com.kuit.conet.domain.MemberPossibleTime;
 import com.kuit.conet.domain.Plan;
 import com.kuit.conet.domain.PlanMemberTime;
 import com.kuit.conet.dto.request.plan.CreatePlanRequest;
+import com.kuit.conet.dto.request.plan.FixPlanRequest;
 import com.kuit.conet.dto.request.plan.PossibleTimeRequest;
 import com.kuit.conet.dto.request.plan.PlanIdRequest;
 import com.kuit.conet.dto.response.plan.*;
@@ -17,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.sql.Time;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -43,7 +46,10 @@ public class PlanService {
 
         PlanMemberTime planMemberTime = new PlanMemberTime(possibleTimeRequest.getPlanId(), userId, possibleTimeRequest.getPossibleDate(), possibleTimeRequest.getPossibleTime());
 
-        planDao.saveTime(planMemberTime);
+        // 대기 중인 약속일 때만 시간 저장
+        if(planDao.isWaitingPlan(possibleTimeRequest.getPlanId())) {
+            planDao.saveTime((planMemberTime));
+        }
     }
 
     public UserTimeResponse getUserTime(PlanIdRequest planIdRequest, HttpServletRequest httpRequest) {
@@ -145,7 +151,6 @@ public class PlanService {
             MemberDateTimeResponse memberDateTimeResponse = new MemberDateTimeResponse(date, tempListMemberResponses.get(j));
             memberDateTimeResponses.add(memberDateTimeResponse);
 
-
             // 약속 기간 시작 날짜에서 하루씩 더하기
             Calendar cal = Calendar.getInstance();
             cal.setTime(date);
@@ -162,5 +167,18 @@ public class PlanService {
         return memberPossibleTimeResponse;
     }
 
+    public String fixPlan(FixPlanRequest fixPlanRequest) {
+        Long longTime = fixPlanRequest.getFixed_time();
+
+        String strTime = longTime.toString() + ":00:00";
+
+        Time time = Time.valueOf(strTime);
+
+        if(planDao.isFixedPlan(fixPlanRequest.getPlanId())){
+            return "이미 확정된 약속입니다.";
+        }
+        planDao.fixPlan(fixPlanRequest.getPlanId(), fixPlanRequest.getFixed_date(), time, fixPlanRequest.getUserId());
+        return "약속 확정에 성공하였습니다.";
+    }
 
 }

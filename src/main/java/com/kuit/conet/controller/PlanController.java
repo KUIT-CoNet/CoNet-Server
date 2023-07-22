@@ -2,6 +2,7 @@ package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
 import com.kuit.conet.dto.request.plan.CreatePlanRequest;
+import com.kuit.conet.dto.request.plan.FixPlanRequest;
 import com.kuit.conet.dto.request.plan.PossibleTimeRequest;
 import com.kuit.conet.dto.request.plan.PlanIdRequest;
 import com.kuit.conet.dto.response.plan.CreatePlanResponse;
@@ -45,4 +46,9 @@ public class PlanController {
         return new BaseResponse<>(response);
     }
 
+    @PostMapping("/fix")
+    public BaseResponse<String> fixPlan(@RequestBody @Valid FixPlanRequest fixPlanRequest) {
+        String response = planService.fixPlan(fixPlanRequest);
+        return new BaseResponse<>(response);
+    }
 }
