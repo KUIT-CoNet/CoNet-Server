@@ -46,7 +46,10 @@ public class PlanService {
 
         PlanMemberTime planMemberTime = new PlanMemberTime(possibleTimeRequest.getPlanId(), userId, possibleTimeRequest.getPossibleDate(), possibleTimeRequest.getPossibleTime());
 
-        planDao.saveTime(planMemberTime);
+        // 대기 중인 약속일 때만 시간 저장
+        if(planDao.isWaitingPlan(possibleTimeRequest.getPlanId())) {
+            planDao.saveTime((planMemberTime));
+        }
     }
 
     public UserTimeResponse getUserTime(PlanIdRequest planIdRequest, HttpServletRequest httpRequest) {

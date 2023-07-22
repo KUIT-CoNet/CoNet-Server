@@ -146,4 +146,11 @@ public class PlanDao {
 
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
+
+    public Boolean isWaitingPlan(Long planId) {
+        String sql = "select exists(select * from plan where plan_id=:plan_id and status=1)";
+        Map<String, Object> param = Map.of("plan_id", planId);
+
+        return jdbcTemplate.queryForObject(sql, param, Boolean.class);
+    }
 }
