@@ -9,7 +9,7 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class PossibleTimeResponse {
+public class UserPossibleTimeResponse {
     private Date date;
     private String time;
 }

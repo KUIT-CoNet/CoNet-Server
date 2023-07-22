@@ -1,16 +1,21 @@
 package com.kuit.conet.dao;
 
+import com.kuit.conet.common.exception.BaseException;
+import com.kuit.conet.domain.MemberPossibleTime;
 import com.kuit.conet.domain.Plan;
 import com.kuit.conet.domain.PlanMemberTime;
-import com.kuit.conet.dto.response.plan.PossibleTimeResponse;
+import com.kuit.conet.dto.response.plan.MemberPossibleTimeResponse;
+import com.kuit.conet.dto.response.plan.UserPossibleTimeResponse;
 import com.kuit.conet.dto.response.plan.UserTimeResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.connection.ReactiveSetCommands;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -64,16 +69,57 @@ public class PlanDao {
         Map<String, Object> param = Map.of("plan_id", planId,
                 "user_id", userId);
 
-        RowMapper<PossibleTimeResponse> mapper = ((rs, rowNum) -> {
-            PossibleTimeResponse possibleTime = new PossibleTimeResponse();
+        RowMapper<UserPossibleTimeResponse> mapper = ((rs, rowNum) -> {
+            UserPossibleTimeResponse possibleTime = new UserPossibleTimeResponse();
             possibleTime.setDate(rs.getDate("possible_date"));
             possibleTime.setTime(rs.getString("possible_time"));
             return possibleTime;
         });
 
-        List<PossibleTimeResponse> response = jdbcTemplate.query(sql, param, mapper);
+        List<UserPossibleTimeResponse> response = jdbcTemplate.query(sql, param, mapper);
 
         return new UserTimeResponse(planId, userId, response);
     }
 
+    public List<MemberPossibleTime> getMemberTime(Long planId, Date planStartPeriod) {
+        String sql = "select user_id, possible_time from plan_member_time where plan_id=:plan_id and possible_date=:possible_date";
+        Map<String, Object> param = Map.of("plan_id", planId,
+                "possible_date", planStartPeriod);
+
+        RowMapper<MemberPossibleTime> mapper = ((rs, rowNum) -> {
+            MemberPossibleTime possibleTime = new MemberPossibleTime();
+            possibleTime.setUserId(rs.getLong("user_id"));
+            possibleTime.setPossibleTime(rs.getString("possible_time"));
+            return possibleTime;
+        });
+
+        return jdbcTemplate.query(sql, param, mapper);
+    }
+
+    public Plan getWaitingPlan(Long planId) {
+        String sql = "select * from plan where plan_id=:plan_id and status=1";
+        Map<String, Object> param = Map.of("plan_id", planId);
+
+        RowMapper<Plan> mapper = ((rs, rowNum) -> {
+            Plan plan = new Plan();
+            plan.setPlanId(rs.getLong("plan_id"));
+            plan.setTeamId(rs.getLong("team_id"));
+            plan.setPlanName(rs.getString("plan_name"));
+            plan.setPlanStartPeriod(rs.getDate("plan_start_period"));
+            plan.setPlanEndPeriod(rs.getDate("plan_end_period"));
+            plan.setFixedDate(rs.getDate("fixed_date"));
+            plan.setFixedTime(rs.getTime("fixed_time"));
+            plan.setStatus(rs.getBoolean("status"));
+            return plan;
+        });
+
+        return jdbcTemplate.queryForObject(sql, param, mapper);
+    }
+
+    public Long getTeamId(Long planId) {
+        String sql = "select team_id from plan where plan_id=:plan_id";
+        Map<String, Object> param = Map.of("plan_id", planId);
+
+        return jdbcTemplate.queryForObject(sql, param, Long.class);
+    }
 }

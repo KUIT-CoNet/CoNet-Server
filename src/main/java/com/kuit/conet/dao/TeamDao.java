@@ -184,7 +184,7 @@ public class TeamDao {
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select team_name, team_image_url from team where team_id=:team_id";
+        String returnSql = "select team_name, team_image_url from team where team_id=:team_id and status=1";
         Map<String, Object> returnParam = Map.of("team_id", teamId);
 
         RowMapper<StorageImgResponse> returnMapper = new RowMapper<StorageImgResponse>() {
@@ -197,5 +197,12 @@ public class TeamDao {
         };
 
         return jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
+    }
+
+    public Long getTeamMemberCount(Long teamId) {
+        String sql = "select count(*) from team_member where team_id=:team_id and status=1";
+        Map<String, Object> param = Map.of("team_id", teamId);
+
+        return jdbcTemplate.queryForObject(sql, param, Long.class);
     }
 }
