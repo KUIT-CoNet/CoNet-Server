@@ -1,14 +1,11 @@
 package com.kuit.conet.dao;
 
-import com.kuit.conet.common.exception.BaseException;
 import com.kuit.conet.domain.MemberPossibleTime;
 import com.kuit.conet.domain.Plan;
 import com.kuit.conet.domain.PlanMemberTime;
-import com.kuit.conet.dto.response.plan.MemberPossibleTimeResponse;
 import com.kuit.conet.dto.response.plan.UserPossibleTimeResponse;
 import com.kuit.conet.dto.response.plan.UserTimeResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.connection.ReactiveSetCommands;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
