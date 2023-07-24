@@ -22,7 +22,7 @@ public class UserController {
     @PostMapping("/delete")
     public BaseResponse<String> userDelete(HttpServletRequest httpRequest) {
         userService.userDelete(httpRequest);
-        return new BaseResponse<>("유저 삭제에 성공하였습니다.");
+        return new BaseResponse<>("유저 탈퇴에 성공하였습니다.");
     }
 
     @GetMapping

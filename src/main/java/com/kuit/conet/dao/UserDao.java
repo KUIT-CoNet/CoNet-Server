@@ -24,7 +24,7 @@ public class UserDao {
     }
 
     public List<Long> findByPlatformAndPlatformId(Platform platform, String platformId) {
-        String sql = "select user_id from user where platform=:platform and platform_id=:platform_id";
+        String sql = "select user_id from user where platform=:platform and platform_id=:platform_id and status=1";
         Map<String, String> param = Map.of(
                 "platform", platform.getPlatform(),
                 "platform_id", platformId);
@@ -35,7 +35,7 @@ public class UserDao {
     }
 
     public User findById(Long userId) {
-        String sql = "select * from user where user_id=:user_id";
+        String sql = "select * from user where user_id=:user_id and status=1";
         Map<String, Long> param = Map.of("user_id", userId);
 
         RowMapper<User> mapper = (rs, rowNum) -> {
@@ -87,7 +87,7 @@ public class UserDao {
     }
 
     public User agreeTermAndPutName(String name, Boolean optionTerm, Long userId) {
-        String sql = "update user set name=:name, service_term=1, option_term=:option_term where user_id=:user_id";
+        String sql = "update user set name=:name, service_term=1, option_term=:option_term where user_id=:user_id and status=1";
         Map<String, Object> param = Map.of(
                 "name", name,
                 "option_term", optionTerm,
@@ -118,7 +118,7 @@ public class UserDao {
 
     public void deleteUser(Long userId) {
         // user 의 platform, platformId 초기화
-        String sql = "update user set platform='', platform_id='', service_term=0, status=0 where user_id=:user_id";
+        String sql = "update user set platform='', platform_id='', service_term=0, status=0 where user_id=:user_id and status=1";
         Map<String, Object> param = Map.of("user_id", userId);
 
         jdbcTemplate.update(sql, param);
@@ -179,14 +179,14 @@ public class UserDao {
     }
 
     public Boolean isDefaultImage(Long userId) {
-        String sql = "select if((select img_url from user where user_id=:user_id) = (select COLUMN_DEFAULT from information_schema.`COLUMNS` C where table_schema='conet' and table_name='user' and column_name='img_url'), 1, 0)";
+        String sql = "select if((select img_url from user where user_id=:user_id and status=1) = (select COLUMN_DEFAULT from information_schema.`COLUMNS` C where table_schema='conet' and table_name='user' and column_name='img_url'), 1, 0)";
         Map<String, Object> param = Map.of("user_id", userId);
 
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 
     public String getUserImgUrl(Long userId) {
-        String sql = "select img_url from user where user_id=:user_id";
+        String sql = "select img_url from user where user_id=:user_id and status=1";
         Map<String, Object> param = Map.of("user_id", userId);
 
         return jdbcTemplate.queryForObject(sql, param, String.class);

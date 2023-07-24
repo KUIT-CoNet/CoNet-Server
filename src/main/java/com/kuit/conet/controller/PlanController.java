@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/plan")
+@RequestMapping("/team/plan")
 public class PlanController {
     private final PlanService planService;
 

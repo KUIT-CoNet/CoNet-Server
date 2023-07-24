@@ -3,7 +3,6 @@ package com.kuit.conet.dto.request.plan;
 import lombok.*;
 
 import java.sql.Date;
-import java.sql.Time;
 import java.util.List;
 
 @Getter

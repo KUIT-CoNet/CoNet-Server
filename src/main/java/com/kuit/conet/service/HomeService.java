@@ -3,10 +3,10 @@ package com.kuit.conet.service;
 import com.kuit.conet.dao.HomeDao;
 import com.kuit.conet.domain.FixedPlan;
 import com.kuit.conet.domain.WaitingPlan;
-import com.kuit.conet.dto.request.PlanRequest;
-import com.kuit.conet.dto.response.DayPlanResponse;
-import com.kuit.conet.dto.response.MonthPlanResponse;
-import com.kuit.conet.dto.response.WaitingPlanResponse;
+import com.kuit.conet.dto.request.home.HomePlanRequest;
+import com.kuit.conet.dto.response.home.HomeDayPlanResponse;
+import com.kuit.conet.dto.response.home.HomeMonthPlanResponse;
+import com.kuit.conet.dto.response.home.HomeWaitingPlanResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import java.util.List;
 public class HomeService {
     private final HomeDao homeDao;
 
-    public MonthPlanResponse getPlanOnMonth(HttpServletRequest httpRequest, PlanRequest planRequest) {
+    public HomeMonthPlanResponse getPlanOnMonth(HttpServletRequest httpRequest, HomePlanRequest planRequest) {
         List<Integer> planDates = new ArrayList<>();
 
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
@@ -33,23 +33,23 @@ public class HomeService {
             planDates.add(date);
         }
 
-        return new MonthPlanResponse(planDates.size(), planDates);
+        return new HomeMonthPlanResponse(planDates.size(), planDates);
     }
 
-    public DayPlanResponse getPlanOnDay(HttpServletRequest httpRequest, PlanRequest planRequest) {
+    public HomeDayPlanResponse getPlanOnDay(HttpServletRequest httpRequest, HomePlanRequest planRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
         String searchDate = planRequest.getSearchDate(); // yyyy-MM-dd
 
         List<FixedPlan> plans = homeDao.getPlanOnDay(userId, searchDate);
 
-        return new DayPlanResponse(plans.size(), plans);
+        return new HomeDayPlanResponse(plans.size(), plans);
     }
 
-    public WaitingPlanResponse getWaitingPlanOnDay(HttpServletRequest httpRequest) {
+    public HomeWaitingPlanResponse getWaitingPlanOnDay(HttpServletRequest httpRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
         List<WaitingPlan> plans = homeDao.getWaitingPlanOnDay(userId);
 
-        return new WaitingPlanResponse(plans.size(), plans);
+        return new HomeWaitingPlanResponse(plans.size(), plans);
     }
 }

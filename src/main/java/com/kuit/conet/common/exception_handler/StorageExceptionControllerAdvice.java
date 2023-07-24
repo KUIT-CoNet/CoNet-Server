@@ -1,6 +1,5 @@
 package com.kuit.conet.common.exception_handler;
 
-import com.kuit.conet.common.exception.PlatformException;
 import com.kuit.conet.common.exception.StorageException;
 import com.kuit.conet.common.response.BaseErrorResponse;
 import jakarta.annotation.Priority;

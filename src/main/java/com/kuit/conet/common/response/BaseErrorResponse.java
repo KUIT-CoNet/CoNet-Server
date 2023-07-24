@@ -6,8 +6,6 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.SUCCESS;
-
 @Getter
 @JsonPropertyOrder({"code", "status", "message", "timestamp"})
 public class BaseErrorResponse implements ResponseStatus {
