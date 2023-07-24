@@ -1,17 +1,18 @@
 package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
+import com.kuit.conet.domain.FixedPlan;
+import com.kuit.conet.domain.WaitingPlan;
 import com.kuit.conet.dto.request.plan.*;
-import com.kuit.conet.dto.response.plan.MonthPlanResponse;
-import com.kuit.conet.dto.response.plan.CreatePlanResponse;
-import com.kuit.conet.dto.response.plan.MemberPossibleTimeResponse;
-import com.kuit.conet.dto.response.plan.UserTimeResponse;
+import com.kuit.conet.dto.response.plan.*;
 import com.kuit.conet.service.PlanService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -56,6 +57,17 @@ public class PlanController {
     @GetMapping("/month")
     public BaseResponse<MonthPlanResponse> getPlanInMonth(@RequestBody @Valid TeamFixedPlanRequest planRequest) {
         MonthPlanResponse response = planService.getPlanInMonth(planRequest);
+        return new BaseResponse<>(response);
+    }
+
+    /**
+     * 모임 내 약속 - 날짜(yyyy-MM-dd) / 시각(hh-mm) / 약속 명
+     * - '나'의 직접적인 참여 여부와 무관
+     * - 모임 명은 필요 없지만 하나의 dto 를 공유하기 위하여 반환함
+     * */
+    @GetMapping("/day")
+    public BaseResponse<DayPlanResponse> getPlanOnDay(@RequestBody @Valid TeamFixedPlanRequest planRequest) {
+        DayPlanResponse response = planService.getPlanOnDay(planRequest);
         return new BaseResponse<>(response);
     }
 }

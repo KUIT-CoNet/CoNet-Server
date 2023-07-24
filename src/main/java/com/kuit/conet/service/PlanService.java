@@ -186,4 +186,10 @@ public class PlanService {
 
         return new MonthPlanResponse(planDates.size(), planDates);
     }
+
+    public DayPlanResponse getPlanOnDay(TeamFixedPlanRequest planRequest) {
+        List<FixedPlan> plans = planDao.getPlanOnDay(planRequest.getTeamId(), planRequest.getSearchDate()); // yyyy-MM-dd
+
+        return new DayPlanResponse(plans.size(), plans);
+    }
 }
