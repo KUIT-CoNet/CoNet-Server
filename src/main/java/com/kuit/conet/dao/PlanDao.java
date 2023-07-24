@@ -167,4 +167,27 @@ public class PlanDao {
 
         return jdbcTemplate.query(sql, param, mapper);
     }
+
+    public List<FixedPlan> getPlanOnDay(Long teamId, String searchDate) {
+        String sql = "select p.fixed_date as fixed_date, p.fixed_time as fixed_time, p.plan_name as plan_name, t.team_name as team_name " +
+                "from plan p, team t " +
+                "where p.team_id = t.team_id " +
+                "and p.team_id=:team_id and t.status=1 " +
+                "and p.status=2 and date_format(p.fixed_date,'%Y-%m-%d')=:search_date"; // plan status 확정 : 2
+        Map<String, Object> param = Map.of("team_id", teamId,
+                "search_date", searchDate);
+
+        RowMapper<FixedPlan> mapper = (rs, rowNum) -> {
+            FixedPlan plan = new FixedPlan();
+            plan.setDate(rs.getString("fixed_date"));
+            String fixedTime = rs.getString("fixed_time");
+            int timeEndIndex = fixedTime.length()-3;
+            plan.setTime(fixedTime.substring(0, timeEndIndex));
+            plan.setTeamName(rs.getString("team_name"));
+            plan.setPlanName(rs.getString("plan_name"));
+            return plan;
+        };
+
+        return jdbcTemplate.query(sql, param, mapper);
+    }
 }
