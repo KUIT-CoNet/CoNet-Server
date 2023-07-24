@@ -74,8 +74,11 @@ public class PlanService {
         // 날짜 하루씩 더해가면서 7일에 대한 구성원의 모든 가능한 시간 저장하는 것 반복
         for(int j=0; j<7; j++) {
             int[] membersCount = new int[24];
-            String[] membersName = new String[24];
-            Arrays.fill(membersName, "");
+
+            ArrayList<ArrayList<String>> membersName  = new ArrayList<>(24);
+            for(int i=0; i<24; i++) {
+                membersName.add(new ArrayList<String>());
+            }
 
             List<MemberPossibleTime> memberPossibleTimes = planDao.getMemberTime(planIdRequest.getPlanId(), date);
             // [{userId, possibleTime}, {1, "1, 2, 3, 4"}, {2, "3, 4, 5, 6"}, ... , {4, "5, 6, 7, 8"}]
@@ -90,18 +93,11 @@ public class PlanService {
                     if(0 <= intTime && intTime <= 23) {
                         membersCount[intTime]++;
                         // [1, 0, 0, ... 0, 0]  각 시간에 가능한 구성원의 수
-                        membersName[intTime] += userDao.getUserName(memberPossibleTime.getUserId()) + ", ";
+
+                        membersName.get(intTime).add(userDao.getUserName(memberPossibleTime.getUserId()));
                         // [("정소민, "), (""), (""), ... , (""), ("")]  각 시간에 가능한 구성원
                         // [("정소민, 정경은, "), ("정소민, "), ("정소민, 이안진, "), ... , (""), ("정경은, 이안진, ")]  이렇게 채워질 것
                     }
-                }
-
-            }
-
-            for(int i=0; i<membersName.length; i++) {
-                if(!(membersName[i] == "")) {
-                    membersName[i] = membersName[i].trim().substring(0, membersName[i].length()-2);
-                    // [("정소민, 정경은"), ("정소민"), ("정소민, 이안진"), ... , (""), ("정경은, 이안진")]
                 }
             }
 
@@ -128,7 +124,7 @@ public class PlanService {
                     continue;
                 }
 
-                MemberResponse memberResponse = new MemberResponse(i, membersCount[i], membersName[i]);
+                MemberResponse memberResponse = new MemberResponse(i, membersCount[i], membersName.get(i));
                 memberResponses.add(memberResponse);
             }
 
