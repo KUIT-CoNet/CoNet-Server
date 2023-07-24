@@ -204,10 +204,25 @@ public class TeamDao {
         return jdbcTemplate.queryForObject(returnSql, returnParam, returnMapper);
     }
 
+    public void updateName(Long teamId, String teamName) {
+        String sql = "update team set team_name=:team_name where team_id=:team_id and status=1";
+        Map<String, Object> param = Map.of("team_name", teamName,
+                "team_id", teamId);
+
+        jdbcTemplate.update(sql, param);
+    }
+
     public Long getTeamMemberCount(Long teamId) {
         String sql = "select count(*) from team_member where team_id=:team_id and status=1";
         Map<String, Object> param = Map.of("team_id", teamId);
 
         return jdbcTemplate.queryForObject(sql, param, Long.class);
+    }
+
+    public String getTeamImgUrl(Long teamId) {
+        String sql = "select team_image_url from team where team_id=:team_id and status=1";
+        Map<String, Object> param = Map.of("team_id", teamId);
+
+        return jdbcTemplate.queryForObject(sql, param, String.class);
     }
 }

@@ -4,6 +4,8 @@ import com.kuit.conet.common.response.BaseResponse;
 import com.kuit.conet.dto.request.team.CreateTeamRequest;
 import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
 import com.kuit.conet.dto.request.team.TeamIdRequest;
+import com.kuit.conet.dto.request.team.UpdateTeamRequest;
+import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.team.CreateTeamResponse;
 import com.kuit.conet.dto.response.team.GetTeamResponse;
 import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
@@ -57,5 +59,11 @@ public class TeamController {
     public BaseResponse<String> deleteTeam(@RequestBody @Valid TeamIdRequest request) {
         String response = teamService.deleteTeam(request);
         return new BaseResponse<String>(response);
+    }
+
+    @PostMapping("/update")
+    public BaseResponse<StorageImgResponse> updateTeam(@RequestPart(value = "request") @Valid UpdateTeamRequest updateTeamRequest, @RequestParam(value = "file") MultipartFile file) {
+        StorageImgResponse response = teamService.updateTeam(updateTeamRequest, file);
+        return new BaseResponse<StorageImgResponse>(response);
     }
 }
