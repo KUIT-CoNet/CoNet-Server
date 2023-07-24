@@ -1,6 +1,6 @@
 package com.kuit.conet.dto.response.user;
 
-import com.kuit.conet.domain.Platform;
+import com.kuit.conet.domain.auth.Platform;
 import lombok.*;
 
 @Getter

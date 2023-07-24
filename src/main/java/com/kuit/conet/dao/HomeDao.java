@@ -1,7 +1,7 @@
 package com.kuit.conet.dao;
 
-import com.kuit.conet.domain.FixedPlan;
-import com.kuit.conet.domain.WaitingPlan;
+import com.kuit.conet.domain.plan.FixedPlan;
+import com.kuit.conet.domain.plan.WaitingPlan;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;

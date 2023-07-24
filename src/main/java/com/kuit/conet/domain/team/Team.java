@@ -1,4 +1,4 @@
-package com.kuit.conet.domain;
+package com.kuit.conet.domain.team;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

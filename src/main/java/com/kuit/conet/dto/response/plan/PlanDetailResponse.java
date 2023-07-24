@@ -1,6 +1,6 @@
 package com.kuit.conet.dto.response.plan;
 
-import com.kuit.conet.domain.plan.WaitingPlan;
+import com.kuit.conet.domain.plan.PlanDetail;
 import lombok.*;
 
 import java.util.List;
@@ -10,7 +10,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class WaitingPlanResponse {
-    private int count;
-    private List<WaitingPlan> plans;
+public class PlanDetailResponse {
+    private List<PlanDetail> details;
 }

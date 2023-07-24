@@ -1,4 +1,4 @@
-package com.kuit.conet.domain;
+package com.kuit.conet.domain.storage;
 
 import com.kuit.conet.common.exception.StorageException;
 import lombok.AllArgsConstructor;

@@ -4,7 +4,7 @@ import com.kuit.conet.common.exception.TeamException;
 import com.kuit.conet.dao.PlanDao;
 import com.kuit.conet.dao.TeamDao;
 import com.kuit.conet.dao.UserDao;
-import com.kuit.conet.domain.*;
+import com.kuit.conet.domain.plan.*;
 import com.kuit.conet.dto.request.plan.*;
 import com.kuit.conet.dto.response.plan.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -193,5 +193,17 @@ public class PlanService {
         List<WaitingPlan> plans = planDao.getWaitingPlanInTeam(planRequest.getTeamId());
 
         return new WaitingPlanResponse(plans.size(), plans);
+    }
+
+    public PlanDetailResponse getPlanDetail(PlanIdRequest planRequest) {
+        Long planId = planRequest.getPlanId();
+
+        // 히스토리 등록 여부
+        Boolean isRegisteredToHistory = planDao.isRegisteredToHistory(planId);
+
+        // 약속 상세 정보
+        List<PlanDetail> details = planDao.getPlanDetail(planRequest.getPlanId(), isRegisteredToHistory);
+
+        return new PlanDetailResponse(details);
     }
 }

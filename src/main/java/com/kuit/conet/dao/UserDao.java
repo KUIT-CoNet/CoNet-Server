@@ -1,7 +1,7 @@
 package com.kuit.conet.dao;
 
-import com.kuit.conet.domain.Platform;
-import com.kuit.conet.domain.User;
+import com.kuit.conet.domain.auth.Platform;
+import com.kuit.conet.domain.user.User;
 import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.user.UserResponse;
 import lombok.extern.slf4j.Slf4j;
