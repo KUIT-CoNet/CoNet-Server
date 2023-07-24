@@ -192,4 +192,10 @@ public class PlanService {
 
         return new DayPlanResponse(plans.size(), plans);
     }
+
+    public WaitingPlanResponse getWaitingPlan(TeamWaitingPlanRequest planRequest) {
+        List<WaitingPlan> plans = planDao.getWaitingPlanInTeam(planRequest.getTeamId());
+
+        return new WaitingPlanResponse(plans.size(), plans);
+    }
 }

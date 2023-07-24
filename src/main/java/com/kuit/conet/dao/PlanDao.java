@@ -190,4 +190,28 @@ public class PlanDao {
 
         return jdbcTemplate.query(sql, param, mapper);
     }
+
+    public List<WaitingPlan> getWaitingPlanInTeam(Long teamId) {
+        // 해당 모임의 p.team_id = ?
+        // 모든 대기 중인 약속 중에서 p.status=1
+        // 시작 날짜가 오늘 이후 plan_start_period >= current_date();
+
+        String sql = "select p.plan_start_period as start_date, p.plan_end_period as end_date, p.plan_name as plan_name, t.team_name as team_name\n" +
+                "from plan p, team t\n" +
+                "where p.team_id = t.team_id\n" +
+                "and p.team_id=:team_id and p.status=1\n" + // plan status 대기 : 1
+                "  and t.status=1 and p.plan_start_period >= current_date()";
+        Map<String, Object> param = Map.of("team_id", teamId);
+
+        RowMapper<WaitingPlan> mapper = (rs, rowNum) -> {
+            WaitingPlan plan = new WaitingPlan();
+            plan.setStartDate(rs.getString("start_date"));
+            plan.setEndDate(rs.getString("end_date"));
+            plan.setPlanName(rs.getString("plan_name"));
+            plan.setTeamName(rs.getString("team_name"));
+            return plan;
+        };
+
+        return jdbcTemplate.query(sql, param, mapper);
+    }
 }

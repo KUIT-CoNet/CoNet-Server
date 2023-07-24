@@ -70,4 +70,15 @@ public class PlanController {
         DayPlanResponse response = planService.getPlanOnDay(planRequest);
         return new BaseResponse<>(response);
     }
+
+    /**
+     * 모임 내 약속 - 날짜(yyyy-MM-dd) / 시각(hh-mm) / 약속 명
+     * - '나'의 직접적인 참여 여부와 무관
+     * - 모임 명은 필요 없지만 하나의 dto 를 공유하기 위하여 반환함
+     * */
+    @GetMapping("/waiting")
+    public BaseResponse<WaitingPlanResponse> getWaitingPlan(@RequestBody @Valid TeamWaitingPlanRequest planRequest) {
+        WaitingPlanResponse response = planService.getWaitingPlan(planRequest);
+        return new BaseResponse<>(response);
+    }
 }
