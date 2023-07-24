@@ -198,4 +198,16 @@ public class PlanService {
 
         return new WaitingPlanResponse(plans.size(), plans);
     }
+
+    public PlanDetailResponse getPlanDetail(PlanIdRequest planRequest) {
+        Long planId = planRequest.getPlanId();
+
+        // 히스토리 등록 여부
+        Boolean isRegisteredToHistory = planDao.isRegisteredToHistory(planId);
+
+        // 약속 상세 정보
+        List<PlanDetail> details = planDao.getPlanDetail(planRequest.getPlanId(), isRegisteredToHistory);
+
+        return new PlanDetailResponse(details);
+    }
 }

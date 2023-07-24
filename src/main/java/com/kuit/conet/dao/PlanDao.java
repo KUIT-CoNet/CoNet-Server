@@ -214,4 +214,73 @@ public class PlanDao {
 
         return jdbcTemplate.query(sql, param, mapper);
     }
+
+    public List<PlanDetail> getPlanDetail(Long planId, Boolean isRegisteredToHistory) {
+        String sql = null;
+        //TODO: sql 채우기
+        if (!isRegisteredToHistory) {
+            sql = "select plan_id, plan_name, fixed_date as date, fixed_time as time " +
+                    "from plan " +
+                    "where plan_id=:plan_id and status=2 and history=0";
+        } else {
+            sql = "select p.plan_id as plan_id, p.plan_name as plan_name, p.fixed_date as date, p.fixed_time as time, h.history_image_url as history_image_url, h.description as history_description " +
+                    "from plan p, history h " +
+                    "where p.plan_id=h.plan_id " +
+                    "  and p.plan_id=:plan_id and p.status=2 and p.history=1;";
+        }
+
+        Map<String, Object> param = Map.of("plan_id", planId);
+
+        RowMapper<PlanDetail> mapper = (rs, rowNum) -> {
+            PlanDetail detail = new PlanDetail();
+            detail.setPlanId(rs.getLong("plan_id"));
+            detail.setPlanName(rs.getString("plan_name"));
+            detail.setDate(rs.getString("date"));
+            String fixedTime = rs.getString("time");
+            int timeEndIndex = fixedTime.length()-3;
+            detail.setTime(fixedTime.substring(0, timeEndIndex));
+            if (isRegisteredToHistory) {
+                detail.setIsRegisteredToHistory(true);
+                detail.setHistoryImgUrl(rs.getString("history_image_url"));
+                detail.setHistoryDescription(rs.getString("history_description"));
+            } else {
+                detail.setIsRegisteredToHistory(false);
+                detail.setHistoryImgUrl(null);
+                detail.setHistoryDescription(null);
+            }
+            return detail;
+        };
+
+        List<PlanDetail> details = jdbcTemplate.query(sql, param, mapper);
+
+        for(PlanDetail detail: details) {
+            Long eachPlanId = detail.getPlanId();
+            List<String> members = getMemberInPlan(eachPlanId);
+            detail.setMembers(members);
+        }
+
+        return details;
+    }
+
+    public List<String> getMemberInPlan(Long planId) {
+        String sql = "select u.name as user_name " +
+                        "from plan_member pm, user u " +
+                        "where pm.user_id=u.user_id and pm.status=1 " +
+                        "  and u.status=1 and pm.plan_id=:plan_id";
+        Map<String, Object> param = Map.of("plan_id", planId);
+
+        RowMapper<String> mapper = new SingleColumnRowMapper<>(String.class);
+
+        return jdbcTemplate.query(sql, param, mapper);
+    }
+
+
+    public Boolean isRegisteredToHistory(Long planId) {
+        String sql = "select exists(select * from plan where plan_id=:plan_id and status=2 and history=1) as isRegisteredToHistory";
+        Map<String, Object> param = Map.of("plan_id", planId);
+
+        RowMapper<Boolean> mapper = new SingleColumnRowMapper<>(Boolean.class);
+
+        return jdbcTemplate.queryForObject(sql, param, mapper);
+    }
 }
