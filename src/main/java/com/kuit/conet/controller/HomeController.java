@@ -1,10 +1,10 @@
 package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
-import com.kuit.conet.dto.request.home.HomePlanRequest;
-import com.kuit.conet.dto.response.home.HomeDayPlanResponse;
-import com.kuit.conet.dto.response.home.HomeMonthPlanResponse;
-import com.kuit.conet.dto.response.home.HomeWaitingPlanResponse;
+import com.kuit.conet.dto.request.plan.HomePlanRequest;
+import com.kuit.conet.dto.response.plan.DayPlanResponse;
+import com.kuit.conet.dto.response.plan.MonthPlanResponse;
+import com.kuit.conet.dto.response.plan.WaitingPlanResponse;
 import com.kuit.conet.service.HomeService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -26,8 +26,8 @@ public class HomeController {
      * 홈 - 날짜 (dd)
      * */
     @GetMapping("/month")
-    public BaseResponse<HomeMonthPlanResponse> getPlanOnMonth(HttpServletRequest httpRequest, @RequestBody @Valid HomePlanRequest planRequest) {
-        HomeMonthPlanResponse response = homeService.getPlanOnMonth(httpRequest, planRequest);
+    public BaseResponse<MonthPlanResponse> getPlanInMonth(HttpServletRequest httpRequest, @RequestBody @Valid HomePlanRequest planRequest) {
+        MonthPlanResponse response = homeService.getPlanInMonth(httpRequest, planRequest);
         return new BaseResponse<>(response);
     }
 
@@ -36,8 +36,8 @@ public class HomeController {
      * - '나'의 직접적인 참여 여부와 무관
      * */
     @GetMapping("/day")
-    public BaseResponse<HomeDayPlanResponse> getPlanOnDay(HttpServletRequest httpRequest, @RequestBody @Valid HomePlanRequest planRequest) {
-        HomeDayPlanResponse response = homeService.getPlanOnDay(httpRequest, planRequest);
+    public BaseResponse<DayPlanResponse> getPlanOnDay(HttpServletRequest httpRequest, @RequestBody @Valid HomePlanRequest planRequest) {
+        DayPlanResponse response = homeService.getPlanOnDay(httpRequest, planRequest);
         return new BaseResponse<>(response);
     }
 
@@ -46,8 +46,8 @@ public class HomeController {
      * - '나'의 직접적인 참여 여부와 무관
      * */
     @GetMapping("/waiting")
-    public BaseResponse<HomeWaitingPlanResponse> getWaitingPlan(HttpServletRequest httpRequest) {
-        HomeWaitingPlanResponse response = homeService.getWaitingPlanOnDay(httpRequest);
+    public BaseResponse<WaitingPlanResponse> getWaitingPlan(HttpServletRequest httpRequest) {
+        WaitingPlanResponse response = homeService.getWaitingPlan(httpRequest);
         return new BaseResponse<>(response);
     }
 }

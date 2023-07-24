@@ -1,13 +1,11 @@
 package com.kuit.conet.dao;
 
-import com.kuit.conet.domain.MemberPossibleTime;
-import com.kuit.conet.domain.Plan;
-import com.kuit.conet.domain.PlanMemberTime;
-import com.kuit.conet.dto.request.plan.FixPlanRequest;
+import com.kuit.conet.domain.*;
 import com.kuit.conet.dto.response.plan.UserPossibleTimeResponse;
 import com.kuit.conet.dto.response.plan.UserTimeResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -152,5 +150,21 @@ public class PlanDao {
         Map<String, Object> param = Map.of("plan_id", planId);
 
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
+    }
+
+    public List<String> getPlanInMonth(Long teamId, String searchDate) {
+        // 해당 년, 월에 해당 모임의 모든 약속 -> fixed_date 만 distinct 로 검색
+        // team_member(userId, status) -> plan(teamId, fixed_date, status)
+
+        String sql = "select distinct(fixed_date) " +
+                "from plan " +
+                "where team_id=:team_id and status=2 " +
+                "and date_format(fixed_date,'%Y-%m')=:search_date"; // plan status 확정 : 2
+        Map<String, Object> param = Map.of("team_id", teamId,
+                "search_date", searchDate);
+
+        RowMapper<String> mapper = new SingleColumnRowMapper<>(String.class);
+
+        return jdbcTemplate.query(sql, param, mapper);
     }
 }

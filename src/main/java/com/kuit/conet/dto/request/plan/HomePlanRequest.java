@@ -1,4 +1,4 @@
-package com.kuit.conet.dto.request.home;
+package com.kuit.conet.dto.request.plan;
 
 import lombok.*;
 
@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class HomePlanRequest {
-    String searchDate;
+    private String searchDate;
     // 특정 달의 조회: "yyyy-MM"
     // 특정 날짜 조회: "yyyy-MM-dd"
 }
