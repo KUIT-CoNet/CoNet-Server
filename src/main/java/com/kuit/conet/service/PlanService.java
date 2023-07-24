@@ -4,13 +4,8 @@ import com.kuit.conet.common.exception.TeamException;
 import com.kuit.conet.dao.PlanDao;
 import com.kuit.conet.dao.TeamDao;
 import com.kuit.conet.dao.UserDao;
-import com.kuit.conet.domain.MemberPossibleTime;
-import com.kuit.conet.domain.Plan;
-import com.kuit.conet.domain.PlanMemberTime;
-import com.kuit.conet.dto.request.plan.CreatePlanRequest;
-import com.kuit.conet.dto.request.plan.FixPlanRequest;
-import com.kuit.conet.dto.request.plan.PossibleTimeRequest;
-import com.kuit.conet.dto.request.plan.PlanIdRequest;
+import com.kuit.conet.domain.*;
+import com.kuit.conet.dto.request.plan.*;
 import com.kuit.conet.dto.response.plan.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -180,4 +175,15 @@ public class PlanService {
         return "약속 확정에 성공하였습니다.";
     }
 
+    public MonthPlanResponse getPlanInMonth(TeamFixedPlanRequest planRequest) {
+        List<Integer> planDates = new ArrayList<>();
+
+        List<String> dateList = planDao.getPlanInMonth(planRequest.getTeamId(), planRequest.getSearchDate()); // yyyy-MM
+        for(String tempDate : dateList) {
+            Integer date = Integer.parseInt(tempDate.split("-")[2]);
+            planDates.add(date);
+        }
+
+        return new MonthPlanResponse(planDates.size(), planDates);
+    }
 }

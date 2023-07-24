@@ -1,10 +1,8 @@
 package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
-import com.kuit.conet.dto.request.plan.CreatePlanRequest;
-import com.kuit.conet.dto.request.plan.FixPlanRequest;
-import com.kuit.conet.dto.request.plan.PossibleTimeRequest;
-import com.kuit.conet.dto.request.plan.PlanIdRequest;
+import com.kuit.conet.dto.request.plan.*;
+import com.kuit.conet.dto.response.plan.MonthPlanResponse;
 import com.kuit.conet.dto.response.plan.CreatePlanResponse;
 import com.kuit.conet.dto.response.plan.MemberPossibleTimeResponse;
 import com.kuit.conet.dto.response.plan.UserTimeResponse;
@@ -49,6 +47,15 @@ public class PlanController {
     @PostMapping("/fix")
     public BaseResponse<String> fixPlan(@RequestBody @Valid FixPlanRequest fixPlanRequest) {
         String response = planService.fixPlan(fixPlanRequest);
+        return new BaseResponse<>(response);
+    }
+
+    /**
+     * 모임 내 약속 - 날짜 (dd)
+     * */
+    @GetMapping("/month")
+    public BaseResponse<MonthPlanResponse> getPlanInMonth(@RequestBody @Valid TeamFixedPlanRequest planRequest) {
+        MonthPlanResponse response = planService.getPlanInMonth(planRequest);
         return new BaseResponse<>(response);
     }
 }
