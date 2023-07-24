@@ -1,4 +1,4 @@
-package com.kuit.conet.domain;
+package com.kuit.conet.domain.auth;
 
 import java.util.Arrays;
 import java.util.Objects;

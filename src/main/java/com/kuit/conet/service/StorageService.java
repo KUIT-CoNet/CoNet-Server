@@ -7,7 +7,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.kuit.conet.common.exception.BaseException;
 import com.kuit.conet.common.exception.StorageException;
-import com.kuit.conet.domain.StorageDomain;
+import com.kuit.conet.domain.storage.StorageDomain;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

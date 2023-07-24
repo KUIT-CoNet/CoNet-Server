@@ -4,7 +4,7 @@ import com.kuit.conet.common.exception.TeamException;
 import com.kuit.conet.dao.PlanDao;
 import com.kuit.conet.dao.TeamDao;
 import com.kuit.conet.dao.UserDao;
-import com.kuit.conet.domain.*;
+import com.kuit.conet.domain.plan.*;
 import com.kuit.conet.dto.request.plan.*;
 import com.kuit.conet.dto.response.plan.*;
 import jakarta.servlet.http.HttpServletRequest;

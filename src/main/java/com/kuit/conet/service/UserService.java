@@ -1,7 +1,7 @@
 package com.kuit.conet.service;
 
 import com.kuit.conet.common.exception.UserException;
-import com.kuit.conet.domain.StorageDomain;
+import com.kuit.conet.domain.storage.StorageDomain;
 import com.kuit.conet.dto.request.user.NameRequest;
 import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.user.UserResponse;

@@ -1,6 +1,6 @@
 package com.kuit.conet.dto.response.plan;
 
-import com.kuit.conet.domain.WaitingPlan;
+import com.kuit.conet.domain.plan.WaitingPlan;
 import lombok.*;
 
 import java.util.List;

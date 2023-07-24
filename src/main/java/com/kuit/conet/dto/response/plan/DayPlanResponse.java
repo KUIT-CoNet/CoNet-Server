@@ -1,6 +1,6 @@
 package com.kuit.conet.dto.response.plan;
 
-import com.kuit.conet.domain.FixedPlan;
+import com.kuit.conet.domain.plan.FixedPlan;
 import lombok.*;
 
 import java.util.List;

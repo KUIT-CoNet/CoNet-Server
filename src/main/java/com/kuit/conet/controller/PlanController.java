@@ -1,8 +1,6 @@
 package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
-import com.kuit.conet.domain.FixedPlan;
-import com.kuit.conet.domain.WaitingPlan;
 import com.kuit.conet.dto.request.plan.*;
 import com.kuit.conet.dto.response.plan.*;
 import com.kuit.conet.service.PlanService;
@@ -11,8 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController

@@ -1,8 +1,8 @@
 package com.kuit.conet.service;
 
 import com.kuit.conet.dao.HomeDao;
-import com.kuit.conet.domain.FixedPlan;
-import com.kuit.conet.domain.WaitingPlan;
+import com.kuit.conet.domain.plan.FixedPlan;
+import com.kuit.conet.domain.plan.WaitingPlan;
 import com.kuit.conet.dto.request.plan.HomePlanRequest;
 import com.kuit.conet.dto.response.plan.DayPlanResponse;
 import com.kuit.conet.dto.response.plan.MonthPlanResponse;

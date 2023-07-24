@@ -1,6 +1,6 @@
 package com.kuit.conet.dao;
 
-import com.kuit.conet.domain.*;
+import com.kuit.conet.domain.plan.*;
 import com.kuit.conet.dto.response.plan.UserPossibleTimeResponse;
 import com.kuit.conet.dto.response.plan.UserTimeResponse;
 import lombok.extern.slf4j.Slf4j;
