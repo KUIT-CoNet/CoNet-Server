@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,5 +14,5 @@ import lombok.ToString;
 public class MemberResponse {
     private int time;
     private int section;
-    private String memberName;
+    private List<String> memberName;
 }
