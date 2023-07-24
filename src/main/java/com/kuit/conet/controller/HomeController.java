@@ -1,7 +1,7 @@
 package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
-import com.kuit.conet.dto.request.plan.PlanRequest;
+import com.kuit.conet.dto.request.plan.HomePlanRequest;
 import com.kuit.conet.dto.response.plan.DayPlanResponse;
 import com.kuit.conet.dto.response.plan.MonthPlanResponse;
 import com.kuit.conet.dto.response.plan.WaitingPlanResponse;
@@ -26,7 +26,7 @@ public class HomeController {
      * 홈 - 날짜 (dd)
      * */
     @GetMapping("/month")
-    public BaseResponse<MonthPlanResponse> getPlanInMonth(HttpServletRequest httpRequest, @RequestBody @Valid PlanRequest planRequest) {
+    public BaseResponse<MonthPlanResponse> getPlanInMonth(HttpServletRequest httpRequest, @RequestBody @Valid HomePlanRequest planRequest) {
         MonthPlanResponse response = homeService.getPlanInMonth(httpRequest, planRequest);
         return new BaseResponse<>(response);
     }
@@ -36,7 +36,7 @@ public class HomeController {
      * - '나'의 직접적인 참여 여부와 무관
      * */
     @GetMapping("/day")
-    public BaseResponse<DayPlanResponse> getPlanOnDay(HttpServletRequest httpRequest, @RequestBody @Valid PlanRequest planRequest) {
+    public BaseResponse<DayPlanResponse> getPlanOnDay(HttpServletRequest httpRequest, @RequestBody @Valid HomePlanRequest planRequest) {
         DayPlanResponse response = homeService.getPlanOnDay(httpRequest, planRequest);
         return new BaseResponse<>(response);
     }

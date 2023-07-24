@@ -3,7 +3,7 @@ package com.kuit.conet.service;
 import com.kuit.conet.dao.HomeDao;
 import com.kuit.conet.domain.FixedPlan;
 import com.kuit.conet.domain.WaitingPlan;
-import com.kuit.conet.dto.request.plan.PlanRequest;
+import com.kuit.conet.dto.request.plan.HomePlanRequest;
 import com.kuit.conet.dto.response.plan.DayPlanResponse;
 import com.kuit.conet.dto.response.plan.MonthPlanResponse;
 import com.kuit.conet.dto.response.plan.WaitingPlanResponse;
@@ -21,7 +21,7 @@ import java.util.List;
 public class HomeService {
     private final HomeDao homeDao;
 
-    public MonthPlanResponse getPlanInMonth(HttpServletRequest httpRequest, PlanRequest planRequest) {
+    public MonthPlanResponse getPlanInMonth(HttpServletRequest httpRequest, HomePlanRequest planRequest) {
         List<Integer> planDates = new ArrayList<>();
 
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
@@ -36,7 +36,7 @@ public class HomeService {
         return new MonthPlanResponse(planDates.size(), planDates);
     }
 
-    public DayPlanResponse getPlanOnDay(HttpServletRequest httpRequest, PlanRequest planRequest) {
+    public DayPlanResponse getPlanOnDay(HttpServletRequest httpRequest, HomePlanRequest planRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
         String searchDate = planRequest.getSearchDate(); // yyyy-MM-dd
 
