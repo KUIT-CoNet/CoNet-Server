@@ -45,10 +45,10 @@ public class HomeService {
         return new DayPlanResponse(plans.size(), plans);
     }
 
-    public WaitingPlanResponse getWaitingPlanOnDay(HttpServletRequest httpRequest) {
+    public WaitingPlanResponse getWaitingPlan(HttpServletRequest httpRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
-        List<WaitingPlan> plans = homeDao.getWaitingPlanOnDay(userId);
+        List<WaitingPlan> plans = homeDao.getWaitingPlan(userId);
 
         return new WaitingPlanResponse(plans.size(), plans);
     }

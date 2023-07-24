@@ -47,7 +47,7 @@ public class HomeController {
      * */
     @GetMapping("/waiting")
     public BaseResponse<WaitingPlanResponse> getWaitingPlan(HttpServletRequest httpRequest) {
-        WaitingPlanResponse response = homeService.getWaitingPlanOnDay(httpRequest);
+        WaitingPlanResponse response = homeService.getWaitingPlan(httpRequest);
         return new BaseResponse<>(response);
     }
 }

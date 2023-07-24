@@ -59,7 +59,7 @@ public class HomeDao {
         return jdbcTemplate.query(sql, param, mapper);
     }
 
-    public List<WaitingPlan> getWaitingPlanOnDay(Long userId) {
+    public List<WaitingPlan> getWaitingPlan(Long userId) {
 //        유저가 속한 모든 모임의 tm.status=1 & tm.userId=:user_id & tm.team_id = p.team_id
 //        모든 대기 중인 약속 중에서 p.status=1
 //        시작 날짜가 오늘 이후 plan_start_period >= current_date();
