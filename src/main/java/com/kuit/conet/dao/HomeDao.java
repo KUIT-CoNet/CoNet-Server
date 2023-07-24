@@ -19,7 +19,7 @@ public class HomeDao {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public List<String> getPlanOnMonth(Long userId, String searchDate) {
+    public List<String> getPlanInMonth(Long userId, String searchDate) {
         // 해당 년, 월에 유저가 포함된 모든 모임의 모든 약속 -> fixed_date 만 distinct 로 검색
         // team_member(userId, status) -> plan(teamId, fixed_date, status)
 

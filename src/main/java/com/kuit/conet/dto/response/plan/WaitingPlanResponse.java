@@ -1,4 +1,4 @@
-package com.kuit.conet.dto.response.home;
+package com.kuit.conet.dto.response.plan;
 
 import com.kuit.conet.domain.WaitingPlan;
 import lombok.*;
@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class HomeWaitingPlanResponse {
+public class WaitingPlanResponse {
     private int count;
     private List<WaitingPlan> plans;
 }

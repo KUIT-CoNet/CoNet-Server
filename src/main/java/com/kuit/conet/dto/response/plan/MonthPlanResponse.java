@@ -1,4 +1,4 @@
-package com.kuit.conet.dto.response.home;
+package com.kuit.conet.dto.response.plan;
 
 import lombok.*;
 
@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class HomeMonthPlanResponse {
+public class MonthPlanResponse {
     int count;
     List<Integer> dates;
 }
