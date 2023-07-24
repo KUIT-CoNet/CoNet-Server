@@ -9,6 +9,7 @@ import com.kuit.conet.domain.TeamMember;
 import com.kuit.conet.dto.request.team.CreateTeamRequest;
 import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
 import com.kuit.conet.dto.request.team.TeamIdRequest;
+import com.kuit.conet.dto.request.team.UpdateTeamRequest;
 import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.team.CreateTeamResponse;
 import com.kuit.conet.dto.response.team.GetTeamResponse;
@@ -35,6 +36,8 @@ public class TeamService {
     private final TeamDao teamDao;
     private final UserDao userDao;
     private final JwtParser jwtParser;
+
+    private final String URL_SPLITER = "/";
 
     public CreateTeamResponse createTeam(CreateTeamRequest createTeamRequest, HttpServletRequest httpRequest, MultipartFile file) {
         // 초대 코드 생성
@@ -182,5 +185,40 @@ public class TeamService {
         }
 
         return "모임 삭제에 성공하였습니다.";
+    }
+
+    public StorageImgResponse updateTeam(UpdateTeamRequest updateTeamRequest, MultipartFile file) {
+        String fileName = storageService.getFileName(file, StorageDomain.TEAM, updateTeamRequest.getTeamId());
+
+        if(!teamDao.isExistTeam(updateTeamRequest.getTeamId())) {
+            return null;
+        }
+
+        String imgUrl = null;
+
+        imgUrl = teamDao.getTeamImgUrl(updateTeamRequest.getTeamId());
+        if(!(imgUrl == null)) {
+            String deleteFileName = imgUrl.split(URL_SPLITER)[3];
+            storageService.deleteImage(deleteFileName);
+        }
+
+        log.info("imgUrl: {}", imgUrl);
+
+        // 새로운 이미지 S3에 업로드
+        imgUrl = storageService.uploadToS3(file, fileName);
+
+        log.info("imgUrl: {}", imgUrl);
+
+        // image update
+        StorageImgResponse response = teamDao.updateImg(updateTeamRequest.getTeamId(), imgUrl);
+
+        log.info("imgUrl: {}", imgUrl);
+
+        // name update
+        teamDao.updateName(updateTeamRequest.getTeamId(), updateTeamRequest.getTeamName());
+
+        log.info("imgUrl: {}", imgUrl);
+
+        return response;
     }
 }
