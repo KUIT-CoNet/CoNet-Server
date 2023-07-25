@@ -205,8 +205,10 @@ public class PlanDao {
 
         RowMapper<WaitingPlan> mapper = (rs, rowNum) -> {
             WaitingPlan plan = new WaitingPlan();
-            plan.setStartDate(rs.getString("start_date"));
-            plan.setEndDate(rs.getString("end_date"));
+            String startDate = rs.getString("start_date").replace("-", ". ");
+            String endDate = rs.getString("end_date").replace("-", ". ");
+            plan.setStartDate(startDate);
+            plan.setEndDate(endDate);
             plan.setPlanName(rs.getString("plan_name"));
             plan.setTeamName(rs.getString("team_name"));
             return plan;

@@ -60,9 +60,9 @@ public class HomeDao {
     }
 
     public List<WaitingPlan> getWaitingPlan(Long userId) {
-//        유저가 속한 모든 모임의 tm.status=1 & tm.userId=:user_id & tm.team_id = p.team_id
-//        모든 대기 중인 약속 중에서 p.status=1
-//        시작 날짜가 오늘 이후 plan_start_period >= current_date();
+        // 유저가 속한 모든 모임의 tm.status=1 & tm.userId=:user_id & tm.team_id = p.team_id
+        // 모든 대기 중인 약속 중에서 p.status=1
+        // 시작 날짜가 오늘 이후 plan_start_period >= current_date();
 
         String sql = "select p.plan_start_period as start_date, p.plan_end_period as end_date, p.plan_name as plan_name, t.team_name as team_name\n" +
                 "from team_member tm, plan p, team t\n" +
@@ -73,8 +73,10 @@ public class HomeDao {
 
         RowMapper<WaitingPlan> mapper = (rs, rowNum) -> {
             WaitingPlan plan = new WaitingPlan();
-            plan.setStartDate(rs.getString("start_date"));
-            plan.setEndDate(rs.getString("end_date"));
+            String startDate = rs.getString("start_date").replace("-", ". ");
+            String endDate = rs.getString("end_date").replace("-", ". ");
+            plan.setStartDate(startDate);
+            plan.setEndDate(endDate);
             plan.setPlanName(rs.getString("plan_name"));
             plan.setTeamName(rs.getString("team_name"));
             return plan;
