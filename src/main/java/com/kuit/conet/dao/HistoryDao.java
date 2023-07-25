@@ -19,11 +19,17 @@ public class HistoryDao {
     public HistoryRegisterResponse registerToHistory(HistoryRegisterRequest registerRequest, String imgUrl) {
         Map<String, Object> planIdParam = Map.of("plan_id", registerRequest.getPlanId());
 
+        String description = registerRequest.getDescription();
+        if (description == null) description = "";
+
+        String historyImgUrl = imgUrl;
+        if (historyImgUrl == null) historyImgUrl="";
+
         // history 테이블에 추가
         String sql = "insert into history (plan_id, history_image_url, description) values (:plan_id, :history_image_url, :description)";
         Map<String, Object> param = Map.of("plan_id", registerRequest.getPlanId(),
-                "history_image_url", imgUrl,
-                "description", registerRequest.getDescription());
+                "history_image_url", historyImgUrl,
+                "description", description);
         jdbcTemplate.update(sql, param);
 
         // plan 테이블의 history 를 1로 업데이트

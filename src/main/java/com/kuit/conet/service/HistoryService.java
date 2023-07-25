@@ -39,11 +39,17 @@ public class HistoryService {
             throw new HistoryException(EXIST_HISTORY);
         }
 
-        // 저장할 파일명 만들기
-        // 받은 파일이 이미지 타입이 아닌 경우에 대한 유효성 검사 진행
-        String fileName = storageService.getFileName(historyImg, StorageDomain.HISTORY, planId);
-        // 새로운 이미지 S3에 업로드
-        String imgUrl = storageService.uploadToS3(historyImg, fileName);
+        // 이미지의 경우 파일이 들어오지 않았을 때, S3 관련 행위를 일체 하지 않아야 함
+        String imgUrl = null;
+        if (!historyImg.isEmpty()){
+            // 저장할 파일명 만들기
+            // 받은 파일이 이미지 타입이 아닌 경우에 대한 유효성 검사 진행
+            String fileName = storageService.getFileName(historyImg, StorageDomain.HISTORY, planId);
+            // 새로운 이미지 S3에 업로드
+            imgUrl = storageService.uploadToS3(historyImg, fileName);
+        } else {
+            log.warn("히스토리 이미지 파일이 입력되지 않았습니다.");
+        }
 
         // history 에 등록
         return historyDao.registerToHistory(registerRequest, imgUrl);

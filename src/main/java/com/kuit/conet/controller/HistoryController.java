@@ -13,12 +13,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("history")
+@RequestMapping("/history")
 public class HistoryController {
     private final HistoryService historyService;
 
     @PostMapping("/register")
-    public BaseResponse<HistoryRegisterResponse> registerToHistory(@RequestBody @Valid HistoryRegisterRequest registerRequest, @RequestParam(value = "file") MultipartFile historyImg) {
+    public BaseResponse<HistoryRegisterResponse> registerToHistory(@RequestPart(value = "registerRequest") @Valid HistoryRegisterRequest registerRequest, @RequestPart(value = "file", required = false)  MultipartFile historyImg) {
         HistoryRegisterResponse response = historyService.registerToHistory(registerRequest, historyImg);
         return new BaseResponse<>(response);
     }
