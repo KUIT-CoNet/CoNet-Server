@@ -242,8 +242,14 @@ public class PlanDao {
             detail.setTime(fixedTime.substring(0, timeEndIndex));
             if (isRegisteredToHistory) {
                 detail.setIsRegisteredToHistory(true);
-                detail.setHistoryImgUrl(rs.getString("history_image_url"));
-                detail.setHistoryDescription(rs.getString("history_description"));
+
+                String imgUrl = rs.getString("history_image_url");
+                if (imgUrl.equals("")) imgUrl = null;
+                detail.setHistoryImgUrl(imgUrl);
+
+                String description = rs.getString("history_description");
+                if (description.equals("")) description = null;
+                detail.setHistoryDescription(description);
             } else {
                 detail.setIsRegisteredToHistory(false);
                 detail.setHistoryImgUrl(null);
