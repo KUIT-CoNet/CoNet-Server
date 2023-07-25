@@ -217,7 +217,6 @@ public class PlanDao {
 
     public List<PlanDetail> getPlanDetail(Long planId, Boolean isRegisteredToHistory) {
         String sql = null;
-        //TODO: sql 채우기
         if (!isRegisteredToHistory) {
             sql = "select plan_id, plan_name, fixed_date as date, fixed_time as time " +
                     "from plan " +
@@ -274,13 +273,25 @@ public class PlanDao {
         return jdbcTemplate.query(sql, param, mapper);
     }
 
-
     public Boolean isRegisteredToHistory(Long planId) {
-        String sql = "select exists(select * from plan where plan_id=:plan_id and status=2 and history=1) as isRegisteredToHistory";
+        String sqlPlan = "select exists(select * from plan where plan_id=:plan_id and status=2 and history=1)";
+        String sqlHistory = "select exists(select * from history where plan_id=:plan_id)";
         Map<String, Object> param = Map.of("plan_id", planId);
 
-        RowMapper<Boolean> mapper = new SingleColumnRowMapper<>(Boolean.class);
+        Boolean isPlanHistoryTrue = jdbcTemplate.queryForObject(sqlPlan, param, Boolean.class);
+        Boolean historyHasPlanId = jdbcTemplate.queryForObject(sqlHistory, param, Boolean.class);
 
-        return jdbcTemplate.queryForObject(sql, param, mapper);
+        return (Boolean.TRUE.equals(isPlanHistoryTrue) | Boolean.TRUE.equals(historyHasPlanId));
+    }
+
+    public Boolean isPastPlan(Long planId) {
+        String sql = "select if( " +
+                "    (select exists(select * " +
+                "                    from plan " +
+                "                    where plan_id=:plan_id and (fixed_date < current_date() or (fixed_date = current_date() and fixed_time < current_time())))) = 1 " +
+                "           , 1, 0)";
+        Map<String, Object> param = Map.of("plan_id", planId);
+
+        return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 }

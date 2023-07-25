@@ -53,12 +53,18 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     EXPIRED_INVITE_CODE(5502, HttpStatus.BAD_REQUEST.value(),"초대 코드 유효 기간이 만료되었습니다."),
     EXIST_USER_IN_TEAM(5503, HttpStatus.BAD_REQUEST.value(),"모임에 이미 참여 중입니다."),
     NOT_FOUND_TEAM(5504, HttpStatus.NOT_FOUND.value(),"존재하지 않는 모임입니다."),
+    /**
+     * 6000: 약속(Plan) 정보 오류
+     * */
+    NOT_PAST_PLAN(6000, HttpStatus.BAD_REQUEST.value(), "지난 약속이 아니므로 히스토리에 등록할 수 없습니다."),
+    EXIST_HISTORY(6001, HttpStatus.BAD_REQUEST.value(), "이미 히스토리에 등록된 약속입니다."),
+    NOT_FIXED_PLAN(6002, HttpStatus.BAD_REQUEST.value(), "확정된 약속이 아니므로 히스토리에 등록할 수 없습니다."),
 
     /**
      * 9000: 기타 오류
      */
     INVALID_STORAGE_DOMAIN(9000, HttpStatus.BAD_REQUEST.value(), "업로드할 이미지의 도메인이 올바르지 않습니다."),
-    INVALID_FILE_EXTENSION(3002, HttpStatus.BAD_REQUEST.value(), "파일의 형식이 올바르지 않습니다.");
+    INVALID_FILE_EXTENSION(9002, HttpStatus.BAD_REQUEST.value(), "파일의 형식이 올바르지 않습니다.");
 
 
     private final int code;
