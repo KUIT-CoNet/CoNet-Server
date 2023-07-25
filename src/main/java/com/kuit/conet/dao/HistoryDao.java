@@ -16,13 +16,13 @@ public class HistoryDao {
 
     public HistoryDao(NamedParameterJdbcTemplate jdbcTemplate) { this.jdbcTemplate = jdbcTemplate; }
 
-    public HistoryRegisterResponse registerToHistory(HistoryRegisterRequest registerRequest) {
+    public HistoryRegisterResponse registerToHistory(HistoryRegisterRequest registerRequest, String imgUrl) {
         Map<String, Object> planIdParam = Map.of("plan_id", registerRequest.getPlanId());
 
         // history 테이블에 추가
         String sql = "insert into history (plan_id, history_image_url, description) values (:plan_id, :history_image_url, :description)";
         Map<String, Object> param = Map.of("plan_id", registerRequest.getPlanId(),
-                "history_image_url", registerRequest.getImgUrl(),
+                "history_image_url", imgUrl,
                 "description", registerRequest.getDescription());
         jdbcTemplate.update(sql, param);
 

@@ -7,10 +7,8 @@ import com.kuit.conet.service.HistoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -20,8 +18,8 @@ public class HistoryController {
     private final HistoryService historyService;
 
     @PostMapping("/register")
-    public BaseResponse<HistoryRegisterResponse> registerToHistory(@RequestBody @Valid HistoryRegisterRequest registerRequest) {
-        HistoryRegisterResponse response = historyService.registerToHistory(registerRequest);
+    public BaseResponse<HistoryRegisterResponse> registerToHistory(@RequestBody @Valid HistoryRegisterRequest registerRequest, @RequestParam(value = "file") MultipartFile historyImg) {
+        HistoryRegisterResponse response = historyService.registerToHistory(registerRequest, historyImg);
         return new BaseResponse<>(response);
     }
 }

@@ -15,7 +15,8 @@ import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.
 @AllArgsConstructor
 public enum StorageDomain {
     TEAM("team"),
-    USER("user");
+    USER("user"),
+    HISTORY("history");
 
     private String storage;
 

@@ -11,6 +11,5 @@ import lombok.ToString;
 @ToString
 public class HistoryRegisterRequest {
     private Long planId;
-    private String imgUrl;
     private String description;
 }
