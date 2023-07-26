@@ -211,4 +211,13 @@ public class PlanService {
         planDao.deletePlan(planRequest.getPlanId());
         return "약속 삭제에 성공하였습니다.";
     }
+
+    public String updateWaitingPlan(UpdateWaitingPlanRequest planRequest) {
+        if (!planDao.isWaitingPlan(planRequest.getPlanId())) {
+            return "대기 중인 약속이 아닙니다.";
+        }
+
+        planDao.updateWaitingPlan(planRequest.getPlanId(), planRequest.getPlanName());
+        return "대기 중인 약속 수정에 성공하였습니다.";
+    }
 }
