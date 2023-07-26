@@ -314,4 +314,12 @@ public class PlanDao {
 
         jdbcTemplate.update(returnSql, retusnParam);
     }
+
+    public void updateWaitingPlan(Long planId, String planName) {
+        String sql = "update plan set plan_name=:plan_name where plan_id=:plan_id and status=1";
+        Map<String, Object> param = Map.of("plan_id", planId,
+                "plan_name", planName);
+
+        jdbcTemplate.update(sql, param);
+    }
 }

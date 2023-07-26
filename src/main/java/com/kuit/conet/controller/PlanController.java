@@ -94,4 +94,10 @@ public class PlanController {
         String response = planService.deletePlan(planRequest);
         return new BaseResponse<>(response);
     }
+
+    @PostMapping("/update-waiting")
+    public BaseResponse<String> updateWaitingPlan(@RequestBody @Valid UpdateWaitingPlanRequest planRequest) {
+        String response = planService.updateWaitingPlan(planRequest);
+        return new BaseResponse<>(response);
+    }
 }
