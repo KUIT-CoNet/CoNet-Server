@@ -43,7 +43,7 @@ public class TeamController {
         return new BaseResponse<CreateTeamResponse>(response);
     }
 
-    @GetMapping("/get")
+    @GetMapping
     public BaseResponse<List<GetTeamResponse>> getTeam(HttpServletRequest httpRequest) {
         List<GetTeamResponse> responses = teamService.getTeam(httpRequest);
         return new BaseResponse<List<GetTeamResponse>>(responses);
