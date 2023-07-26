@@ -102,17 +102,20 @@ public class TeamDao {
         return team;
     }
 
-    public List<GetTeamResponse> getTeam(Long userId) {
-        String sql = "select t.team_name, t.team_image_url " +
+    public List<Team> getTeam(Long userId) {
+        String sql = "select t.team_id, t.team_name, t.team_image_url, t.created_at, t.is_new " +
                 "from team_member as tm join team as t on tm.team_id=t.team_id " +
                 "where tm.user_id=:user_id and tm.status=1";
         Map<String, Object> param = Map.of("user_id", userId);
 
-        RowMapper<GetTeamResponse> mapper = (rs, rowNum) -> {
-            GetTeamResponse response = new GetTeamResponse();
-            response.setTeam_name(rs.getString("team_name"));
-            response.setTeam_image_url(rs.getString("team_image_url"));
-            return response;
+        RowMapper<Team> mapper = (rs, rowNum) -> {
+            Team team = new Team();
+            team.setTeamId(rs.getLong("team_id"));
+            team.setTeamName(rs.getString("team_name"));
+            team.setTeamImgUrl(rs.getString("team_image_url"));
+            team.setCodeGeneratedTime(rs.getTimestamp("created_at"));
+            team.setIsNew(rs.getBoolean("is_new"));
+            return team;
         };
 
         return jdbcTemplate.query(sql, param, mapper);
@@ -224,5 +227,20 @@ public class TeamDao {
         Map<String, Object> param = Map.of("team_id", teamId);
 
         return jdbcTemplate.queryForObject(sql, param, String.class);
+    }
+
+    public Timestamp getCreatedTime(Long teamId) {
+        String sql = "select created_at from team where team_id=:team_id and status=1";
+        Map<String, Object> param = Map.of("team_id", teamId);
+
+        return jdbcTemplate.queryForObject(sql, param, Timestamp.class);
+    }
+
+    public void updatdIsNew(Integer isNew, Long teamId) {
+        String sql = "update team set is_new=:is_new where team_id=:team_id";
+        Map<String, Object> param = Map.of("is_new", isNew,
+                "team_id", teamId);
+
+        jdbcTemplate.update(sql, param);
     }
 }

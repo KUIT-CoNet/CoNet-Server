@@ -21,8 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -155,8 +159,41 @@ public class TeamService {
 
     public List<GetTeamResponse> getTeam(HttpServletRequest httpRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
-        List<GetTeamResponse> responses = teamDao.getTeam(userId);
-        return responses;
+
+        List<Team> teamResponses = teamDao.getTeam(userId);
+        List<GetTeamResponse> teamReturnResponses = new ArrayList<>();
+
+        // 모임의 created_at 시간 비교해서 3일 안지났으면 new_update 필드 1, 지났으면 0으로 update
+        for(Team list : teamResponses) {
+            Timestamp createdTime = teamDao.getCreatedTime(list.getTeamId());
+            log.info("created: {}", createdTime);
+            // Timestamp를 Instant로 변환
+            Instant instant = createdTime.toInstant();
+            // Instant를 LocalDateTime으로 변환 (기본 시스템의 ZoneId 사용)
+            LocalDateTime time = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+            LocalDateTime now = LocalDateTime.now();
+            log.info("현재: {}", createdTime);
+
+            if(now.minusDays(3).isAfter(time)) {
+                teamDao.updatdIsNew(0, list.getTeamId());
+            }
+
+            log.info("현재: {}", list.getIsNew());
+        }
+
+        teamResponses = teamDao.getTeam(userId);
+
+        // response 생성
+        for(Team list : teamResponses)
+            teamReturnResponses.add(new GetTeamResponse(list.getTeamId(), list.getTeamName(), list.getTeamImgUrl(), list.getIsNew()));
+
+        // 모임의 구성원 수 받고 response에 넣음
+        for(int i=0; i<teamResponses.size(); i++) {
+            teamReturnResponses.get(i).setTeamMemberCount(teamDao.getTeamMemberCount(teamResponses.get(i).getTeamId()));
+        }
+
+        return teamReturnResponses;
     }
 
     public String leaveTeam(TeamIdRequest teamIdRequest, HttpServletRequest httpRequest) {
