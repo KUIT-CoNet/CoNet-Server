@@ -243,4 +243,12 @@ public class TeamDao {
 
         jdbcTemplate.update(sql, param);
     }
+
+    public Boolean getBookmark(Long userId, Long teamId) {
+        String sql = "select bookmark from team_member where user_id=:user_id and team_id=:team_id and status=1";
+        Map<String, Object> param = Map.of("user_id", userId,
+                "team_id", teamId);
+
+        return jdbcTemplate.queryForObject(sql, param, Boolean.class);
+    }
 }

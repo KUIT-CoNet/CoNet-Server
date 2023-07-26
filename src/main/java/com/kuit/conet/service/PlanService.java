@@ -206,4 +206,9 @@ public class PlanService {
 
         return new PlanDetailResponse(details);
     }
+
+    public String deletePlan(PlanIdRequest planRequest) {
+        planDao.deletePlan(planRequest.getPlanId());
+        return "약속 삭제에 성공하였습니다.";
+    }
 }
