@@ -302,4 +302,16 @@ public class PlanDao {
 
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
+
+    public void deletePlan(Long planId) {
+        String sql = "update plan set status=0 where plan_id=:plan_id";
+        Map<String, Object> param = Map.of("plan_id", planId);
+
+        jdbcTemplate.update(sql, param);
+
+        String returnSql = "update plan_member set status=0 where plan_id=:plan_id";
+        Map<String, Object> retusnParam = Map.of("plan_id", planId);
+
+        jdbcTemplate.update(returnSql, retusnParam);
+    }
 }

@@ -88,4 +88,10 @@ public class PlanController {
         PlanDetailResponse response = planService.getPlanDetail(planRequest);
         return new BaseResponse<>(response);
     }
+
+    @PostMapping("/delete")
+    public BaseResponse<String> deletePlan(@RequestBody @Valid PlanIdRequest planRequest) {
+        String response = planService.deletePlan(planRequest);
+        return new BaseResponse<>(response);
+    }
 }
