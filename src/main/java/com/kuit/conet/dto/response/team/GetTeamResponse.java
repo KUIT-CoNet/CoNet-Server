@@ -15,6 +15,7 @@ public class GetTeamResponse {
     private String teamImgUrl;
     private Long teamMemberCount;
     private Boolean isNew;
+    private Boolean bookmark;
 
     public GetTeamResponse(Long teamId, String teamName, String teamImgUrl, Boolean isNew) {
         this.teamId = teamId;

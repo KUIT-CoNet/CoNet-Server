@@ -190,6 +190,10 @@ public class TeamService {
 
         // 모임의 구성원 수 받고 response에 넣음
         for(int i=0; i<teamResponses.size(); i++) {
+            log.info("user_id: {}", userId);
+            log.info("{}", teamResponses.get(i).getTeamId());
+            log.info("{}", teamDao.getBookmark(userId, teamResponses.get(i).getTeamId()));
+            teamReturnResponses.get(i).setBookmark(teamDao.getBookmark(userId, teamResponses.get(i).getTeamId()));
             teamReturnResponses.get(i).setTeamMemberCount(teamDao.getTeamMemberCount(teamResponses.get(i).getTeamId()));
         }
 
