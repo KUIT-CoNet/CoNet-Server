@@ -3,11 +3,13 @@ package com.kuit.conet.dao;
 import com.kuit.conet.domain.history.History;
 import com.kuit.conet.dto.request.history.HistoryRegisterRequest;
 import com.kuit.conet.dto.response.history.HistoryRegisterResponse;
+import com.kuit.conet.dto.response.history.HistoryResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -77,5 +79,39 @@ public class HistoryDao {
         Map<String, Object> param = Map.of("plan_id", planId);
 
         return jdbcTemplate.queryForObject(sql, param, String.class);
+    }
+
+    public List<HistoryResponse> getHistory(Long teamId) {
+        String sql = "select p.plan_id as plan_id, p.plan_name as plan_name, p.fixed_date as date, h.history_image_url as history_image_url, h.description as history_description\n" +
+                        "from plan p, history h\n" +
+                        "where p.plan_id=h.plan_id and p.status=2 and p.history=1\n" +
+                        "  and p.team_id=:team_id";
+        Map<String, Object> param = Map.of("team_id", teamId);
+
+        RowMapper<HistoryResponse> mapper = (rs, rowNum) -> {
+            HistoryResponse plan = new HistoryResponse();
+            String date = rs.getString("date").replace("-", ". ");
+            plan.setPlanId(rs.getLong("plan_id"));
+            plan.setPlanName(rs.getString("plan_name"));
+            plan.setPlanDate(date);
+            plan.setHistoryImgUrl(rs.getString("history_image_url"));
+            plan.setHistoryDescription(rs.getString("history_description"));
+            return plan;
+        };
+
+        List<HistoryResponse> plans = jdbcTemplate.query(sql, param, mapper);
+
+        for (HistoryResponse plan : plans) {
+            Long planId = plan.getPlanId();
+            String memberSql = "select count(*) " +
+                                "from plan_member " +
+                                "where plan_id=:plan_id and status=1";
+            Map<String, Object> memberParam = Map.of("plan_id", planId);
+            int memberNum = jdbcTemplate.queryForObject(memberSql, memberParam, Integer.class);
+            // TODO: 회원 탈퇴해서 pm.status=0 인 사람과 모임 나가기해서 pm.status=0 인 사람 구분하기
+            plan.setPlanMemberNum(memberNum);
+        }
+
+        return plans;
     }
 }

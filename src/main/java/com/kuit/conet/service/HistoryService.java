@@ -5,11 +5,15 @@ import com.kuit.conet.dao.HistoryDao;
 import com.kuit.conet.dao.PlanDao;
 import com.kuit.conet.domain.storage.StorageDomain;
 import com.kuit.conet.dto.request.history.HistoryRegisterRequest;
+import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.response.history.HistoryRegisterResponse;
+import com.kuit.conet.dto.response.history.HistoryResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -53,5 +57,10 @@ public class HistoryService {
 
         // history 에 등록
         return historyDao.registerToHistory(registerRequest, imgUrl);
+    }
+
+    public List<HistoryResponse> getHistory(TeamIdRequest request) {
+        Long teamId = request.getTeamId();
+        return historyDao.getHistory(teamId);
     }
 }
