@@ -104,9 +104,9 @@ public class TeamDao {
     }
 
     public List<Team> getTeam(Long userId) {
-        String sql = "select t.team_id, t.team_name, t.team_image_url, t.created_at, t.is_new" +
+        String sql = "select t.team_id, t.team_name, t.team_image_url, t.created_at, t.is_new " +
                 "from team_member as tm join team as t on tm.team_id=t.team_id " +
-                "where tm.user_id=:user_id and tm.status=1";
+                "where tm.user_id=:user_id and tm.status=1 and t.status=1";
         Map<String, Object> param = Map.of("user_id", userId);
 
         RowMapper<Team> mapper = (rs, rowNum) -> {
