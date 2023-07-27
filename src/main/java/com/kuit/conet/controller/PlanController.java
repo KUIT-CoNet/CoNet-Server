@@ -24,19 +24,19 @@ public class PlanController {
     }
 
     @PostMapping("/time")
-    public BaseResponse<String> registerTime(@RequestBody @Valid PossibleTimeRequest request, HttpServletRequest httpRequest) {
+    public BaseResponse<String> registerTime(HttpServletRequest httpRequest, @RequestBody @Valid PossibleTimeRequest request) {
         planService.saveTime(request, httpRequest);
         return new BaseResponse<>("사용자의 가능한 시간 등록에 성공하였습니다.");
     }
 
     @GetMapping("/user-time")
-    public BaseResponse<UserTimeResponse> getUserTime(@RequestBody @Valid PlanIdRequest request, HttpServletRequest httpRequest) {
+    public BaseResponse<UserTimeResponse> getUserTime(HttpServletRequest httpRequest, @ModelAttribute @Valid PlanIdRequest request) {
         UserTimeResponse response = planService.getUserTime(request, httpRequest);
         return new BaseResponse<>(response);
     }
 
     @GetMapping("/member-time")
-    public BaseResponse<MemberPossibleTimeResponse> getMemberTime(@RequestBody @Valid PlanIdRequest request) {
+    public BaseResponse<MemberPossibleTimeResponse> getMemberTime(@ModelAttribute @Valid PlanIdRequest request) {
         MemberPossibleTimeResponse response = planService.getMemberTime(request);
         return new BaseResponse<>(response);
     }
@@ -51,7 +51,7 @@ public class PlanController {
      * 모임 내 약속 - 날짜 (dd)
      * */
     @GetMapping("/month")
-    public BaseResponse<MonthPlanResponse> getPlanInMonth(@RequestBody @Valid TeamFixedPlanRequest planRequest) {
+    public BaseResponse<MonthPlanResponse> getPlanInMonth(@ModelAttribute @Valid TeamFixedPlanRequest planRequest) {
         MonthPlanResponse response = planService.getPlanInMonth(planRequest);
         return new BaseResponse<>(response);
     }
@@ -62,7 +62,7 @@ public class PlanController {
      * - 모임 명은 필요 없지만 하나의 dto 를 공유하기 위하여 반환함
      * */
     @GetMapping("/day")
-    public BaseResponse<DayPlanResponse> getPlanOnDay(@RequestBody @Valid TeamFixedPlanRequest planRequest) {
+    public BaseResponse<DayPlanResponse> getPlanOnDay(@ModelAttribute @Valid TeamFixedPlanRequest planRequest) {
         DayPlanResponse response = planService.getPlanOnDay(planRequest);
         return new BaseResponse<>(response);
     }
@@ -73,7 +73,7 @@ public class PlanController {
      * - 모임 명은 필요 없지만 하나의 dto 를 공유하기 위하여 반환함
      * */
     @GetMapping("/waiting")
-    public BaseResponse<WaitingPlanResponse> getWaitingPlan(@RequestBody @Valid TeamWaitingPlanRequest planRequest) {
+    public BaseResponse<WaitingPlanResponse> getWaitingPlan(@ModelAttribute @Valid TeamWaitingPlanRequest planRequest) {
         WaitingPlanResponse response = planService.getWaitingPlan(planRequest);
         return new BaseResponse<>(response);
     }
@@ -84,7 +84,7 @@ public class PlanController {
      * - 모임 명은 필요 없지만 하나의 dto 를 공유하기 위하여 반환함
      * */
     @GetMapping("/detail")
-    public BaseResponse<PlanDetailResponse> getPlanDetail(@RequestBody @Valid PlanIdRequest planRequest) {
+    public BaseResponse<PlanDetailResponse> getPlanDetail(@ModelAttribute @Valid PlanIdRequest planRequest) {
         PlanDetailResponse response = planService.getPlanDetail(planRequest);
         return new BaseResponse<>(response);
     }

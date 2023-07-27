@@ -10,10 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -26,7 +23,8 @@ public class HomeController {
      * 홈 - 날짜 (dd)
      * */
     @GetMapping("/month")
-    public BaseResponse<MonthPlanResponse> getPlanInMonth(HttpServletRequest httpRequest, @RequestBody @Valid HomePlanRequest planRequest) {
+    public BaseResponse<MonthPlanResponse> getPlanInMonth(HttpServletRequest httpRequest, @ModelAttribute @Valid HomePlanRequest planRequest) {
+        log.info("searchDate: {}", planRequest.getSearchDate());
         MonthPlanResponse response = homeService.getPlanInMonth(httpRequest, planRequest);
         return new BaseResponse<>(response);
     }
@@ -36,7 +34,7 @@ public class HomeController {
      * - '나'의 직접적인 참여 여부와 무관
      * */
     @GetMapping("/day")
-    public BaseResponse<DayPlanResponse> getPlanOnDay(HttpServletRequest httpRequest, @RequestBody @Valid HomePlanRequest planRequest) {
+    public BaseResponse<DayPlanResponse> getPlanOnDay(HttpServletRequest httpRequest, @ModelAttribute @Valid HomePlanRequest planRequest) {
         DayPlanResponse response = homeService.getPlanOnDay(httpRequest, planRequest);
         return new BaseResponse<>(response);
     }
