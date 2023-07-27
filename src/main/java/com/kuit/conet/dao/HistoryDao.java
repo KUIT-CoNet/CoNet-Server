@@ -108,7 +108,6 @@ public class HistoryDao {
                                 "where plan_id=:plan_id and status=1";
             Map<String, Object> memberParam = Map.of("plan_id", planId);
             int memberNum = jdbcTemplate.queryForObject(memberSql, memberParam, Integer.class);
-            // TODO: 회원 탈퇴해서 pm.status=0 인 사람과 모임 나가기해서 pm.status=0 인 사람 구분하기
             plan.setPlanMemberNum(memberNum);
         }
 

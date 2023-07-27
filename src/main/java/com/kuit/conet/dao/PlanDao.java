@@ -280,7 +280,6 @@ public class PlanDao {
         String sql = "select u.name as user_name " +
                         "from plan_member pm, user u " +
                         "where pm.user_id=u.user_id and pm.status=1 " +
-                // TODO: 회원 탈퇴해서 pm.status=0 인 사람과 모임 나가기해서 pm.status=0 인 사람 구분하기
                 // 회원 탈퇴시 team 에 대해서만 status 0으로 변경하고 있음
                         "  and u.status=1 and pm.plan_id=:plan_id";
         Map<String, Object> param = Map.of("plan_id", planId);
