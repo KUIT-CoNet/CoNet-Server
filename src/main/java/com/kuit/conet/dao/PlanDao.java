@@ -224,7 +224,7 @@ public class PlanDao {
         return jdbcTemplate.query(sql, param, mapper);
     }
 
-    public List<PlanDetail> getPlanDetail(Long planId, Boolean isRegisteredToHistory) {
+    public PlanDetail getPlanDetail(Long planId, Boolean isRegisteredToHistory) {
         String sql = null;
         if (!isRegisteredToHistory) {
             sql = "select plan_id, plan_name, fixed_date as date, fixed_time as time " +
@@ -243,7 +243,8 @@ public class PlanDao {
             PlanDetail detail = new PlanDetail();
             detail.setPlanId(rs.getLong("plan_id"));
             detail.setPlanName(rs.getString("plan_name"));
-            detail.setDate(rs.getString("date"));
+            String date = rs.getString("date").replace("-", ". ");
+            detail.setDate(date);
             String fixedTime = rs.getString("time");
             int timeEndIndex = fixedTime.length()-3;
             detail.setTime(fixedTime.substring(0, timeEndIndex));
@@ -265,15 +266,14 @@ public class PlanDao {
             return detail;
         };
 
-        List<PlanDetail> details = jdbcTemplate.query(sql, param, mapper);
+        PlanDetail detail = jdbcTemplate.queryForObject(sql, param, mapper);
 
-        for(PlanDetail detail: details) {
-            Long eachPlanId = detail.getPlanId();
-            List<String> members = getMemberInPlan(eachPlanId);
-            detail.setMembers(members);
-        }
+        List<String> members = getMemberInPlan(planId);
+        List<Long> memberIds = getMemberIdInPlan(planId);
+        detail.setMembers(members);
+        detail.setMembersId(memberIds);
 
-        return details;
+        return detail;
     }
 
     public List<String> getMemberInPlan(Long planId) {
@@ -284,6 +284,18 @@ public class PlanDao {
         Map<String, Object> param = Map.of("plan_id", planId);
 
         RowMapper<String> mapper = new SingleColumnRowMapper<>(String.class);
+
+        return jdbcTemplate.query(sql, param, mapper);
+    }
+
+    public List<Long> getMemberIdInPlan(Long planId) {
+        String sql = "select u.user_id as user_id " +
+                "from plan_member pm, user u " +
+                "where pm.user_id=u.user_id and pm.status=1 " +
+                "  and u.status=1 and pm.plan_id=:plan_id";
+        Map<String, Object> param = Map.of("plan_id", planId);
+
+        RowMapper<Long> mapper = new SingleColumnRowMapper<>(Long.class);
 
         return jdbcTemplate.query(sql, param, mapper);
     }
