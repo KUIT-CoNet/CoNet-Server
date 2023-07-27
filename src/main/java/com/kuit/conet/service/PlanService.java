@@ -1,10 +1,13 @@
 package com.kuit.conet.service;
 
 import com.kuit.conet.common.exception.TeamException;
+import com.kuit.conet.dao.HistoryDao;
 import com.kuit.conet.dao.PlanDao;
 import com.kuit.conet.dao.TeamDao;
 import com.kuit.conet.dao.UserDao;
+import com.kuit.conet.domain.history.History;
 import com.kuit.conet.domain.plan.*;
+import com.kuit.conet.domain.storage.StorageDomain;
 import com.kuit.conet.dto.request.plan.*;
 import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.response.plan.*;
@@ -12,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -27,6 +31,8 @@ public class PlanService {
     private final PlanDao planDao;
     private final UserDao userDao;
     private final TeamDao teamDao;
+    private final HistoryDao historyDao;
+    private final StorageService storageService;
 
     public CreatePlanResponse createPlan(CreatePlanRequest createPlanRequest) {
         Plan plan = new Plan(createPlanRequest.getTeamId(), createPlanRequest.getPlanName(), createPlanRequest.getPlanStartPeriod(), createPlanRequest.getPlanEndPeriod());
@@ -219,7 +225,39 @@ public class PlanService {
         }
 
         planDao.updateWaitingPlan(planRequest.getPlanId(), planRequest.getPlanName());
-        return "대기 중인 약속 수정에 성공하였습니다.";
+        return "약속 수정을 성공하였습니다.";
+    }
+
+    public String updateFixedPlan(UpdatePlanRequest planRequest, MultipartFile file) {
+        Long planId = planRequest.getPlanId();
+
+        if (!planDao.isFixedPlan(planId)) {
+            return "확정된 약속이 아닙니다.";
+        }
+
+        // plan 테이블 정보 수정
+        planDao.updateFixedPlan(planRequest);
+
+        // history 있으면 history 수정
+        if (planRequest.getIsRegisteredToHistory()) {
+            // 기존 이미지 삭제 작업 진행 - 존재하지 않으면 생략
+            if (historyDao.isHistoryImageExist(planId)) {
+                String imgUrl = historyDao.getHistoryImgUrl(planId);
+                String deleteFileName = storageService.getFileNameFromUrl(imgUrl);
+                storageService.deleteImage(deleteFileName);
+            }
+
+            // 저장할 파일명 만들기 - 받은 파일이 이미지 타입이 아닌 경우에 대한 유효성 검사 진행
+            String fileName = storageService.getFileName(file, StorageDomain.HISTORY, planId);
+            // 새로운 이미지 S3에 업로드
+            String imgUrl = storageService.uploadToS3(file, fileName);
+
+            History newHistory = new History(imgUrl, planRequest.getHistoryDescription());
+
+            historyDao.updateHistory(newHistory, planId);
+        }
+
+        return "약속 정보를 수정하였습니다.";
     }
 
     public List<PastPlan> getPastPlan(TeamIdRequest planRequest) {

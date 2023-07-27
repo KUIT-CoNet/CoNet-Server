@@ -1,4 +1,4 @@
-package com.kuit.conet.domain.plan;
+package com.kuit.conet.dto.request.plan;
 
 import lombok.*;
 
@@ -9,16 +9,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class PlanDetail {
+public class UpdatePlanRequest {
     private Long planId;
     private String planName;
     private String date; // yyyy-MM-dd
     private String time; // hh:mm
-    private List<String> members;
-    //TODO: List<Long> memberIds 추가
+    private List<Long> members; // 구성원 userId
 
     private Boolean isRegisteredToHistory;
     // 히스토리에 등록되어 있을 때
-    private String historyImgUrl;
     private String historyDescription;
 }
