@@ -3,6 +3,7 @@ package com.kuit.conet.controller;
 import com.kuit.conet.common.response.BaseResponse;
 import com.kuit.conet.domain.plan.FixedPlan;
 import com.kuit.conet.domain.plan.PastPlan;
+import com.kuit.conet.domain.plan.PlanDetail;
 import com.kuit.conet.dto.request.plan.*;
 import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.response.plan.*;
@@ -89,8 +90,8 @@ public class PlanController {
      * - 모임 명은 필요 없지만 하나의 dto 를 공유하기 위하여 반환함
      * */
     @GetMapping("/detail")
-    public BaseResponse<PlanDetailResponse> getPlanDetail(@ModelAttribute @Valid PlanIdRequest planRequest) {
-        PlanDetailResponse response = planService.getPlanDetail(planRequest);
+    public BaseResponse<List<PlanDetail>> getPlanDetail(@ModelAttribute @Valid PlanIdRequest planRequest) {
+        List<PlanDetail> response = planService.getPlanDetail(planRequest);
         return new BaseResponse<>(response);
     }
 

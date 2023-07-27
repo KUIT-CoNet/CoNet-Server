@@ -37,7 +37,7 @@ public class HomeDao {
     }
 
     public List<FixedPlan> getPlanOnDay(Long userId, String searchDate) {
-        String sql = "select p.fixed_date as fixed_date, p.fixed_time as fixed_time, p.plan_name as plan_name, t.team_name as team_name " +
+        String sql = "select p.plan_id as plan_id, p.fixed_date as fixed_date, p.fixed_time as fixed_time, p.plan_name as plan_name, t.team_name as team_name " +
                 "from team_member tm, plan p, team t " +
                 "where tm.team_id = p.team_id and p.team_id = t.team_id " +
                 "and tm.user_id=:user_id and tm.status=1 and t.status=1 " +
@@ -47,6 +47,7 @@ public class HomeDao {
 
         RowMapper<FixedPlan> mapper = (rs, rowNum) -> {
             FixedPlan plan = new FixedPlan();
+            plan.setPlanId(rs.getLong("plan_id"));
             plan.setDate(rs.getString("fixed_date"));
             String fixedTime = rs.getString("fixed_time");
             int timeEndIndex = fixedTime.length()-3;
@@ -64,7 +65,7 @@ public class HomeDao {
         // 모든 대기 중인 약속 중에서 p.status=1
         // 시작 날짜가 오늘 이후 plan_start_period >= current_date();
 
-        String sql = "select p.plan_start_period as start_date, p.plan_end_period as end_date, p.plan_name as plan_name, t.team_name as team_name\n" +
+        String sql = "select plan_id as plan_id, p.plan_start_period as start_date, p.plan_end_period as end_date, p.plan_name as plan_name, t.team_name as team_name\n" +
                 "from team_member tm, plan p, team t\n" +
                 "where tm.team_id = p.team_id and p.team_id = t.team_id\n" +
                 "and tm.user_id=:user_id and tm.status=1 and t.status=1\n" +
@@ -75,6 +76,8 @@ public class HomeDao {
             WaitingPlan plan = new WaitingPlan();
             String startDate = rs.getString("start_date").replace("-", ". ");
             String endDate = rs.getString("end_date").replace("-", ". ");
+
+            plan.setPlanId(rs.getLong("plan_id"));
             plan.setStartDate(startDate);
             plan.setEndDate(endDate);
             plan.setPlanName(rs.getString("plan_name"));

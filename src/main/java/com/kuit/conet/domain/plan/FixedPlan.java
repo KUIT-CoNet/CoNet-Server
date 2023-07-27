@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class FixedPlan {
+    private Long planId;
     private String date; // yyyy-MM-dd
     private String time; // hh-mm
     private Long dDay;

@@ -196,7 +196,7 @@ public class PlanService {
         return new WaitingPlanResponse(plans.size(), plans);
     }
 
-    public PlanDetailResponse getPlanDetail(PlanIdRequest planRequest) {
+    public List<PlanDetail> getPlanDetail(PlanIdRequest planRequest) {
         Long planId = planRequest.getPlanId();
 
         // 히스토리 등록 여부
@@ -205,7 +205,7 @@ public class PlanService {
         // 약속 상세 정보
         List<PlanDetail> details = planDao.getPlanDetail(planRequest.getPlanId(), isRegisteredToHistory);
 
-        return new PlanDetailResponse(details);
+        return details;
     }
 
     public String deletePlan(PlanIdRequest planRequest) {
