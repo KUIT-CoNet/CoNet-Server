@@ -272,4 +272,9 @@ public class PlanService {
         Long teamId = planRequest.getTeamId();
         return planDao.getFixedPlan(teamId);
     }
+
+    public List<PastPlan> getNotRegisteredToHistoryPlan(TeamIdRequest planRequest) {
+        Long teamId = planRequest.getTeamId();
+        return planDao.getNotRegisteredToHistoryPlan(teamId);
+    }
 }
