@@ -2,6 +2,7 @@ package com.kuit.conet.dao;
 
 import com.kuit.conet.domain.plan.*;
 import com.kuit.conet.domain.plan.PastPlan;
+import com.kuit.conet.dto.request.plan.UpdatePlanRequest;
 import com.kuit.conet.dto.response.plan.UserPossibleTimeResponse;
 import com.kuit.conet.dto.response.plan.UserTimeResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -329,6 +330,57 @@ public class PlanDao {
         jdbcTemplate.update(sql, param);
     }
 
+    public void updateFixedPlan(UpdatePlanRequest request) {
+        Long planId = request.getPlanId();
+
+        if (request.getPlanName() != null) {
+            String sql = "update plan set plan_name=:plan_name where plan_id=:plan_id and status=2";
+            Map<String, Object> param = Map.of("plan_id", planId,
+                    "plan_name", request.getPlanName());
+
+            jdbcTemplate.update(sql, param);
+        }
+
+        if (request.getDate() != null) {
+            String sql = "update plan set fixed_date=:fixed_date where plan_id=:plan_id and status=2";
+            Map<String, Object> param = Map.of("plan_id", planId,
+                    "fixed_date", request.getDate());
+
+            jdbcTemplate.update(sql, param);
+        }
+
+        if (request.getTime() != null) {
+            String sql = "update plan set fixed_time=:fixed_time where plan_id=:plan_id and status=2";
+            Map<String, Object> param = Map.of("plan_id", planId,
+                    "fixed_time", request.getTime());
+
+            jdbcTemplate.update(sql, param);
+        }
+
+        if (request.getMembers() != null) {
+            updateMember(planId, request.getMembers());
+        }
+    }
+
+    private void updateMember(Long planId, List<Long> members) {
+        deleteMember(planId);
+
+        for (Long memberId : members) {
+            String sql = "insert into plan_member (plan_id, user_id) values (:plan_id, :user_id)";
+            Map<String, Object> param = Map.of("plan_id", planId,
+                    "user_id", memberId);
+
+            jdbcTemplate.update(sql, param);
+        }
+    }
+
+    private void deleteMember(Long planId) {
+        String sql = "delete from plan_member where plan_id=:plan_id";
+        Map<String, Object> param = Map.of("plan_id", planId);
+
+        jdbcTemplate.update(sql, param);
+    }
+
     public List<PastPlan> getPastPlan(Long teamId) {
         String sql = "select plan_id, fixed_date, fixed_time, plan_name, history " +
                         "from plan " +
@@ -365,7 +417,6 @@ public class PlanDao {
             LocalDate fixedDate = LocalDate.parse(rs.getString("fixed_date"));
             LocalDate now = LocalDate.now();
             Long dDay = ChronoUnit.DAYS.between(now, fixedDate);
-            log.info("d-day: {}", dDay);
 
             String date = fixedDate.toString().replace("-", ". ");
             String time = rs.getString("fixed_time");

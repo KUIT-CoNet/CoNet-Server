@@ -37,7 +37,7 @@ public class StorageService {
 
         String extension = null;
         try {
-            log.info("file content type: {}", file.getContentType());
+            //log.info("file content type: {}", file.getContentType());
             String contentType = file.getContentType();
             if (!contentType.startsWith("image")) {
                 // content type 검사
@@ -88,13 +88,17 @@ public class StorageService {
             return;
         }
 
-        //log.info("현재 프로필 이미지는 기본 이미지가 아닙니다. 기존 이미지 객체를 삭제합니다.");
+        //log.info("기존 이미지 객체를 삭제합니다.");
         log.info("delete the file: {}", fileName);
         try {
             amazonS3Client.deleteObject(bucketName, fileName);
         } catch (AmazonServiceException e) {
             throw new StorageException(BAD_REQUEST, e.getMessage());
         }
+    }
+
+    public String getFileNameFromUrl(String url) {
+        return url.split(SPLITER)[3];
     }
 
     public Boolean isExistImage(String fileName) {

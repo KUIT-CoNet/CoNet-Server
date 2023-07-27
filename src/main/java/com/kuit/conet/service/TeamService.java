@@ -64,8 +64,6 @@ public class TeamService {
         String imgUrl = storageService.uploadToS3(file, fileName);
 
         StorageImgResponse response = teamDao.updateImg(teamId, imgUrl);
-        log.info("imgUrl: {}", response.getImgUrl());
-        log.info("name: {}", response.getName());
 
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
@@ -231,8 +229,8 @@ public class TeamService {
         String imgUrl = null;
 
         imgUrl = teamDao.getTeamImgUrl(updateTeamRequest.getTeamId());
-        if(!(imgUrl == null)) {
-            String deleteFileName = imgUrl.split(URL_SPLITER)[3];
+        if(imgUrl != null) {
+            String deleteFileName = storageService.getFileNameFromUrl(imgUrl);
             storageService.deleteImage(deleteFileName);
         }
 

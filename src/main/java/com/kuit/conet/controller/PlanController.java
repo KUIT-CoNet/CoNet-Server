@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -104,6 +105,12 @@ public class PlanController {
     @PostMapping("/update-waiting")
     public BaseResponse<String> updateWaitingPlan(@RequestBody @Valid UpdateWaitingPlanRequest planRequest) {
         String response = planService.updateWaitingPlan(planRequest);
+        return new BaseResponse<>(response);
+    }
+
+    @PostMapping("/update-fixed")
+    public BaseResponse<String> updateFixedPlan(@RequestPart(value = "requestBody") @Valid UpdatePlanRequest planRequest, @RequestPart(value = "file", required = false) MultipartFile historyImg) {
+        String response = planService.updateFixedPlan(planRequest, historyImg);
         return new BaseResponse<>(response);
     }
 

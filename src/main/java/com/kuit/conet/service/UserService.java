@@ -33,7 +33,7 @@ public class UserService {
 
         // S3에 없는 객체에 대한 유효성 검사
         String imgUrl = userDao.getUserImgUrl(userId);
-        String fileName = imgUrl.split(URL_SPLITER)[3];
+        String fileName = storageService.getFileNameFromUrl(imgUrl);
         if(!storageService.isExistImage(fileName)) {
             log.warn("S3 버킷에 존재하지 않는 이미지입니다. 기본 이미지로 변경하겠습니다.");
             userDao.setImageUrlDefault(userId);
@@ -54,7 +54,7 @@ public class UserService {
         유저의 프로필 이미지가 기본 프로필 이미지인지 확인 -> 기본 이미지가 아니면 기존 이미지를 S3에서 이미지 삭제
         S3 버킷에 존재하지 않는 객체인 경우 삭제를 생략 */
         String imgUrl = userDao.getUserImgUrl(userId);
-        String deleteFileName = imgUrl.split(URL_SPLITER)[3];
+        String deleteFileName = storageService.getFileNameFromUrl(imgUrl);
         if (!userDao.isDefaultImage(userId)) {
             storageService.deleteImage(deleteFileName);
         }

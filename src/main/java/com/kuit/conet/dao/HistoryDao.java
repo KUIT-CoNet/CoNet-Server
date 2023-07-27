@@ -1,5 +1,6 @@
 package com.kuit.conet.dao;
 
+import com.kuit.conet.domain.history.History;
 import com.kuit.conet.dto.request.history.HistoryRegisterRequest;
 import com.kuit.conet.dto.response.history.HistoryRegisterResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -48,4 +49,33 @@ public class HistoryDao {
         return jdbcTemplate.queryForObject(returnSql, planIdParam, returnMapper);
     }
 
+    public void updateHistory(History history, Long planId) {
+        String historyImgUrl = history.getHistoryImgUrl();
+        if (historyImgUrl == null) historyImgUrl="";
+        String description = history.getHistoryDescription();
+        if (description == null) description = "";
+
+        String sql = "update history set history_image_url=:img_url, description=:description where plan_id=:plan_id;";
+        Map<String, Object> param = Map.of("img_url", historyImgUrl,
+                "description", description,
+                "plan_id", planId);
+
+        jdbcTemplate.update(sql, param);
+    }
+
+    public Boolean isHistoryImageExist(Long planId) {
+        String sql = "select history_image_url from history where plan_id=:plan_id";
+        Map<String, Object> param = Map.of("plan_id", planId);
+
+        String imgUrl = jdbcTemplate.queryForObject(sql, param, String.class);
+        if (!imgUrl.equals("")) return true;
+        else return false;
+    }
+
+    public String getHistoryImgUrl(Long planId) {
+        String sql = "select history_image_url from history where plan_id=:plan_id";
+        Map<String, Object> param = Map.of("plan_id", planId);
+
+        return jdbcTemplate.queryForObject(sql, param, String.class);
+    }
 }
