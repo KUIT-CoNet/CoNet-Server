@@ -104,7 +104,7 @@ public class TeamDao {
     }
 
     public List<Team> getTeam(Long userId) {
-        String sql = "select t.team_id, t.team_name, t.team_image_url, t.created_at, t.is_new " +
+        String sql = "select t.team_id, t.team_name, t.team_image_url, t.created_at, t.is_new" +
                 "from team_member as tm join team as t on tm.team_id=t.team_id " +
                 "where tm.user_id=:user_id and tm.status=1";
         Map<String, Object> param = Map.of("user_id", userId);
@@ -262,5 +262,13 @@ public class TeamDao {
         RowMapper<String> mapper = new SingleColumnRowMapper<>(String.class);
 
         return jdbcTemplate.query(sql, param, mapper);
+    }
+
+    public void bookmarkTeam(Long userId, Long teamId) {
+        String sql = "update team_member set bookmark=1 where user_id=:user_id and team_id=:team_id";
+        Map<String, Object> param = Map.of("user_id", userId,
+                "team_id", teamId);
+
+        jdbcTemplate.update(sql, param);
     }
 }

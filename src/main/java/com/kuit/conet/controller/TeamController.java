@@ -72,4 +72,10 @@ public class TeamController {
         List<String> response = teamService.getTeamMembers(request);
         return new BaseResponse<>(response);
     }
+
+    @PostMapping("/bookmark")
+    public BaseResponse<String> bookmarkTeam(HttpServletRequest httpRequest, @RequestBody @Valid TeamIdRequest request) {
+        teamService.bookmarkTeam(httpRequest, request);
+        return new BaseResponse<>("모임을 즐겨찾기에 추가하였습니다.");
+    }
 }
