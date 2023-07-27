@@ -444,4 +444,28 @@ public class PlanDao {
 
         return jdbcTemplate.query(sql, param, mapper);
     }
+
+    public List<PastPlan> getNotRegisteredToHistoryPlan(Long teamId) {
+        String sql = "select plan_id, fixed_date, fixed_time, plan_name, history " +
+                "from plan " +
+                "where team_id=:team_id and status=2 and history=0 " +
+                "and (fixed_date < current_date() or (fixed_date = current_date() and fixed_time <= current_time()))";
+        Map<String, Object> param = Map.of("team_id", teamId);
+
+        RowMapper<PastPlan> mapper = (rs, rowNum) -> {
+            PastPlan plan = new PastPlan();
+            String date = rs.getString("fixed_date").replace("-", ". ");
+            String time = rs.getString("fixed_time");
+            int timeEndIndex = time.length()-3;
+
+            plan.setPlanId(rs.getLong("plan_id"));
+            plan.setDate(date);
+            plan.setTime(time.substring(0, timeEndIndex));
+            plan.setPlanName(rs.getString("plan_name"));
+            plan.setIsRegisteredToHistory(rs.getBoolean("history"));
+            return plan;
+        };
+
+        return jdbcTemplate.query(sql, param, mapper);
+    }
 }
