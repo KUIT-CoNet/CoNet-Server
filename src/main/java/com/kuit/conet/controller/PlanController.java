@@ -1,6 +1,7 @@
 package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
+import com.kuit.conet.domain.plan.FixedPlan;
 import com.kuit.conet.domain.plan.PastPlan;
 import com.kuit.conet.dto.request.plan.*;
 import com.kuit.conet.dto.request.team.TeamIdRequest;
@@ -111,6 +112,15 @@ public class PlanController {
     @GetMapping("/past")
     public BaseResponse<List<PastPlan>> getPastPlan(@ModelAttribute @Valid TeamIdRequest planRequest) {
         List<PastPlan> response = planService.getPastPlan(planRequest);
+        return new BaseResponse<>(response);
+    }
+
+    /**
+     * 확정 약속 - 모임 내 사이드바 메뉴
+     * */
+    @GetMapping("/fixed")
+    public BaseResponse<List<FixedPlan>> getFixedPlan(@ModelAttribute @Valid TeamIdRequest planRequest) {
+        List<FixedPlan> response = planService.getFixedPlan(planRequest);
         return new BaseResponse<>(response);
     }
 }
