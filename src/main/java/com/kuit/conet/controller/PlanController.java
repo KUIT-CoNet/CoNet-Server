@@ -1,7 +1,9 @@
 package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
+import com.kuit.conet.domain.plan.PastPlan;
 import com.kuit.conet.dto.request.plan.*;
+import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.response.plan.*;
 import com.kuit.conet.service.PlanService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -98,6 +102,15 @@ public class PlanController {
     @PostMapping("/update-waiting")
     public BaseResponse<String> updateWaitingPlan(@RequestBody @Valid UpdateWaitingPlanRequest planRequest) {
         String response = planService.updateWaitingPlan(planRequest);
+        return new BaseResponse<>(response);
+    }
+
+    /**
+     * 지난 약속 - 모임 내 사이드바 메뉴
+     * */
+    @GetMapping("/past")
+    public BaseResponse<List<PastPlan>> getPastPlan(@ModelAttribute @Valid TeamIdRequest planRequest) {
+        List<PastPlan> response = planService.getPastPlan(planRequest);
         return new BaseResponse<>(response);
     }
 }

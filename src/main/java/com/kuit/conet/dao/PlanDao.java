@@ -1,6 +1,7 @@
 package com.kuit.conet.dao;
 
 import com.kuit.conet.domain.plan.*;
+import com.kuit.conet.domain.plan.PastPlan;
 import com.kuit.conet.dto.response.plan.UserPossibleTimeResponse;
 import com.kuit.conet.dto.response.plan.UserTimeResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -321,5 +322,27 @@ public class PlanDao {
                 "plan_name", planName);
 
         jdbcTemplate.update(sql, param);
+    }
+
+    public List<PastPlan> getPastPlan(Long teamId) {
+        String sql = "select fixed_date, fixed_time, plan_name, history\n" +
+                        "from plan\n" +
+                        "where team_id=:team_id and status=2;";
+        Map<String, Object> param = Map.of("team_id", teamId);
+
+        RowMapper<PastPlan> mapper = (rs, rowNum) -> {
+            PastPlan plan = new PastPlan();
+            String date = rs.getString("fixed_date").replace("-", ". ");
+            String time = rs.getString("fixed_time");
+            int timeEndIndex = time.length()-3;
+
+            plan.setDate(date);
+            plan.setTime(time.substring(0, timeEndIndex));
+            plan.setPlanName(rs.getString("plan_name"));
+            plan.setIsRegisteredToHistory(rs.getBoolean("history"));
+            return plan;
+        };
+
+        return jdbcTemplate.query(sql, param, mapper);
     }
 }
