@@ -22,9 +22,9 @@ public class HomeController {
     /**
      * 홈 - 날짜 (dd)
      * */
-    @PostMapping("/month")
-    public BaseResponse<MonthPlanResponse> getPlanInMonth(HttpServletRequest httpRequest, @RequestBody @Valid HomePlanRequest planRequest) {
-        MonthPlanResponse response = homeService.getPlanInMonth(httpRequest, planRequest);
+    @GetMapping("/month/{searchDate}")
+    public BaseResponse<MonthPlanResponse> getPlanInMonth(HttpServletRequest httpRequest, @PathVariable("searchDate") @Valid String searchDate) {
+        MonthPlanResponse response = homeService.getPlanInMonth(httpRequest, searchDate);
         return new BaseResponse<>(response);
     }
 
