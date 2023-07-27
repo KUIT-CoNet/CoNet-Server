@@ -271,4 +271,12 @@ public class TeamDao {
 
         jdbcTemplate.update(sql, param);
     }
+
+    public void unBookmarkTeam(Long userId, Long teamId) {
+        String sql = "update team_member set bookmark=0 where user_id=:user_id and team_id=:team_id";
+        Map<String, Object> param = Map.of("user_id", userId,
+                "team_id", teamId);
+
+        jdbcTemplate.update(sql, param);
+    }
 }
