@@ -6,6 +6,7 @@ import com.kuit.conet.dao.TeamDao;
 import com.kuit.conet.dao.UserDao;
 import com.kuit.conet.domain.plan.*;
 import com.kuit.conet.dto.request.plan.*;
+import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.response.plan.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -219,5 +220,10 @@ public class PlanService {
 
         planDao.updateWaitingPlan(planRequest.getPlanId(), planRequest.getPlanName());
         return "대기 중인 약속 수정에 성공하였습니다.";
+    }
+
+    public List<PastPlan> getPastPlan(TeamIdRequest planRequest) {
+        Long teamId = planRequest.getTeamId();
+        return planDao.getPastPlan(teamId);
     }
 }
