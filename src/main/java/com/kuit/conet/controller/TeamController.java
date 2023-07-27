@@ -66,4 +66,10 @@ public class TeamController {
         StorageImgResponse response = teamService.updateTeam(updateTeamRequest, file);
         return new BaseResponse<StorageImgResponse>(response);
     }
+
+    @GetMapping("/members")
+    public BaseResponse<List<String>> getTeamMembers(@RequestBody @Valid TeamIdRequest request) {
+        List<String> response = teamService.getTeamMembers(request);
+        return new BaseResponse<>(response);
+    }
 }

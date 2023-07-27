@@ -6,6 +6,7 @@ import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.team.GetTeamResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -250,5 +251,16 @@ public class TeamDao {
                 "team_id", teamId);
 
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
+    }
+
+    public List<String> getTeamMembers(Long teamId) {
+        String sql = "select u.name from team_member tm, user u " +
+                "where tm.user_id=u.user_id and tm.status=1 " +
+                "and u.status=1 and tm.team_id=:team_id";
+        Map<String, Object> param = Map.of("team_id", teamId);
+
+        RowMapper<String> mapper = new SingleColumnRowMapper<>(String.class);
+
+        return jdbcTemplate.query(sql, param, mapper);
     }
 }
