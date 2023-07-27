@@ -64,8 +64,6 @@ public class TeamService {
         String imgUrl = storageService.uploadToS3(file, fileName);
 
         StorageImgResponse response = teamDao.updateImg(teamId, imgUrl);
-        log.info("imgUrl: {}", response.getImgUrl());
-        log.info("name: {}", response.getName());
 
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 

@@ -211,6 +211,8 @@ public class PlanService {
         // 약속 상세 정보
         List<PlanDetail> details = planDao.getPlanDetail(planRequest.getPlanId(), isRegisteredToHistory);
 
+        // TODO: history 에서 검색은 되지만, 이미지랑 설명이 모두 null 인 경우 history 테이블에서 삭제 후 isRegisteredToHistory false 처리
+
         return details;
     }
 

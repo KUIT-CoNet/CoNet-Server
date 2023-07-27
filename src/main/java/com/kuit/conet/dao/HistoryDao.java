@@ -68,7 +68,6 @@ public class HistoryDao {
         Map<String, Object> param = Map.of("plan_id", planId);
 
         String imgUrl = jdbcTemplate.queryForObject(sql, param, String.class);
-        log.info("imgUrl: {}", imgUrl);
         if (!imgUrl.equals("")) return true;
         else return false;
     }

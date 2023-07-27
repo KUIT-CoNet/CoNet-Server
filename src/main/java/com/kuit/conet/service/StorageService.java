@@ -37,7 +37,7 @@ public class StorageService {
 
         String extension = null;
         try {
-            log.info("file content type: {}", file.getContentType());
+            //log.info("file content type: {}", file.getContentType());
             String contentType = file.getContentType();
             if (!contentType.startsWith("image")) {
                 // content type 검사

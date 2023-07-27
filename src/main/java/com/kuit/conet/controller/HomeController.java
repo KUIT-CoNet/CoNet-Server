@@ -24,7 +24,6 @@ public class HomeController {
      * */
     @GetMapping("/month")
     public BaseResponse<MonthPlanResponse> getPlanInMonth(HttpServletRequest httpRequest, @ModelAttribute @Valid HomePlanRequest planRequest) {
-        log.info("searchDate: {}", planRequest.getSearchDate());
         MonthPlanResponse response = homeService.getPlanInMonth(httpRequest, planRequest);
         return new BaseResponse<>(response);
     }

@@ -417,7 +417,6 @@ public class PlanDao {
             LocalDate fixedDate = LocalDate.parse(rs.getString("fixed_date"));
             LocalDate now = LocalDate.now();
             Long dDay = ChronoUnit.DAYS.between(now, fixedDate);
-            log.info("d-day: {}", dDay);
 
             String date = fixedDate.toString().replace("-", ". ");
             String time = rs.getString("fixed_time");
