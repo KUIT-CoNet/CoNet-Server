@@ -10,10 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -25,7 +22,7 @@ public class HomeController {
     /**
      * 홈 - 날짜 (dd)
      * */
-    @GetMapping("/month")
+    @PostMapping("/month")
     public BaseResponse<MonthPlanResponse> getPlanInMonth(HttpServletRequest httpRequest, @RequestBody @Valid HomePlanRequest planRequest) {
         MonthPlanResponse response = homeService.getPlanInMonth(httpRequest, planRequest);
         return new BaseResponse<>(response);
