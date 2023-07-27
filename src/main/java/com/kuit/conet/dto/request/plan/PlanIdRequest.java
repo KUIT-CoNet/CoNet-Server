@@ -3,10 +3,10 @@ package com.kuit.conet.dto.request.plan;
 import lombok.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Setter
 public class PlanIdRequest {
     private Long planId;
 }

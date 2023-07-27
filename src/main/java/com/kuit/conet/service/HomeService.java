@@ -21,13 +21,13 @@ import java.util.List;
 public class HomeService {
     private final HomeDao homeDao;
 
-    public MonthPlanResponse getPlanInMonth(HttpServletRequest httpRequest, String searchDate) {
+    public MonthPlanResponse getPlanInMonth(HttpServletRequest httpRequest, HomePlanRequest planRequest) {
         List<Integer> planDates = new ArrayList<>();
 
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
         //String searchDate = planRequest.getSearchDate(); // yyyy-MM
 
-        List<String> dateList = homeDao.getPlanInMonth(userId, searchDate);
+        List<String> dateList = homeDao.getPlanInMonth(userId, planRequest.getSearchDate());
         for(String tempDate : dateList) {
             Integer date = Integer.parseInt(tempDate.split("-")[2]);
             planDates.add(date);
