@@ -91,8 +91,8 @@ public class PlanController {
      * - 모임 명은 필요 없지만 하나의 dto 를 공유하기 위하여 반환함
      * */
     @GetMapping("/detail")
-    public BaseResponse<List<PlanDetail>> getPlanDetail(@ModelAttribute @Valid PlanIdRequest planRequest) {
-        List<PlanDetail> response = planService.getPlanDetail(planRequest);
+    public BaseResponse<PlanDetail> getPlanDetail(@ModelAttribute @Valid PlanIdRequest planRequest) {
+        PlanDetail response = planService.getPlanDetail(planRequest);
         return new BaseResponse<>(response);
     }
 

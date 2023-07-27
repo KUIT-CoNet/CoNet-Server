@@ -15,7 +15,7 @@ public class PlanDetail {
     private String date; // yyyy-MM-dd
     private String time; // hh:mm
     private List<String> members;
-    //TODO: List<Long> memberIds 추가
+    private List<Long> membersId;
 
     private Boolean isRegisteredToHistory;
     // 히스토리에 등록되어 있을 때
