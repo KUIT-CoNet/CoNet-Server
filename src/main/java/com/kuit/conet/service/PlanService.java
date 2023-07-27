@@ -226,4 +226,9 @@ public class PlanService {
         Long teamId = planRequest.getTeamId();
         return planDao.getPastPlan(teamId);
     }
+
+    public List<FixedPlan> getFixedPlan(TeamIdRequest planRequest) {
+        Long teamId = planRequest.getTeamId();
+        return planDao.getFixedPlan(teamId);
+    }
 }

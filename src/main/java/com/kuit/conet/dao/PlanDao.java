@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
@@ -325,9 +327,10 @@ public class PlanDao {
     }
 
     public List<PastPlan> getPastPlan(Long teamId) {
-        String sql = "select fixed_date, fixed_time, plan_name, history\n" +
-                        "from plan\n" +
-                        "where team_id=:team_id and status=2;";
+        String sql = "select fixed_date, fixed_time, plan_name, history " +
+                        "from plan " +
+                        "where team_id=:team_id and status=2 " +
+                        "and (fixed_date < current_date() or (fixed_date = current_date() and fixed_time < current_time()))";
         Map<String, Object> param = Map.of("team_id", teamId);
 
         RowMapper<PastPlan> mapper = (rs, rowNum) -> {
@@ -340,6 +343,34 @@ public class PlanDao {
             plan.setTime(time.substring(0, timeEndIndex));
             plan.setPlanName(rs.getString("plan_name"));
             plan.setIsRegisteredToHistory(rs.getBoolean("history"));
+            return plan;
+        };
+
+        return jdbcTemplate.query(sql, param, mapper);
+    }
+
+    public List<FixedPlan> getFixedPlan(Long teamId) {
+        String sql = "select fixed_date, fixed_time, plan_name, history " +
+                "from plan " +
+                "where team_id=:team_id and status=2 " +
+                "and (fixed_date > current_date() or (fixed_date = current_date() and fixed_time >= current_time()))";
+        Map<String, Object> param = Map.of("team_id", teamId);
+
+        RowMapper<FixedPlan> mapper = (rs, rowNum) -> {
+            FixedPlan plan = new FixedPlan();
+            LocalDate fixedDate = LocalDate.parse(rs.getString("fixed_date"));
+            LocalDate now = LocalDate.now();
+            Long dDay = ChronoUnit.DAYS.between(now, fixedDate);
+            log.info("d-day: {}", dDay);
+
+            String date = fixedDate.toString().replace("-", ". ");
+            String time = rs.getString("fixed_time");
+            int timeEndIndex = time.length()-3;
+
+            plan.setDate(date);
+            plan.setTime(time.substring(0, timeEndIndex));
+            plan.setDDay(dDay);
+            plan.setPlanName(rs.getString("plan_name"));
             return plan;
         };
 
