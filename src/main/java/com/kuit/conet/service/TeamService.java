@@ -166,20 +166,16 @@ public class TeamService {
         // 모임의 created_at 시간 비교해서 3일 안지났으면 new_update 필드 1, 지났으면 0으로 update
         for(Team list : teamResponses) {
             Timestamp createdTime = teamDao.getCreatedTime(list.getTeamId());
-            log.info("created: {}", createdTime);
             // Timestamp를 Instant로 변환
             Instant instant = createdTime.toInstant();
             // Instant를 LocalDateTime으로 변환 (기본 시스템의 ZoneId 사용)
             LocalDateTime time = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
 
             LocalDateTime now = LocalDateTime.now();
-            log.info("현재: {}", createdTime);
 
             if(now.minusDays(3).isAfter(time)) {
                 teamDao.updatdIsNew(0, list.getTeamId());
             }
-
-            log.info("현재: {}", list.getIsNew());
         }
 
         teamResponses = teamDao.getTeam(userId);
@@ -190,9 +186,6 @@ public class TeamService {
 
         // 모임의 구성원 수 받고 response에 넣음
         for(int i=0; i<teamResponses.size(); i++) {
-            log.info("user_id: {}", userId);
-            log.info("{}", teamResponses.get(i).getTeamId());
-            log.info("{}", teamDao.getBookmark(userId, teamResponses.get(i).getTeamId()));
             teamReturnResponses.get(i).setBookmark(teamDao.getBookmark(userId, teamResponses.get(i).getTeamId()));
             teamReturnResponses.get(i).setTeamMemberCount(teamDao.getTeamMemberCount(teamResponses.get(i).getTeamId()));
         }
@@ -243,23 +236,19 @@ public class TeamService {
             storageService.deleteImage(deleteFileName);
         }
 
-        log.info("imgUrl: {}", imgUrl);
-
         // 새로운 이미지 S3에 업로드
         imgUrl = storageService.uploadToS3(file, fileName);
-
-        log.info("imgUrl: {}", imgUrl);
 
         // image update
         StorageImgResponse response = teamDao.updateImg(updateTeamRequest.getTeamId(), imgUrl);
 
-        log.info("imgUrl: {}", imgUrl);
-
         // name update
         teamDao.updateName(updateTeamRequest.getTeamId(), updateTeamRequest.getTeamName());
 
-        log.info("imgUrl: {}", imgUrl);
-
         return response;
+    }
+
+    public List<String> getTeamMembers(TeamIdRequest teamIdRequest) {
+        return teamDao.getTeamMembers(teamIdRequest.getTeamId());
     }
 }
