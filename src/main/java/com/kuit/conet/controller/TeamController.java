@@ -69,8 +69,8 @@ public class TeamController {
     }
 
     @GetMapping("/members")
-    public BaseResponse<List<GetTeamMemberResponse>> getTeamMembers(@ModelAttribute @Valid TeamIdRequest request) {
-        List<GetTeamMemberResponse> response = teamService.getTeamMembers(request);
+    public BaseResponse<GetTeamMemberResponse> getTeamMembers(@ModelAttribute @Valid TeamIdRequest request) {
+        GetTeamMemberResponse response = teamService.getTeamMembers(request);
         return new BaseResponse<>(response);
     }
 
