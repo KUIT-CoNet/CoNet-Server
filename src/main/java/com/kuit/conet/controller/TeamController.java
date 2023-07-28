@@ -7,6 +7,7 @@ import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.request.team.UpdateTeamRequest;
 import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.team.CreateTeamResponse;
+import com.kuit.conet.dto.response.team.GetTeamMemberResponse;
 import com.kuit.conet.dto.response.team.GetTeamResponse;
 import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
 import com.kuit.conet.service.TeamService;
@@ -68,8 +69,8 @@ public class TeamController {
     }
 
     @GetMapping("/members")
-    public BaseResponse<List<String>> getTeamMembers(@ModelAttribute @Valid TeamIdRequest request) {
-        List<String> response = teamService.getTeamMembers(request);
+    public BaseResponse<List<GetTeamMemberResponse>> getTeamMembers(@ModelAttribute @Valid TeamIdRequest request) {
+        List<GetTeamMemberResponse> response = teamService.getTeamMembers(request);
         return new BaseResponse<>(response);
     }
 

@@ -3,6 +3,7 @@ package com.kuit.conet.dao;
 import com.kuit.conet.domain.team.Team;
 import com.kuit.conet.domain.team.TeamMember;
 import com.kuit.conet.dto.response.StorageImgResponse;
+import com.kuit.conet.dto.response.team.GetTeamMemberResponse;
 import com.kuit.conet.dto.response.team.GetTeamResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
@@ -245,13 +246,19 @@ public class TeamDao {
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 
-    public List<String> getTeamMembers(Long teamId) {
-        String sql = "select u.name from team_member tm, user u " +
+    public List<GetTeamMemberResponse> getTeamMembers(Long teamId) {
+        String sql = "select u.name, u.user_id from team_member tm, user u " +
                 "where tm.user_id=u.user_id and tm.status=1 " +
                 "and u.status=1 and tm.team_id=:team_id";
+        log.info("{}", teamId);
         Map<String, Object> param = Map.of("team_id", teamId);
 
-        RowMapper<String> mapper = new SingleColumnRowMapper<>(String.class);
+        RowMapper<GetTeamMemberResponse> mapper = (rs, rowNum) -> {
+            GetTeamMemberResponse teamMemberResponse = new GetTeamMemberResponse();
+            teamMemberResponse.setUserId(rs.getLong("user_id"));
+            teamMemberResponse.setUserName(rs.getString("name"));
+            return teamMemberResponse;
+        };
 
         return jdbcTemplate.query(sql, param, mapper);
     }

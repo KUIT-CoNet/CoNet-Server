@@ -12,6 +12,7 @@ import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.request.team.UpdateTeamRequest;
 import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.team.CreateTeamResponse;
+import com.kuit.conet.dto.response.team.GetTeamMemberResponse;
 import com.kuit.conet.dto.response.team.GetTeamResponse;
 import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
 import com.kuit.conet.utils.JwtParser;
@@ -239,7 +240,7 @@ public class TeamService {
         return response;
     }
 
-    public List<String> getTeamMembers(TeamIdRequest teamIdRequest) {
+    public List<GetTeamMemberResponse> getTeamMembers(TeamIdRequest teamIdRequest) {
         return teamDao.getTeamMembers(teamIdRequest.getTeamId());
     }
 
