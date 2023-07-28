@@ -25,9 +25,10 @@ public class TeamDao {
     }
 
     public Long saveTeam(Team team) {
-        String sql = "insert into team (team_name, invite_code, code_generated_time) values (:team_name, :invite_code, :code_generated_time)";
+        String sql = "insert into team (team_name, invite_code, team_image_url, code_generated_time) values (:team_name, :invite_code, :team_image_url, :code_generated_time)";
         Map<String, String> param = Map.of("team_name", team.getTeamName(),
                 "invite_code", team.getInviteCode(),
+                "team_image_url", team.getTeamImgUrl(),
                 "code_generated_time", team.getCodeGeneratedTime().toString());
 
         jdbcTemplate.update(sql, param);

@@ -56,7 +56,7 @@ public class TeamService {
         Timestamp codeGeneratedTime = Timestamp.valueOf(LocalDateTime.now());
 
         // team table에 새로운 team insert하고 teamId 얻기
-        Team newTeam = new Team(createTeamRequest.getTeamName(), null, inviteCode, codeGeneratedTime);
+        Team newTeam = new Team(createTeamRequest.getTeamName(), "", inviteCode, codeGeneratedTime);
         Long teamId = teamDao.saveTeam(newTeam);
 
         // 새로운 이미지 S3에 업로드
