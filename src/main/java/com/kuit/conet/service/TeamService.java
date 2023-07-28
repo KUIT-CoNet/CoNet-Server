@@ -161,8 +161,9 @@ public class TeamService {
         List<Team> teamResponses = teamDao.getTeam(userId);
         List<GetTeamResponse> teamReturnResponses = new ArrayList<>();
 
-        // 모임의 created_at 시간 비교해서 3일 안지났으면 new_update 필드 1, 지났으면 0으로 update
+        // 모임의 created_at 시간 비교해서 3일 안지났으면 isNew 값 true, 지났으면 false로 반환
         for(Team list : teamResponses) {
+            log.info("{}", list.getTeamName());
             Timestamp createdTime = teamDao.getCreatedTime(list.getTeamId());
             // Timestamp를 Instant로 변환
             Instant instant = createdTime.toInstant();
@@ -172,20 +173,12 @@ public class TeamService {
             LocalDateTime now = LocalDateTime.now();
 
             if(now.minusDays(3).isAfter(time)) {
-                teamDao.updatdIsNew(0, list.getTeamId());
+                GetTeamResponse teamResponse = new GetTeamResponse(list.getTeamId(), list.getTeamName(), list.getTeamImgUrl(), teamDao.getTeamMemberCount(list.getTeamId()), false, teamDao.getBookmark(userId, list.getTeamId()));
+                teamReturnResponses.add(teamResponse);
+            }else {
+                GetTeamResponse teamResponse = new GetTeamResponse(list.getTeamId(), list.getTeamName(), list.getTeamImgUrl(), teamDao.getTeamMemberCount(list.getTeamId()), true, teamDao.getBookmark(userId, list.getTeamId()));
+                teamReturnResponses.add(teamResponse);
             }
-        }
-
-        teamResponses = teamDao.getTeam(userId);
-
-        // response 생성
-        for(Team list : teamResponses)
-            teamReturnResponses.add(new GetTeamResponse(list.getTeamId(), list.getTeamName(), list.getTeamImgUrl(), list.getIsNew()));
-
-        // 모임의 구성원 수 받고 response에 넣음
-        for(int i=0; i<teamResponses.size(); i++) {
-            teamReturnResponses.get(i).setBookmark(teamDao.getBookmark(userId, teamResponses.get(i).getTeamId()));
-            teamReturnResponses.get(i).setTeamMemberCount(teamDao.getTeamMemberCount(teamResponses.get(i).getTeamId()));
         }
 
         return teamReturnResponses;
