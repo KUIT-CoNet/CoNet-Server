@@ -115,7 +115,6 @@ public class TeamDao {
             team.setTeamName(rs.getString("team_name"));
             team.setTeamImgUrl(rs.getString("team_image_url"));
             team.setCodeGeneratedTime(rs.getTimestamp("created_at"));
-            team.setIsNew(rs.getBoolean("is_new"));
             return team;
         };
 
