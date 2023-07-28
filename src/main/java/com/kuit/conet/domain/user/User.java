@@ -23,4 +23,9 @@ public class User {
         this.platform = platform;
         this.platformId = platformId;
     }
+
+    public User(Long userId, String name) {
+        this.userId = userId;
+        this.name = name;
+    }
 }

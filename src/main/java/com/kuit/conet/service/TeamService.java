@@ -240,7 +240,7 @@ public class TeamService {
         return response;
     }
 
-    public List<GetTeamMemberResponse> getTeamMembers(TeamIdRequest teamIdRequest) {
+    public GetTeamMemberResponse getTeamMembers(TeamIdRequest teamIdRequest) {
         return teamDao.getTeamMembers(teamIdRequest.getTeamId());
     }
 

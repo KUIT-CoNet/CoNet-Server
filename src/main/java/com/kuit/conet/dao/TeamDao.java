@@ -2,6 +2,7 @@ package com.kuit.conet.dao;
 
 import com.kuit.conet.domain.team.Team;
 import com.kuit.conet.domain.team.TeamMember;
+import com.kuit.conet.domain.user.User;
 import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.team.GetTeamMemberResponse;
 import com.kuit.conet.dto.response.team.GetTeamResponse;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -246,21 +248,34 @@ public class TeamDao {
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 
-    public List<GetTeamMemberResponse> getTeamMembers(Long teamId) {
+    public GetTeamMemberResponse getTeamMembers(Long teamId) {
         String sql = "select u.name, u.user_id from team_member tm, user u " +
                 "where tm.user_id=u.user_id and tm.status=1 " +
                 "and u.status=1 and tm.team_id=:team_id";
         log.info("{}", teamId);
         Map<String, Object> param = Map.of("team_id", teamId);
 
-        RowMapper<GetTeamMemberResponse> mapper = (rs, rowNum) -> {
-            GetTeamMemberResponse teamMemberResponse = new GetTeamMemberResponse();
-            teamMemberResponse.setUserId(rs.getLong("user_id"));
-            teamMemberResponse.setUserName(rs.getString("name"));
-            return teamMemberResponse;
+        RowMapper<User> mapper = (rs, rowNum) -> {
+            User user = new User();
+            user.setUserId(rs.getLong("user_id"));
+            user.setName(rs.getString("name"));
+            return user;
         };
 
-        return jdbcTemplate.query(sql, param, mapper);
+        List<User> userList = jdbcTemplate.query(sql, param, mapper);
+
+        List<String> name = new ArrayList<>();
+        List<Long> userId = new ArrayList<>();
+        GetTeamMemberResponse teamMemberResponse = new GetTeamMemberResponse();
+        teamMemberResponse.setUserName(name);
+        teamMemberResponse.setUserId(userId);
+
+        for(User user : userList) {
+            teamMemberResponse.getUserId().add(user.getUserId());
+            teamMemberResponse.getUserName().add(user.getName());
+        }
+
+        return teamMemberResponse;
     }
 
     public void bookmarkTeam(Long userId, Long teamId) {
