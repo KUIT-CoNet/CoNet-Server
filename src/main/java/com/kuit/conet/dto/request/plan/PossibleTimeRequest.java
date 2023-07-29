@@ -3,6 +3,7 @@ package com.kuit.conet.dto.request.plan;
 import lombok.*;
 
 import java.sql.Date;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -12,5 +13,5 @@ import java.sql.Date;
 public class PossibleTimeRequest {
     private Long planId;
     private Date possibleDate;
-    private String possibleTime;
+    private List<String> possibleTime;
 }
