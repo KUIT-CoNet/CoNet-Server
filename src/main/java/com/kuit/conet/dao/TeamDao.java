@@ -293,4 +293,22 @@ public class TeamDao {
 
         jdbcTemplate.update(sql, param);
     }
+
+    public GetTeamResponse getTeamDetail(Long teamId) {
+        String sql = "select t.team_id, t.team_name, t.team_image_url, count(tm.user_id)" +
+                "from team_member as tm join team as t on tm.team_id=t.team_id " +
+                "where tm.team_id=:team_id and tm.status=1 and t.status=1";
+        Map<String, Object> param = Map.of("team_id", teamId);
+
+        RowMapper<GetTeamResponse> mapper = (rs, rowNum) -> {
+            GetTeamResponse getTeamResponse = new GetTeamResponse();
+            getTeamResponse.setTeamId(rs.getLong("team_id"));
+            getTeamResponse.setTeamName(rs.getString("team_name"));
+            getTeamResponse.setTeamImgUrl(rs.getString("team_image_url"));
+            getTeamResponse.setTeamMemberCount(rs.getLong("count(tm.user_id)"));
+            return getTeamResponse;
+        };
+
+        return jdbcTemplate.queryForObject(sql, param, mapper);
+    }
 }

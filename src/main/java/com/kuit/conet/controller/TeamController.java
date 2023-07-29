@@ -85,4 +85,10 @@ public class TeamController {
         teamService.unBookmarkTeam(httpRequest, request);
         return new BaseResponse<>("모임을 즐겨찾기에서 삭제하였습니다.");
     }
+
+    @GetMapping("/detail")
+    public BaseResponse<GetTeamResponse> getTeamDetail(HttpServletRequest httpRequest, @ModelAttribute @Valid TeamIdRequest request) {
+        GetTeamResponse response = teamService.getTeamDetail(httpRequest, request);
+        return new BaseResponse<>(response);
+    }
 }

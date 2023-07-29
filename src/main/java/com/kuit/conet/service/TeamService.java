@@ -267,4 +267,18 @@ public class TeamService {
 
         teamDao.unBookmarkTeam(userId, teamId);
     }
+
+    public GetTeamResponse getTeamDetail(HttpServletRequest httpRequest, TeamIdRequest request) {
+        Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
+        Long teamId = request.getTeamId();
+
+        // 유저가 팀에 참가 중인지 검사
+        if (!teamDao.isExistingUser(teamId, userId)) {
+            throw new TeamException(USER_NOT_EXIST_IN_TEAM);
+        }
+
+        GetTeamResponse getTeamResponse = teamDao.getTeamDetail(teamId);
+        getTeamResponse.setBookmark(teamDao.getBookmark(userId, teamId));
+        return getTeamResponse;
+    }
 }
