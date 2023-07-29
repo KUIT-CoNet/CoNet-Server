@@ -45,11 +45,20 @@ public class PlanService {
     public void saveTime(PossibleTimeRequest possibleTimeRequest, HttpServletRequest httpRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
-        PlanMemberTime planMemberTime = new PlanMemberTime(possibleTimeRequest.getPlanId(), userId, possibleTimeRequest.getPossibleDate(), possibleTimeRequest.getPossibleTime());
+        String strTime = "";
+        for(String time : possibleTimeRequest.getPossibleTime()) {
+            strTime += time + ", ";
+        }
+
+        strTime = strTime.trim().substring(0, strTime.length()-2);
+
+        log.info(strTime);
+
+        PlanMemberTime planMemberTime = new PlanMemberTime(possibleTimeRequest.getPlanId(), userId, possibleTimeRequest.getPossibleDate(), strTime);
 
         // 대기 중인 약속일 때만 시간 저장
         if(planDao.isWaitingPlan(possibleTimeRequest.getPlanId())) {
-            planDao.saveTime((planMemberTime));
+            planDao.saveTime(planMemberTime);
         }
     }
 
