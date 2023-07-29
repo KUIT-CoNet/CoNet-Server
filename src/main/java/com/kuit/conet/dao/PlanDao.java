@@ -279,7 +279,7 @@ public class PlanDao {
     public List<String> getMemberInPlan(Long planId) {
         String sql = "select u.name as user_name " +
                         "from plan_member pm, user u " +
-                        "where pm.user_id=u.user_id and pm.status=1 " +
+                        "where pm.user_id=u.user_id " +
                 // 회원 탈퇴시 team 에 대해서만 status 0으로 변경하고 있음
                         "  and u.status=1 and pm.plan_id=:plan_id";
         Map<String, Object> param = Map.of("plan_id", planId);
@@ -292,7 +292,7 @@ public class PlanDao {
     public List<Long> getMemberIdInPlan(Long planId) {
         String sql = "select u.user_id as user_id " +
                 "from plan_member pm, user u " +
-                "where pm.user_id=u.user_id and pm.status=1 " +
+                "where pm.user_id=u.user_id " +
                 "  and u.status=1 and pm.plan_id=:plan_id";
         Map<String, Object> param = Map.of("plan_id", planId);
 
@@ -329,7 +329,7 @@ public class PlanDao {
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "update plan_member set status=0 where plan_id=:plan_id";
+        String returnSql = "delete from plan_member where plan_id=:plan_id";
         Map<String, Object> retusnParam = Map.of("plan_id", planId);
 
         jdbcTemplate.update(returnSql, retusnParam);

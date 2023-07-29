@@ -52,8 +52,6 @@ public class PlanService {
 
         strTime = strTime.trim().substring(0, strTime.length()-2);
 
-        log.info(strTime);
-
         PlanMemberTime planMemberTime = new PlanMemberTime(possibleTimeRequest.getPlanId(), userId, possibleTimeRequest.getPossibleDate(), strTime);
 
         // 대기 중인 약속일 때만 시간 저장
