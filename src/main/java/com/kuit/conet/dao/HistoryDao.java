@@ -105,7 +105,7 @@ public class HistoryDao {
             Long planId = plan.getPlanId();
             String memberSql = "select count(*) " +
                                 "from plan_member " +
-                                "where plan_id=:plan_id and status=1";
+                                "where plan_id=:plan_id";
             Map<String, Object> memberParam = Map.of("plan_id", planId);
             int memberNum = jdbcTemplate.queryForObject(memberSql, memberParam, Integer.class);
             plan.setPlanMemberNum(memberNum);

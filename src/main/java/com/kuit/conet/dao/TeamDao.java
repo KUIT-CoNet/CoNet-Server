@@ -132,9 +132,9 @@ public class TeamDao {
 
         jdbcTemplate.update(sql, param);
 
-        String planMemberSql = "update plan_member pm " +
-                "inner join plan p on pm.plan_id=p.plan_id " +
-                "set pm.status=0 where p.team_id=:team_id and pm.user_id=:user_id";
+        String planMemberSql = "delete pm " +
+                "from plan_member pm left join plan p on pm.plan_id=p.plan_id " +
+                "where p.team_id=:team_id and pm.user_id=:user_id";
         Map<String, Object> planMemberParam = Map.of("user_id", userId,
                 "team_id", teamId);
 
@@ -163,9 +163,9 @@ public class TeamDao {
 
         jdbcTemplate.update(planUpdateSql, planUpdateParam);
 
-        String planMemberSql = "update plan_member pm " +
-                "inner join plan p on pm.plan_id=p.plan_id " +
-                "set pm.status=0 where p.team_id=:team_id";
+        String planMemberSql = "delete pm " +
+                "from plan_member pm left join plan p on pm.plan_id=p.plan_id " +
+                "where p.team_id=:team_id";
         Map<String, Object> planMemberParam = Map.of("team_id", teamId);
 
         jdbcTemplate.update(planMemberSql, planMemberParam);
