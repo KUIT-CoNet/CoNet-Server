@@ -469,4 +469,22 @@ public class PlanDao {
 
         return jdbcTemplate.query(sql, param, mapper);
     }
+
+    public Boolean isExistingUserDate(PlanMemberTime planMemberTime) {
+        String isExistingSql = "select exists(select * from plan_member_time where plan_id=:plan_id and user_id=:user_id and possible_date=:possible_date)";
+        Map<String, Object> isExistingParam = Map.of("plan_id", planMemberTime.getPlanId(),
+                "user_id", planMemberTime.getUserId(),
+                "possible_date", planMemberTime.getPossibleDate());
+
+        return jdbcTemplate.queryForObject(isExistingSql, isExistingParam, Boolean.class);
+    }
+
+    public void deletePossibleDate(PlanMemberTime planMemberTime) {
+        String sql = "delete from plan_member_time where plan_id=:plan_id and user_id=:user_id and possible_date=:possible_date";
+        Map<String, Object> param = Map.of("plan_id", planMemberTime.getPlanId(),
+                "user_id", planMemberTime.getUserId(),
+                "possible_date", planMemberTime.getPossibleDate());
+
+        jdbcTemplate.update(sql, param);
+    }
 }
