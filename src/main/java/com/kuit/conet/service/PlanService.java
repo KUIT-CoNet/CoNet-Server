@@ -56,6 +56,11 @@ public class PlanService {
 
         // 대기 중인 약속일 때만 시간 저장
         if(planDao.isWaitingPlan(possibleTimeRequest.getPlanId())) {
+            // 이미 저장되어 있는 날짜이면 삭제 후 저장
+            if(planDao.isExistingUserDate(planMemberTime)) {
+                planDao.deletePossibleDate(planMemberTime);
+            }
+
             planDao.saveTime(planMemberTime);
         }
     }
