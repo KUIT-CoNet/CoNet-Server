@@ -67,7 +67,7 @@ public class PlanDao {
     }
 
     public UserTimeResponse getUserTime(Long planId, Long userId) {
-        String sql = "select * from plan_member_time where plan_id=:plan_id and user_id=:user_id";
+        String sql = "select * from plan_member_time where plan_id=:plan_id and user_id=:user_id order by possible_date";
         Map<String, Object> param = Map.of("plan_id", planId,
                 "user_id", userId);
 
