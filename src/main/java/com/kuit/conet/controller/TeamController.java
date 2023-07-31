@@ -91,4 +91,10 @@ public class TeamController {
         GetTeamResponse response = teamService.getTeamDetail(httpRequest, request);
         return new BaseResponse<>(response);
     }
+
+    @GetMapping("/bookmark")
+    public BaseResponse<List<GetTeamResponse>> getBookmark(HttpServletRequest httpRequest) {
+        List<GetTeamResponse> responses = teamService.getBookmarks(httpRequest);
+        return new BaseResponse<>(responses);
+    }
 }

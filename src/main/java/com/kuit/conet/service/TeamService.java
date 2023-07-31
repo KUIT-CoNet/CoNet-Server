@@ -281,4 +281,34 @@ public class TeamService {
         getTeamResponse.setBookmark(teamDao.getBookmark(userId, teamId));
         return getTeamResponse;
     }
+
+    public List<GetTeamResponse> getBookmarks(HttpServletRequest httpRequest) {
+        Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
+
+        List<Team> teamResponses = teamDao.getBookmarks(userId);
+        List<GetTeamResponse> teamReturnResponses = new ArrayList<>();
+
+        // 모임의 created_at 시간 비교해서 3일 안지났으면 isNew 값 true, 지났으면 false로 반환
+        for(Team list : teamResponses) {
+            log.info("{}", list.getTeamName());
+            Timestamp createdTime = teamDao.getCreatedTime(list.getTeamId());
+            // Timestamp를 Instant로 변환
+            Instant instant = createdTime.toInstant();
+            // Instant를 LocalDateTime으로 변환 (기본 시스템의 ZoneId 사용)
+            LocalDateTime time = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+            LocalDateTime now = LocalDateTime.now();
+
+            if(now.minusDays(3).isAfter(time)) {
+                GetTeamResponse teamResponse = new GetTeamResponse(list.getTeamId(), list.getTeamName(), list.getTeamImgUrl(), teamDao.getTeamMemberCount(list.getTeamId()), false, teamDao.getBookmark(userId, list.getTeamId()));
+                teamReturnResponses.add(teamResponse);
+            }else {
+                GetTeamResponse teamResponse = new GetTeamResponse(list.getTeamId(), list.getTeamName(), list.getTeamImgUrl(), teamDao.getTeamMemberCount(list.getTeamId()), true, teamDao.getBookmark(userId, list.getTeamId()));
+                teamReturnResponses.add(teamResponse);
+            }
+        }
+
+        return teamReturnResponses;
+    }
+
 }
