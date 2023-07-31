@@ -110,7 +110,7 @@ public class TeamDao {
     public List<Team> getTeam(Long userId) {
         String sql = "select t.team_id, t.team_name, t.team_image_url, t.created_at " +
                 "from team_member as tm join team as t on tm.team_id=t.team_id " +
-                "where tm.user_id=:user_id and tm.status=1 and t.status=1";
+                "where tm.user_id=:user_id and tm.status=1 and t.status=1 order by tm.team_id desc";
         Map<String, Object> param = Map.of("user_id", userId);
 
         RowMapper<Team> mapper = (rs, rowNum) -> {
@@ -251,7 +251,7 @@ public class TeamDao {
     public GetTeamMemberResponse getTeamMembers(Long teamId) {
         String sql = "select u.name, u.user_id from team_member tm, user u " +
                 "where tm.user_id=u.user_id and tm.status=1 " +
-                "and u.status=1 and tm.team_id=:team_id";
+                "and u.status=1 and tm.team_id=:team_id order by tm.user_id";
         log.info("{}", teamId);
         Map<String, Object> param = Map.of("team_id", teamId);
 
@@ -315,7 +315,7 @@ public class TeamDao {
     public List<Team> getBookmarks(Long userId) {
         String sql = "select t.team_id, t.team_name, t.team_image_url, t.created_at " +
                 "from team_member as tm join team as t on tm.team_id=t.team_id " +
-                "where tm.user_id=:user_id and tm.bookmark=1 and tm.status=1 and t.status=1";
+                "where tm.user_id=:user_id and tm.bookmark=1 and tm.status=1 and t.status=1 order by tm.team_id desc";
         Map<String, Object> param = Map.of("user_id", userId);
 
         RowMapper<Team> mapper = (rs, rowNum) -> {
