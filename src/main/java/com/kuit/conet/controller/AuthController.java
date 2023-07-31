@@ -3,6 +3,7 @@ package com.kuit.conet.controller;
 import com.kuit.conet.annotation.ClientIp;
 import com.kuit.conet.common.response.BaseResponse;
 import com.kuit.conet.dto.request.auth.LoginRequest;
+import com.kuit.conet.dto.request.auth.OptionTermRequest;
 import com.kuit.conet.dto.request.auth.PutOptionTermAndNameRequest;
 import com.kuit.conet.dto.response.auth.AgreeTermAndPutNameResponse;
 import com.kuit.conet.dto.response.auth.LoginResponse;
@@ -45,5 +46,11 @@ public class AuthController {
     public BaseResponse<AgreeTermAndPutNameResponse> agreeTermAndPutName(@RequestBody @Valid PutOptionTermAndNameRequest nameRequest, HttpServletRequest httpRequest, @ClientIp String clientIp) {
         AgreeTermAndPutNameResponse response = authService.agreeTermAndPutName(nameRequest, httpRequest, clientIp);
         return new BaseResponse<>(response);
+    }
+
+    @PostMapping("/option-term")
+    public BaseResponse<String> updateOptionTerm(@RequestBody @Valid OptionTermRequest optionTermRequest, HttpServletRequest httpRequest) {
+        authService.updateOptionTerm(optionTermRequest, httpRequest);
+        return new BaseResponse<>("선택 약관의 선택 여부 변경을 성공하였습니다.");
     }
 }

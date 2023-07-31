@@ -1,5 +1,6 @@
 package com.kuit.conet.service;
 
+import com.kuit.conet.dto.request.auth.OptionTermRequest;
 import com.kuit.conet.utils.JwtParser;
 import com.kuit.conet.utils.auth.JwtTokenProvider;
 import com.kuit.conet.auth.apple.AppleUserProvider;
@@ -104,5 +105,17 @@ public class AuthService {
         User user = userDao.agreeTermAndPutName(nameRequest.getName(), nameRequest.getOptionTerm(), userId);
 
         return new AgreeTermAndPutNameResponse(user.getName(), user.getEmail(), user.getServiceTerm(), user.getOptionTerm());
+    }
+
+    public void updateOptionTerm(OptionTermRequest optionTermRequest, HttpServletRequest httpRequest) {
+        Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
+
+        // 선택 약관에 대한 데이터베이스 값과 입력 값 비교
+        // -> 동일하면 exception
+        if (optionTermRequest.getOption() == userDao.getOptionTerm(userId)) {
+            throw new UserException(OPTION_TERM_ALREADY_SET);
+        }
+
+        userDao.updateOptionTerm(optionTermRequest, userId);
     }
 }
