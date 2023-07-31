@@ -17,6 +17,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +74,16 @@ public class PlanDao {
         RowMapper<UserPossibleTimeResponse> mapper = ((rs, rowNum) -> {
             UserPossibleTimeResponse possibleTime = new UserPossibleTimeResponse();
             possibleTime.setDate(rs.getDate("possible_date"));
-            possibleTime.setTime(rs.getString("possible_time"));
+
+            String time = rs.getString("possible_time");
+            String[] timeStrList = time.split(",");
+            List<Integer> timeIntList = new ArrayList<>();
+
+            for(String str : timeStrList) {
+                timeIntList.add(Integer.parseInt(str.trim()));
+            }
+
+            possibleTime.setTime(timeIntList);
             return possibleTime;
         });
 
