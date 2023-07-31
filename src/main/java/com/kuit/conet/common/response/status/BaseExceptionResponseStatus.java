@@ -38,6 +38,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     INVALID_CLAIMS(4011, HttpStatus.UNAUTHORIZED.value(), "OAuth Claims 값이 올바르지 않습니다."),
     INVALID_REFRESH_TOKEN(4012, HttpStatus.UNAUTHORIZED.value(), "유효하지 않은 Refresh Token입니다."),
     IP_MISMATCH(4013, HttpStatus.UNAUTHORIZED.value(), "다른 IP에서 접속했습니다. 다시 로그인해주세요."),
+    OPTION_TERM_ALREADY_SET(4014, HttpStatus.UNAUTHORIZED.value(), "입력한 선택 약관의 선택 여부와 기존 선택 약관의 선택 여부가 동일합니다."),
 
     /**
      * 5000: 회원 정보 오류

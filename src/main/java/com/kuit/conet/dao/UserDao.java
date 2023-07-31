@@ -2,6 +2,7 @@ package com.kuit.conet.dao;
 
 import com.kuit.conet.domain.auth.Platform;
 import com.kuit.conet.domain.user.User;
+import com.kuit.conet.dto.request.auth.OptionTermRequest;
 import com.kuit.conet.dto.response.StorageImgResponse;
 import com.kuit.conet.dto.response.user.UserResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -203,5 +204,19 @@ public class UserDao {
         Map<String, Object> param = Map.of("user_id", userId);
 
         return jdbcTemplate.queryForObject(sql, param, String.class);
+    }
+
+    public Boolean getOptionTerm(Long userId) {
+        String sql = "select option_term from user where user_id=:user_id and status=1";
+        Map<String, Object> param = Map.of("user_id", userId);
+
+        return jdbcTemplate.queryForObject(sql, param, Boolean.class);
+    }
+
+    public void updateOptionTerm(OptionTermRequest optionTermRequest, Long userId) {
+        String sql = "update user set option_term=:option_term where user_id=:user_id and status=1";
+        Map<String, Object> param = Map.of("option_term", optionTermRequest.getOption(),
+                                            "user_id", userId);
+        jdbcTemplate.update(sql, param);
     }
 }
