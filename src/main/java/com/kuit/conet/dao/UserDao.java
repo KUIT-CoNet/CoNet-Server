@@ -119,7 +119,7 @@ public class UserDao {
 
     public void deleteUser(Long userId) {
         // user 의 platform, platformId 초기화
-        String sql = "update user set platform='', platform_id='', service_term=0, status=0 where user_id=:user_id and status=1";
+        String sql = "update user set platform='', platform_id='', img_url='', service_term=0, status=0 where user_id=:user_id and status=1";
         Map<String, Object> param = Map.of("user_id", userId);
 
         jdbcTemplate.update(sql, param);

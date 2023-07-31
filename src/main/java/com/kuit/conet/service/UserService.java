@@ -20,10 +20,18 @@ import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.
 public class UserService {
     private final UserDao userDao;
     private final StorageService storageService;
-    private final String URL_SPLITER = "/";
 
     public void userDelete(HttpServletRequest httpRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
+
+        // S3 에서 프로필 이미지 객체 삭제
+        String imgUrl = userDao.getUserImgUrl(userId);
+        String deleteFileName = storageService.getFileNameFromUrl(imgUrl);
+        if (!userDao.isDefaultImage(userId)) {
+            log.info("S3에서 유저의 프로필 이미지 객체를 삭제합니다.");
+            storageService.deleteImage(deleteFileName);
+        }
+
         userDao.deleteUser(userId);
     }
 
