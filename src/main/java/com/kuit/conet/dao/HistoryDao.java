@@ -113,4 +113,10 @@ public class HistoryDao {
 
         return plans;
     }
+
+    public void deleteHistory(Long planId) {
+        String sql = "delete from history where plan_id=:plan_id";
+        Map<String, Object> param = Map.of("plan_id", planId);
+        jdbcTemplate.update(sql, param);
+    }
 }

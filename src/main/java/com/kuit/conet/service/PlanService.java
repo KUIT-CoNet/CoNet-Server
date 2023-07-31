@@ -229,8 +229,6 @@ public class PlanService {
         // 약속 상세 정보
         PlanDetail details = planDao.getPlanDetail(planRequest.getPlanId(), isRegisteredToHistory);
 
-        // TODO: history 에서 검색은 되지만, 이미지랑 설명이 모두 null 인 경우 history 테이블에서 삭제 후 isRegisteredToHistory false 처리
-
         return details;
     }
 
@@ -258,7 +256,7 @@ public class PlanService {
         // plan 테이블 정보 수정
         planDao.updateFixedPlan(planRequest);
 
-        // history 있으면 history 수정
+        // 이미 history 에 등록된 약속이면 history 수정
         if (planRequest.getIsRegisteredToHistory()) {
             // 기존 이미지 삭제 작업 진행 - 존재하지 않으면 생략
             if (historyDao.isHistoryImageExist(planId)) {
@@ -267,14 +265,24 @@ public class PlanService {
                 storageService.deleteImage(deleteFileName);
             }
 
-            // 저장할 파일명 만들기 - 받은 파일이 이미지 타입이 아닌 경우에 대한 유효성 검사 진행
-            String fileName = storageService.getFileName(file, StorageDomain.HISTORY, planId);
-            // 새로운 이미지 S3에 업로드
-            String imgUrl = storageService.uploadToS3(file, fileName);
+            // 수정된 값의 이미지와 상세 내용 존재 여부를 판단
+            // -> 둘 다 null 인 경우 히스토리 데이터 삭제 및 plan 테이블에 history=0 으로 수정
+            if (planRequest.getHistoryDescription()==null && file.isEmpty()) {
+                log.info("히스토리 정보가 비어있습니다. 해당 약속의 히스토리 데이터를 삭제합니다.");
 
-            History newHistory = new History(imgUrl, planRequest.getHistoryDescription());
+                // 기존 히스토리 정보에 이미지 존재시 S3 객체 삭제
+                planDao.setHistoryInactive(planId);
+                historyDao.deleteHistory(planId);
+            } else {
+                // 저장할 파일명 만들기 - 받은 파일이 이미지 타입이 아닌 경우에 대한 유효성 검사 진행
+                String fileName = storageService.getFileName(file, StorageDomain.HISTORY, planId);
+                // 새로운 이미지 S3에 업로드
+                String imgUrl = storageService.uploadToS3(file, fileName);
 
-            historyDao.updateHistory(newHistory, planId);
+                History newHistory = new History(imgUrl, planRequest.getHistoryDescription());
+
+                historyDao.updateHistory(newHistory, planId);
+            }
         }
 
         return "약속 정보를 수정하였습니다.";

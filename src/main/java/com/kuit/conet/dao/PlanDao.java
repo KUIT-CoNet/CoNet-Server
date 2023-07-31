@@ -497,4 +497,10 @@ public class PlanDao {
 
         jdbcTemplate.update(sql, param);
     }
+
+    public void setHistoryInactive(Long planId) {
+        String sql = "update plan set history=0 where plan_id=:plan_id and status=2";
+        Map<String, Object> param = Map.of("plan_id", planId);
+        jdbcTemplate.update(sql, param);
+    }
 }
