@@ -311,4 +311,22 @@ public class TeamDao {
 
         return jdbcTemplate.queryForObject(sql, param, mapper);
     }
+
+    public List<Team> getBookmarks(Long userId) {
+        String sql = "select t.team_id, t.team_name, t.team_image_url, t.created_at " +
+                "from team_member as tm join team as t on tm.team_id=t.team_id " +
+                "where tm.user_id=:user_id and tm.bookmark=1 and tm.status=1 and t.status=1";
+        Map<String, Object> param = Map.of("user_id", userId);
+
+        RowMapper<Team> mapper = (rs, rowNum) -> {
+            Team team = new Team();
+            team.setTeamId(rs.getLong("team_id"));
+            team.setTeamName(rs.getString("team_name"));
+            team.setTeamImgUrl(rs.getString("team_image_url"));
+            team.setCodeGeneratedTime(rs.getTimestamp("created_at"));
+            return team;
+        };
+
+        return jdbcTemplate.query(sql, param, mapper);
+    }
 }
