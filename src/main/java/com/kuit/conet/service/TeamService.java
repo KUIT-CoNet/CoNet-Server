@@ -11,10 +11,7 @@ import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
 import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.request.team.UpdateTeamRequest;
 import com.kuit.conet.dto.response.StorageImgResponse;
-import com.kuit.conet.dto.response.team.CreateTeamResponse;
-import com.kuit.conet.dto.response.team.GetTeamMemberResponse;
-import com.kuit.conet.dto.response.team.GetTeamResponse;
-import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
+import com.kuit.conet.dto.response.team.*;
 import com.kuit.conet.utils.JwtParser;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -75,7 +72,7 @@ public class TeamService {
         return new CreateTeamResponse(savedTeamMember.getTeamId(), inviteCode);
     }
 
-    public CreateTeamResponse regenerateCode(TeamIdRequest request) {
+    public RegenerateCodeResponse regenerateCode(TeamIdRequest request) {
         // 초대 코드 생성
         String inviteCode;
 
@@ -95,7 +92,10 @@ public class TeamService {
         // 초대 코드, 생성시간 update
         String newCode = teamDao.codeUpdate(request.getTeamId(), inviteCode, codeGeneratedTime);
 
-        return new CreateTeamResponse(request.getTeamId(), newCode);
+        LocalDateTime codeDeadline = codeGeneratedTime.toLocalDateTime().plusDays(1);
+        String codeDeadlineStr = codeDeadline.format(DateTimeFormatter.ofPattern("yyyy. MM. dd. HH:mm"));
+
+        return new RegenerateCodeResponse(request.getTeamId(), newCode, codeDeadlineStr);
     }
 
     public String generateInviteCode() {

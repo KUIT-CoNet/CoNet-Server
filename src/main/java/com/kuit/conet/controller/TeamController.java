@@ -6,10 +6,7 @@ import com.kuit.conet.dto.request.team.ParticipateTeamRequest;
 import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.request.team.UpdateTeamRequest;
 import com.kuit.conet.dto.response.StorageImgResponse;
-import com.kuit.conet.dto.response.team.CreateTeamResponse;
-import com.kuit.conet.dto.response.team.GetTeamMemberResponse;
-import com.kuit.conet.dto.response.team.GetTeamResponse;
-import com.kuit.conet.dto.response.team.ParticipateTeamResponse;
+import com.kuit.conet.dto.response.team.*;
 import com.kuit.conet.service.TeamService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -39,9 +36,9 @@ public class TeamController {
     }
 
     @PostMapping("/code")
-    public BaseResponse<CreateTeamResponse> regenerateCode(@RequestBody @Valid TeamIdRequest request) {
-        CreateTeamResponse response = teamService.regenerateCode(request);
-        return new BaseResponse<CreateTeamResponse>(response);
+    public BaseResponse<RegenerateCodeResponse> regenerateCode(@RequestBody @Valid TeamIdRequest request) {
+        RegenerateCodeResponse response = teamService.regenerateCode(request);
+        return new BaseResponse<>(response);
     }
 
     @GetMapping
