@@ -13,5 +13,5 @@ import java.util.List;
 public class PossibleTimeRequest {
     private Long planId;
     private Date possibleDate;
-    private List<String> possibleTime;
+    private List<Integer> possibleTime;
 }

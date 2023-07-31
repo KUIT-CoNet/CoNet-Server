@@ -3,6 +3,7 @@ package com.kuit.conet.dto.response.plan;
 import lombok.*;
 
 import java.sql.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,5 +12,5 @@ import java.sql.Date;
 @ToString
 public class UserPossibleTimeResponse {
     private Date date;
-    private String time;
+    private List<Integer> time;
 }

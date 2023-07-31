@@ -46,8 +46,8 @@ public class PlanService {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
         String strTime = "";
-        for(String time : possibleTimeRequest.getPossibleTime()) {
-            strTime += time + ", ";
+        for(Integer time : possibleTimeRequest.getPossibleTime()) {
+            strTime += time.toString() + ", ";
         }
 
         strTime = strTime.trim().substring(0, strTime.length()-2);
