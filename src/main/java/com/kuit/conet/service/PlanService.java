@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.NOT_FOUND_TEAM;
@@ -35,7 +37,10 @@ public class PlanService {
     private final StorageService storageService;
 
     public CreatePlanResponse createPlan(CreatePlanRequest createPlanRequest) {
-        Plan plan = new Plan(createPlanRequest.getTeamId(), createPlanRequest.getPlanName(), createPlanRequest.getPlanStartPeriod(), createPlanRequest.getPlanEndPeriod());
+        LocalDate endDate = createPlanRequest.getPlanStartPeriod().toLocalDate();
+        endDate = endDate.plusDays(6);
+        Date date = java.sql.Date.valueOf(endDate);
+        Plan plan = new Plan(createPlanRequest.getTeamId(), createPlanRequest.getPlanName(), createPlanRequest.getPlanStartPeriod(), date);
 
         Long planId = planDao.savePlan(plan);
 
