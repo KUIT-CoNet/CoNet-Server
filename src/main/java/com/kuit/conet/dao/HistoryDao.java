@@ -119,4 +119,19 @@ public class HistoryDao {
         Map<String, Object> param = Map.of("plan_id", planId);
         jdbcTemplate.update(sql, param);
     }
+
+    public List<String> getHistoryImgUrlFromTeamId(Long teamId) {
+        String sql = "select h.history_image_url " +
+                "from history h, plan p " +
+                "where h.plan_id=p.plan_id and p.team_id=:team_id and p.status=2 and p.history=1";
+
+        Map<String, Object> param = Map.of("team_id", teamId);
+
+        RowMapper<String> mapper = (rs, rowNum) -> {
+            String history_image_url = rs.getString("history_image_url");
+            return history_image_url;
+        };
+
+        return jdbcTemplate.query(sql, param, mapper);
+    }
 }

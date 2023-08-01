@@ -36,7 +36,7 @@ public class TeamDao {
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select team_id from team where team_name=:team_name and invite_code=:invite_code and status=1";
+        String returnSql = "select team_id from team where team_name=:team_name and invite_code=:invite_code";
         Map<String, String> returnParam = Map.of("team_name", team.getTeamName(),
                 "invite_code", team.getInviteCode());
 
@@ -50,7 +50,7 @@ public class TeamDao {
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select * from team_member where team_id=:team_id and user_id=:user_id and status=1";
+        String returnSql = "select * from team_member where team_id=:team_id and user_id=:user_id";
         Map<String, Object> returnParam = Map.of("team_id", teamMember.getTeamId(),
                 "user_id", teamMember.getUserId());
 
@@ -59,7 +59,6 @@ public class TeamDao {
             member.setTeamMemberId(rs.getLong("team_member_id"));
             member.setTeamId(rs.getLong("team_id"));
             member.setUserId(rs.getLong("user_id"));
-            member.setStatus(rs.getBoolean("status"));
             return member;
         };
 
@@ -67,28 +66,28 @@ public class TeamDao {
     }
 
     public String codeUpdate(Long teamId, String newCode, Timestamp regeneratedtime) {
-        String sql = "update team set invite_code=:invite_code, code_generated_time=:code_generated_time where team_id=:team_id and status=1";
+        String sql = "update team set invite_code=:invite_code, code_generated_time=:code_generated_time where team_id=:team_id";
         Map<String, String> param = Map.of("invite_code", newCode,
                 "team_id", teamId.toString(),
                 "code_generated_time", regeneratedtime.toString());
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select invite_code from team where team_id=:team_id and status=1";
+        String returnSql = "select invite_code from team where team_id=:team_id";
         Map<String, String> returnParam = Map.of("team_id", teamId.toString());
 
         return jdbcTemplate.queryForObject(returnSql, returnParam, String.class);
     }
 
     public Boolean validateDuplicateCode(String inviteCode) {
-        String sql = "select exists(select * from team where invite_code=:invite_code and status=1);";
+        String sql = "select exists(select * from team where invite_code=:invite_code);";
         Map<String, String> param = Map.of("invite_code", inviteCode);
 
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 
     public Team getTeamFromInviteCode(String inviteCode) {
-        String sql = "select * from team where invite_code=:invite_code and status=1";
+        String sql = "select * from team where invite_code=:invite_code";
         Map<String, String> param = Map.of("invite_code", inviteCode);
 
         RowMapper<Team> mapper = (rs, rowNum) -> {
@@ -98,7 +97,6 @@ public class TeamDao {
             team.setTeamImgUrl(rs.getString("team_image_url"));
             team.setInviteCode(rs.getString("invite_code"));
             team.setCodeGeneratedTime(rs.getTimestamp("code_generated_time"));
-            team.setStatus(rs.getBoolean("status"));
             return team;
         };
 
@@ -110,7 +108,7 @@ public class TeamDao {
     public List<Team> getTeam(Long userId) {
         String sql = "select t.team_id, t.team_name, t.team_image_url, t.created_at " +
                 "from team_member as tm join team as t on tm.team_id=t.team_id " +
-                "where tm.user_id=:user_id and tm.status=1 and t.status=1 order by tm.team_id desc";
+                "where tm.user_id=:user_id order by tm.team_id desc";
         Map<String, Object> param = Map.of("user_id", userId);
 
         RowMapper<Team> mapper = (rs, rowNum) -> {
@@ -125,59 +123,65 @@ public class TeamDao {
         return jdbcTemplate.query(sql, param, mapper);
     }
 
-    public Boolean leaveTeam(Long teamId, Long userId) {
-        String sql = "update team_member set status=0 where team_id=:team_id and user_id=:user_id";
+    public void leaveTeam(Long teamId, Long userId) {
+        // plan_member_time 삭제
+        String planMemberTimeSql = "delete pmt " +
+                "from plan_member_time pmt left join plan p on pmt.plan_id=p.plan_id " +
+                "where p.team_id=:team_id and pmt.user_id=:user_id";
         Map<String, Object> param = Map.of("user_id", userId,
                 "team_id", teamId);
+        jdbcTemplate.update(planMemberTimeSql, param);
 
-        jdbcTemplate.update(sql, param);
-
+        // plan_member 삭제
         String planMemberSql = "delete pm " +
                 "from plan_member pm left join plan p on pm.plan_id=p.plan_id " +
                 "where p.team_id=:team_id and pm.user_id=:user_id";
-        Map<String, Object> planMemberParam = Map.of("user_id", userId,
-                "team_id", teamId);
+        jdbcTemplate.update(planMemberSql, param);
 
-        jdbcTemplate.update(planMemberSql, planMemberParam);
-
-        String returnSql = "select status from team_member where team_id=:team_id and user_id=:user_id";
-        Map<String, Object> returnParam = Map.of("user_id", userId,
-                "team_id", teamId);
-
-        return jdbcTemplate.queryForObject(returnSql, returnParam, Boolean.class);
+        // team_member 삭제
+        String teamMemberSql = "delete from team_member where team_id=:team_id and user_id=:user_id";
+        jdbcTemplate.update(teamMemberSql, param);
     }
 
-    public Boolean deleteTeam(Long teamId) {
-        String teamUpdateSql = "update team set status=0 where team_id=:team_id";
-        Map<String, Object> teamUpdateParam = Map.of("team_id", teamId);
+    public void deleteTeam(Long teamId) {
+        // history s3 사진 삭제
 
-        jdbcTemplate.update(teamUpdateSql, teamUpdateParam);
+        // history 삭제
+        String historySql = "delete h " +
+                "from history h left join plan p on h.plan_id=p.plan_id " +
+                "where p.team_id=:team_id and p.status=2 and p.history=1";
+        Map<String, Object> param = Map.of("team_id", teamId);
+        jdbcTemplate.update(historySql, param);
 
-        String teamMemberUpdateSql = "update team_member set status=0 where team_id=:team_id";
-        Map<String, Object> teamMemberUpdateParam = Map.of("team_id", teamId);
+        //plan_member_time 삭제
+        String planMemberTimeSql = "delete pmt " +
+                "from plan_member_time pmt left join plan p on pmt.plan_id=p.plan_id " +
+                "where p.team_id=:team_id";
+        jdbcTemplate.update(planMemberTimeSql, param);
 
-        jdbcTemplate.update(teamMemberUpdateSql, teamMemberUpdateParam);
-
-        String planUpdateSql = "update plan set status=0 where team_id=:team_id";
-        Map<String, Object> planUpdateParam = Map.of("team_id", teamId);
-
-        jdbcTemplate.update(planUpdateSql, planUpdateParam);
-
+        // plan_member 삭제
         String planMemberSql = "delete pm " +
                 "from plan_member pm left join plan p on pm.plan_id=p.plan_id " +
                 "where p.team_id=:team_id";
-        Map<String, Object> planMemberParam = Map.of("team_id", teamId);
+        jdbcTemplate.update(planMemberSql, param);
 
-        jdbcTemplate.update(planMemberSql, planMemberParam);
+        // plan 삭제
+        String planSql = "delete p " +
+                "from plan p left join team t on p.team_id=t.team_id " +
+                "where p.team_id=:team_id";
+        jdbcTemplate.update(planSql, param);
 
-        String returnSql = "select status from team where team_id=:team_id";
-        Map<String, Object> returnParam = Map.of("team_id", teamId);
+        // team_member 삭제
+        String teamMemberUpdateSql = "delete from team_member where team_id=:team_id";
+        jdbcTemplate.update(teamMemberUpdateSql, param);
 
-        return jdbcTemplate.queryForObject(returnSql, returnParam, Boolean.class);
+        // team 삭제
+        String teamUpdateSql = "delete from team where team_id=:team_id";
+        jdbcTemplate.update(teamUpdateSql, param);
     }
 
     public Boolean isExistingUser(Long teamId, Long userId) {
-            String sql = "select exists(select * from team_member where user_id=:user_id and team_id=:team_id and status=1);";
+            String sql = "select exists(select * from team_member where user_id=:user_id and team_id=:team_id);";
             Map<String, Object> param = Map.of("user_id", userId,
                     "team_id", teamId);
 
@@ -185,20 +189,20 @@ public class TeamDao {
     }
 
     public Boolean isExistTeam(Long teamId) {
-        String sql = "select exists(select * from team where team_id=:team_id and status=1);";
+        String sql = "select exists(select * from team where team_id=:team_id);";
         Map<String, Object> param = Map.of("team_id", teamId);
 
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 
     public StorageImgResponse updateImg(Long teamId, String imgUrl) {
-        String sql = "update team set team_image_url=:team_image_url where team_id=:team_id and status=1";
+        String sql = "update team set team_image_url=:team_image_url where team_id=:team_id";
         Map<String, Object> param = Map.of("team_image_url", imgUrl,
                 "team_id", teamId);
 
         jdbcTemplate.update(sql, param);
 
-        String returnSql = "select team_name, team_image_url from team where team_id=:team_id and status=1";
+        String returnSql = "select team_name, team_image_url from team where team_id=:team_id";
         Map<String, Object> returnParam = Map.of("team_id", teamId);
 
         RowMapper<StorageImgResponse> returnMapper = (rs, rowNum) -> {
@@ -212,7 +216,7 @@ public class TeamDao {
     }
 
     public void updateName(Long teamId, String teamName) {
-        String sql = "update team set team_name=:team_name where team_id=:team_id and status=1";
+        String sql = "update team set team_name=:team_name where team_id=:team_id";
         Map<String, Object> param = Map.of("team_name", teamName,
                 "team_id", teamId);
 
@@ -220,28 +224,28 @@ public class TeamDao {
     }
 
     public Long getTeamMemberCount(Long teamId) {
-        String sql = "select count(*) from team_member where team_id=:team_id and status=1";
+        String sql = "select count(*) from team_member where team_id=:team_id";
         Map<String, Object> param = Map.of("team_id", teamId);
 
         return jdbcTemplate.queryForObject(sql, param, Long.class);
     }
 
     public String getTeamImgUrl(Long teamId) {
-        String sql = "select team_image_url from team where team_id=:team_id and status=1";
+        String sql = "select team_image_url from team where team_id=:team_id";
         Map<String, Object> param = Map.of("team_id", teamId);
 
         return jdbcTemplate.queryForObject(sql, param, String.class);
     }
 
     public Timestamp getCreatedTime(Long teamId) {
-        String sql = "select created_at from team where team_id=:team_id and status=1";
+        String sql = "select created_at from team where team_id=:team_id";
         Map<String, Object> param = Map.of("team_id", teamId);
 
         return jdbcTemplate.queryForObject(sql, param, Timestamp.class);
     }
 
     public Boolean getBookmark(Long userId, Long teamId) {
-        String sql = "select bookmark from team_member where user_id=:user_id and team_id=:team_id and status=1";
+        String sql = "select bookmark from team_member where user_id=:user_id and team_id=:team_id";
         Map<String, Object> param = Map.of("user_id", userId,
                 "team_id", teamId);
 
@@ -250,7 +254,7 @@ public class TeamDao {
 
     public GetTeamMemberResponse getTeamMembers(Long teamId) {
         String sql = "select u.name, u.user_id from team_member tm, user u " +
-                "where tm.user_id=u.user_id and tm.status=1 " +
+                "where tm.user_id=u.user_id " +
                 "and u.status=1 and tm.team_id=:team_id order by tm.user_id";
         log.info("{}", teamId);
         Map<String, Object> param = Map.of("team_id", teamId);
@@ -297,7 +301,7 @@ public class TeamDao {
     public GetTeamResponse getTeamDetail(Long teamId) {
         String sql = "select t.team_id, t.team_name, t.team_image_url, count(tm.user_id)" +
                 "from team_member as tm join team as t on tm.team_id=t.team_id " +
-                "where tm.team_id=:team_id and tm.status=1 and t.status=1";
+                "where tm.team_id=:team_id";
         Map<String, Object> param = Map.of("team_id", teamId);
 
         RowMapper<GetTeamResponse> mapper = (rs, rowNum) -> {
@@ -315,7 +319,7 @@ public class TeamDao {
     public List<Team> getBookmarks(Long userId) {
         String sql = "select t.team_id, t.team_name, t.team_image_url, t.created_at " +
                 "from team_member as tm join team as t on tm.team_id=t.team_id " +
-                "where tm.user_id=:user_id and tm.bookmark=1 and tm.status=1 and t.status=1 order by tm.team_id desc";
+                "where tm.user_id=:user_id and tm.bookmark=1 order by tm.team_id desc";
         Map<String, Object> param = Map.of("user_id", userId);
 
         RowMapper<Team> mapper = (rs, rowNum) -> {
