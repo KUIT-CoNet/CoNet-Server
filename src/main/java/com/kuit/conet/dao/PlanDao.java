@@ -291,7 +291,7 @@ public class PlanDao {
                         "from plan_member pm, user u " +
                         "where pm.user_id=u.user_id " +
                 // 회원 탈퇴시 team 에 대해서만 status 0으로 변경하고 있음
-                        "  and u.status=1 and pm.plan_id=:plan_id";
+                        "  and pm.plan_id=:plan_id";
         Map<String, Object> param = Map.of("plan_id", planId);
 
         RowMapper<String> mapper = new SingleColumnRowMapper<>(String.class);
@@ -303,7 +303,7 @@ public class PlanDao {
         String sql = "select u.user_id as user_id " +
                 "from plan_member pm, user u " +
                 "where pm.user_id=u.user_id " +
-                "  and u.status=1 and pm.plan_id=:plan_id";
+                "  and pm.plan_id=:plan_id";
         Map<String, Object> param = Map.of("plan_id", planId);
 
         RowMapper<Long> mapper = new SingleColumnRowMapper<>(Long.class);
