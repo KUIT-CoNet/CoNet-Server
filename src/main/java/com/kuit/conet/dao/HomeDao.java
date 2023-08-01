@@ -26,7 +26,7 @@ public class HomeDao {
         String sql = "select distinct(p.fixed_date) " +
                 "from team_member tm, plan p " +
                 "where tm.team_id = p.team_id " +
-                "and tm.user_id=:user_id and tm.status=1 " +
+                "and tm.user_id=:user_id " +
                 "and p.status=2 and date_format(p.fixed_date,'%Y-%m')=:search_date"; // plan status 확정 : 2
         Map<String, Object> param = Map.of("user_id", userId,
                 "search_date", searchDate);
@@ -40,7 +40,7 @@ public class HomeDao {
         String sql = "select p.plan_id as plan_id, p.fixed_date as fixed_date, p.fixed_time as fixed_time, p.plan_name as plan_name, t.team_name as team_name " +
                 "from team_member tm, plan p, team t " +
                 "where tm.team_id = p.team_id and p.team_id = t.team_id " +
-                "and tm.user_id=:user_id and tm.status=1 and t.status=1 " +
+                "and tm.user_id=:user_id " +
                 "and p.status=2 and date_format(p.fixed_date,'%Y-%m-%d')=:search_date"; // plan status 확정 : 2
         Map<String, Object> param = Map.of("user_id", userId,
                 "search_date", searchDate);
@@ -68,7 +68,7 @@ public class HomeDao {
         String sql = "select plan_id as plan_id, p.plan_start_period as start_date, p.plan_end_period as end_date, p.plan_name as plan_name, t.team_name as team_name\n" +
                 "from team_member tm, plan p, team t\n" +
                 "where tm.team_id = p.team_id and p.team_id = t.team_id\n" +
-                "and tm.user_id=:user_id and tm.status=1 and t.status=1\n" +
+                "and tm.user_id=:user_id\n" +
                 "  and p.status=1 and p.plan_start_period >= current_date();"; // plan status 대기 : 1
         Map<String, Object> param = Map.of("user_id", userId);
 

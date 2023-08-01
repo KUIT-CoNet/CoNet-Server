@@ -125,7 +125,7 @@ public class UserDao {
         jdbcTemplate.update(sql, param);
 
         // user 가 참여한 모든 모임(team) 나가기
-        sql = "update team_member set status=0 where user_id=:user_id";
+        sql = "delete from team_member where user_id=:user_id";
         jdbcTemplate.update(sql, param);
     }
 

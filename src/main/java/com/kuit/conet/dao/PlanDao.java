@@ -186,7 +186,7 @@ public class PlanDao {
         String sql = "select p.plan_id as plan_id, p.fixed_date as fixed_date, p.fixed_time as fixed_time, p.plan_name as plan_name, t.team_name as team_name " +
                 "from plan p, team t " +
                 "where p.team_id = t.team_id " +
-                "and p.team_id=:team_id and t.status=1 " +
+                "and p.team_id=:team_id " +
                 "and p.status=2 and date_format(p.fixed_date,'%Y-%m-%d')=:search_date"; // plan status 확정 : 2
         Map<String, Object> param = Map.of("team_id", teamId,
                 "search_date", searchDate);
@@ -215,7 +215,7 @@ public class PlanDao {
                 "from plan p, team t\n" +
                 "where p.team_id = t.team_id\n" +
                 "and p.team_id=:team_id and p.status=1\n" + // plan status 대기 : 1
-                "  and t.status=1 and p.plan_start_period >= current_date()";
+                "  and p.plan_start_period >= current_date()";
         Map<String, Object> param = Map.of("team_id", teamId);
 
         RowMapper<WaitingPlan> mapper = (rs, rowNum) -> {
