@@ -333,16 +333,36 @@ public class PlanDao {
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 
-    public void deletePlan(Long planId) {
-        String sql = "update plan set status=0 where plan_id=:plan_id";
+    public void deleteFixedPlan(Long planId) {
         Map<String, Object> param = Map.of("plan_id", planId);
+        if(isRegisteredToHistory(planId)) {
+            // history 삭제
+            String historySql = "delete from history where plan_id=:plan_id";
+            jdbcTemplate.update(historySql, param);
+        }
 
-        jdbcTemplate.update(sql, param);
+        //plan_member_time 삭제
+        String planMemberTimeSql = "delete from plan_member_time where plan_id=:plan_id";
+        jdbcTemplate.update(planMemberTimeSql, param);
 
-        String returnSql = "delete from plan_member where plan_id=:plan_id";
-        Map<String, Object> retusnParam = Map.of("plan_id", planId);
+        // plan_member 삭제
+        String planMemberSql = "delete from plan_member where plan_id=:plan_id";
+        jdbcTemplate.update(planMemberSql, param);
 
-        jdbcTemplate.update(returnSql, retusnParam);
+        // plan 삭제
+        String planSql = "delete from plan where plan_id=:plan_id";
+        jdbcTemplate.update(planSql, param);
+    }
+
+    public void deleteWaitingPlan(Long planId) {
+        //plan_member_time 삭제
+        String planMemberTimeSql = "delete from plan_member_time where plan_id=:plan_id";
+        Map<String, Object> param = Map.of("plan_id", planId);
+        jdbcTemplate.update(planMemberTimeSql, param);
+
+        // plan 삭제
+        String planSql = "delete from plan where plan_id=:plan_id";
+        jdbcTemplate.update(planSql, param);
     }
 
     public void updateWaitingPlan(Long planId, String planName) {
