@@ -1,6 +1,7 @@
 package com.kuit.conet.service;
 
 import com.kuit.conet.common.exception.TeamException;
+import com.kuit.conet.dao.HistoryDao;
 import com.kuit.conet.dao.TeamDao;
 import com.kuit.conet.dao.UserDao;
 import com.kuit.conet.domain.storage.StorageDomain;
@@ -37,6 +38,7 @@ public class TeamService {
     private final StorageService storageService;
     private final TeamDao teamDao;
     private final UserDao userDao;
+    private final HistoryDao historyDao;
     private final JwtParser jwtParser;
 
     private final String URL_SPLITER = "/";
@@ -193,9 +195,7 @@ public class TeamService {
             throw new TeamException(NOT_FOUND_TEAM);
         }
 
-        if (teamDao.leaveTeam(teamIdRequest.getTeamId(), userId)) {
-             return "모임 탈퇴에 실패하였습니다.";
-        }
+        teamDao.leaveTeam(teamIdRequest.getTeamId(), userId);
 
         return "모임 탈퇴에 성공하였습니다.";
     }
@@ -206,9 +206,22 @@ public class TeamService {
             throw new TeamException(NOT_FOUND_TEAM);
         }
 
-        if (teamDao.deleteTeam(teamIdRequest.getTeamId())) {
-            return "모임 삭제에 실패하였습니다.";
+        List<String> historyImgUrl = historyDao.getHistoryImgUrlFromTeamId(teamIdRequest.getTeamId());
+        for(String url : historyImgUrl) {
+            if(url != null) {
+                String deleteFileName = storageService.getFileNameFromUrl(url);
+                storageService.deleteImage(deleteFileName);
+            }
         }
+
+        String imgUrl = teamDao.getTeamImgUrl(teamIdRequest.getTeamId());
+
+        if((imgUrl != null) && (imgUrl != "")) {
+            String deleteFileName = storageService.getFileNameFromUrl(imgUrl);
+            storageService.deleteImage(deleteFileName);
+        }
+
+        teamDao.deleteTeam(teamIdRequest.getTeamId());
 
         return "모임 삭제에 성공하였습니다.";
     }
