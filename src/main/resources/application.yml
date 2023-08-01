@@ -18,6 +18,20 @@ oauth:
 
 ---
 
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET_NAME}
+    stack.auto: false
+    region:
+      static: ap-northeast-2
+      auto: false
+    credentials:
+      accessKey: ${AWS_S3_ACCESS_KEY}
+      secretKey: ${AWS_S3_SECRET_KEY}
+
+---
+
 spring:
   config:
     activate:
@@ -40,17 +54,12 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
-cloud:
-  aws:
-    s3:
-      bucket: ${AWS_S3_BUCKET_NAME}
-    stack.auto: false
-    region:
-      static: ap-northeast-2
-      auto: false
-    credentials:
-      accessKey: ${AWS_S3_ACCESS_KEY}
-      secretKey: ${AWS_S3_SECRET_KEY}
+  log:
+    config:
+      path: ./logs
+      filename: app-local
+      maxHistory: 3 # 3일
+      totalSizeCap: 10MB # 로그 파일 사이즈
 
 ---
 
@@ -77,17 +86,12 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
-cloud:
-  aws:
-    s3:
-      bucket: ${AWS_S3_BUCKET_NAME}
-    stack.auto: false
-    region:
-      static: ap-northeast-2
-      auto: false
-    credentials:
-      accessKey: ${AWS_S3_ACCESS_KEY}
-      secretKey: ${AWS_S3_SECRET_KEY}
+  log:
+    config:
+      path: ./logs
+      filename: app-dev
+      maxHistory: 7 # 7일
+      totalSizeCap: 1GB # 로그 파일 사이즈
 
 ---
 
@@ -115,17 +119,12 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
-cloud:
-  aws:
-    s3:
-      bucket: ${AWS_S3_BUCKET_NAME}
-    stack.auto: false
-    region:
-      static: ap-northeast-2
-      auto: false
-    credentials:
-      accessKey: ${AWS_S3_ACCESS_KEY}
-      secretKey: ${AWS_S3_SECRET_KEY}
+  log:
+    config:
+      path: ./logs
+      filename: app-prod
+      maxHistory: 10 # 10일
+      totalSizeCap: 1GB # 로그 파일 사이즈
 
 ---
 
