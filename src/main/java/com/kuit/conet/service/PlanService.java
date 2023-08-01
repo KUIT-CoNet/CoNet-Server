@@ -21,8 +21,9 @@ import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.NOT_FOUND_TEAM;
 
@@ -233,7 +234,25 @@ public class PlanService {
     }
 
     public String deletePlan(PlanIdRequest planRequest) {
-        planDao.deletePlan(planRequest.getPlanId());
+        Long planId = planRequest.getPlanId();
+
+        if(planDao.isFixedPlan(planId)) {
+            if(planDao.isRegisteredToHistory(planId)) {
+                String imgUrl = historyDao.getHistoryImgUrl(planId);
+                if(imgUrl != null) {
+                    String deleteFileName = storageService.getFileNameFromUrl(imgUrl);
+                    if(storageService.isExistImage(deleteFileName)) {
+                        storageService.deleteImage(deleteFileName);
+                    }
+                }
+            }
+            planDao.deleteFixedPlan(planId);
+        }
+
+        if(planDao.isWaitingPlan(planId)) {
+            planDao.deleteWaitingPlan(planId);
+        }
+
         return "약속 삭제에 성공하였습니다.";
     }
 

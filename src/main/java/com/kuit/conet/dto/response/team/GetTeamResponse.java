@@ -2,8 +2,6 @@ package com.kuit.conet.dto.response.team;
 
 import lombok.*;
 
-import java.sql.Timestamp;
-
 @Setter
 @Getter
 @NoArgsConstructor
