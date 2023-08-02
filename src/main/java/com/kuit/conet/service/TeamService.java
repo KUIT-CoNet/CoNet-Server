@@ -216,7 +216,7 @@ public class TeamService {
 
         String imgUrl = teamDao.getTeamImgUrl(teamIdRequest.getTeamId());
 
-        if((imgUrl != null) && (imgUrl != "")) {
+        if(!imgUrl.equals("")) {
             String deleteFileName = storageService.getFileNameFromUrl(imgUrl);
             storageService.deleteImage(deleteFileName);
         }
