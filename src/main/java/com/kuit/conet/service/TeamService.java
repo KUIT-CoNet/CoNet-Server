@@ -39,18 +39,14 @@ public class TeamService {
     private final TeamDao teamDao;
     private final UserDao userDao;
     private final HistoryDao historyDao;
-    private final JwtParser jwtParser;
-
-    private final String URL_SPLITER = "/";
 
     public CreateTeamResponse createTeam(CreateTeamRequest createTeamRequest, HttpServletRequest httpRequest, MultipartFile file) {
-        // 초대 코드 생성
         String inviteCode;
 
-        // 코드 중복 확인
+        // 초대 코드 생성 및 코드 중복 확인
         do {
             inviteCode = generateInviteCode();
-        } while(teamDao.validateDuplicateCode(inviteCode));  // 중복되면 true 반환
+        } while (teamDao.validateDuplicateCode(inviteCode));  // 중복되면 true 반환
 
         // 모임 생성 시간 찍기
         Timestamp codeGeneratedTime = Timestamp.valueOf(LocalDateTime.now());
