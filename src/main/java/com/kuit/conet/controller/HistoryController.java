@@ -22,7 +22,7 @@ public class HistoryController {
     private final HistoryService historyService;
 
     @PostMapping("/register")
-    public BaseResponse<HistoryRegisterResponse> registerToHistory(@RequestPart(value = "registerRequest") @Valid HistoryRegisterRequest registerRequest, @RequestPart(value = "file", required = false)  MultipartFile historyImg) {
+    public BaseResponse<HistoryRegisterResponse> registerToHistory(@RequestPart(value = "registerRequest") @Valid HistoryRegisterRequest registerRequest, @RequestPart(value = "file", required = false) MultipartFile historyImg) {
         HistoryRegisterResponse response = historyService.registerToHistory(registerRequest, historyImg);
         return new BaseResponse<>(response);
     }

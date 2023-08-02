@@ -58,9 +58,11 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     /**
      * 6000: 약속(Plan) 정보 오류
      * */
-    NOT_PAST_PLAN(6000, HttpStatus.BAD_REQUEST.value(), "지난 약속이 아니므로 히스토리에 등록할 수 없습니다."),
-    EXIST_HISTORY(6001, HttpStatus.BAD_REQUEST.value(), "이미 히스토리에 등록된 약속입니다."),
-    NOT_FIXED_PLAN(6002, HttpStatus.BAD_REQUEST.value(), "확정된 약속이 아니므로 히스토리에 등록할 수 없습니다."),
+    NOT_WAITING_PLAN(6000, HttpStatus.BAD_REQUEST.value(), "대기 중인 약속 아닙니다."),
+    NOT_FIXED_PLAN(6001, HttpStatus.BAD_REQUEST.value(), "확정된 약속이 아닙니다."),
+    NOT_PAST_PLAN(6002, HttpStatus.BAD_REQUEST.value(), "지난 약속이 아닙니다."),
+    ALREADY_FIXED_PLAN(6003, HttpStatus.BAD_REQUEST.value(), "이미 확정된 약속입니다."),
+    EXIST_HISTORY(6004, HttpStatus.BAD_REQUEST.value(), "이미 히스토리에 등록된 약속입니다."),
 
     /**
      * 9000: 기타 오류

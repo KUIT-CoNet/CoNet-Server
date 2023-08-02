@@ -183,7 +183,7 @@ public class PlanDao {
     }
 
     public List<FixedPlan> getPlanOnDay(Long teamId, String searchDate) {
-        String sql = "select p.plan_id as plan_id, p.fixed_date as fixed_date, p.fixed_time as fixed_time, p.plan_name as plan_name, t.team_name as team_name " +
+        String sql = "select p.plan_id as plan_id, p.fixed_time as fixed_time, p.plan_name as plan_name " +
                 "from plan p, team t " +
                 "where p.team_id = t.team_id " +
                 "and p.team_id=:team_id " +
@@ -194,11 +194,9 @@ public class PlanDao {
         RowMapper<FixedPlan> mapper = (rs, rowNum) -> {
             FixedPlan plan = new FixedPlan();
             plan.setPlanId(rs.getLong("plan_id"));
-            plan.setDate(rs.getString("fixed_date"));
             String fixedTime = rs.getString("fixed_time");
             int timeEndIndex = fixedTime.length()-3;
             plan.setTime(fixedTime.substring(0, timeEndIndex));
-            plan.setTeamName(rs.getString("team_name"));
             plan.setPlanName(rs.getString("plan_name"));
             return plan;
         };
@@ -211,11 +209,11 @@ public class PlanDao {
         // 모든 대기 중인 약속 중에서 p.status=1
         // 시작 날짜가 오늘 이후 plan_start_period >= current_date();
 
-        String sql = "select p.plan_id as plan_id, p.plan_start_period as start_date, p.plan_end_period as end_date, p.plan_name as plan_name, t.team_name as team_name\n" +
-                "from plan p, team t\n" +
-                "where p.team_id = t.team_id\n" +
-                "and p.team_id=:team_id and p.status=1\n" + // plan status 대기 : 1
-                "  and p.plan_start_period >= current_date()";
+        String sql = "select p.plan_id as plan_id, p.plan_start_period as start_date, p.plan_end_period as end_date, p.plan_name as plan_name " +
+                        "from plan p, team t " +
+                        "where p.team_id = t.team_id " +
+                        "and p.team_id=:team_id and p.status=1 " + // plan status 대기 : 1
+                        "  and p.plan_start_period >= current_date()";
         Map<String, Object> param = Map.of("team_id", teamId);
 
         RowMapper<WaitingPlan> mapper = (rs, rowNum) -> {
@@ -227,7 +225,6 @@ public class PlanDao {
             plan.setStartDate(startDate);
             plan.setEndDate(endDate);
             plan.setPlanName(rs.getString("plan_name"));
-            plan.setTeamName(rs.getString("team_name"));
             return plan;
         };
 
@@ -290,8 +287,7 @@ public class PlanDao {
         String sql = "select u.name as user_name " +
                         "from plan_member pm, user u " +
                         "where pm.user_id=u.user_id " +
-                // 회원 탈퇴시 team 에 대해서만 status 0으로 변경하고 있음
-                        "  and pm.plan_id=:plan_id";
+                        "  and pm.plan_id=:plan_id"; // user status 필터링 안 하는 이유: 탈퇴한 유저도 이름이 서치되어야 함
         Map<String, Object> param = Map.of("plan_id", planId);
 
         RowMapper<String> mapper = new SingleColumnRowMapper<>(String.class);
@@ -303,7 +299,7 @@ public class PlanDao {
         String sql = "select u.user_id as user_id " +
                 "from plan_member pm, user u " +
                 "where pm.user_id=u.user_id " +
-                "  and pm.plan_id=:plan_id";
+                "  and pm.plan_id=:plan_id"; // user status 필터링 안 하는 이유: 탈퇴한 유저도 이름이 서치되어야 함
         Map<String, Object> param = Map.of("plan_id", planId);
 
         RowMapper<Long> mapper = new SingleColumnRowMapper<>(Long.class);
@@ -376,29 +372,17 @@ public class PlanDao {
     public void updateFixedPlan(UpdatePlanRequest request) {
         Long planId = request.getPlanId();
 
-        if (request.getPlanName() != null) {
-            String sql = "update plan set plan_name=:plan_name where plan_id=:plan_id and status=2";
-            Map<String, Object> param = Map.of("plan_id", planId,
-                    "plan_name", request.getPlanName());
+        // 약속 이름, 날짜/시간 update
+        String sql = "update plan set plan_name=:plan_name, fixed_date=:fixed_date, fixed_time=:fixed_time where plan_id=:plan_id and status=2";
+        Map<String, Object> param = Map.of("plan_id", planId,
+                "plan_name", request.getPlanName(),
+                "fixed_date", request.getDate(),
+                "fixed_time", request.getTime());
 
-            jdbcTemplate.update(sql, param);
-        }
+        jdbcTemplate.update(sql, param);
 
-        if (request.getDate() != null) {
-            String sql = "update plan set fixed_date=:fixed_date where plan_id=:plan_id and status=2";
-            Map<String, Object> param = Map.of("plan_id", planId,
-                    "fixed_date", request.getDate());
-
-            jdbcTemplate.update(sql, param);
-        }
-
-        if (request.getTime() != null) {
-            String sql = "update plan set fixed_time=:fixed_time where plan_id=:plan_id and status=2";
-            Map<String, Object> param = Map.of("plan_id", planId,
-                    "fixed_time", request.getTime());
-
-            jdbcTemplate.update(sql, param);
-        }
+        // 구성원 update
+        deleteMember(planId);
 
         if (request.getMembers() != null) {
             updateMember(planId, request.getMembers());
@@ -406,8 +390,6 @@ public class PlanDao {
     }
 
     private void updateMember(Long planId, List<Long> members) {
-        deleteMember(planId);
-
         for (Long memberId : members) {
             String sql = "insert into plan_member (plan_id, user_id) values (:plan_id, :user_id)";
             Map<String, Object> param = Map.of("plan_id", planId,
@@ -519,7 +501,7 @@ public class PlanDao {
     }
 
     public void setHistoryInactive(Long planId) {
-        String sql = "update plan set history=0 where plan_id=:plan_id and status=2";
+        String sql = "update plan set history=0 where plan_id=:plan_id and status=2 and history=1";
         Map<String, Object> param = Map.of("plan_id", planId);
         jdbcTemplate.update(sql, param);
     }

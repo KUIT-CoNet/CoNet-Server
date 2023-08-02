@@ -1,5 +1,6 @@
 package com.kuit.conet.service;
 
+import com.kuit.conet.common.exception.PlanException;
 import com.kuit.conet.common.exception.TeamException;
 import com.kuit.conet.dao.HistoryDao;
 import com.kuit.conet.dao.PlanDao;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.NOT_FOUND_TEAM;
+import static com.kuit.conet.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
 @Service
@@ -83,26 +84,28 @@ public class PlanService {
 
     public MemberPossibleTimeResponse getMemberTime(PlanIdRequest planIdRequest) {
         Plan plan = planDao.getWaitingPlan(planIdRequest.getPlanId());
+
         if(plan == null) {
-            log.warn("대기 중인 약속이 아닙니다.");
+            throw new PlanException(NOT_WAITING_PLAN);
         }
+
         Date date = plan.getPlanStartPeriod();
         Long teamId = planDao.getTeamId(planIdRequest.getPlanId());
-        if(!teamDao.isExistTeam(teamId)) {
-            throw new TeamException(NOT_FOUND_TEAM);
-        }
+
         Long count = teamDao.getTeamMemberCount(teamId);
 
-        List<MemberResponse> memberResponses = new ArrayList<>(24);
         List<MemberDateTimeResponse> memberDateTimeResponses = new ArrayList<>(7);
 
         // 날짜 하루씩 더해가면서 7일에 대한 구성원의 모든 가능한 시간 저장하는 것 반복
         for(int j=0; j<7; j++) {
             int[] membersCount = new int[24];
 
-            ArrayList<ArrayList<String>> membersName  = new ArrayList<>(24);
+            List<MemberResponse> memberResponses = new ArrayList<>(24);
+            ArrayList<ArrayList<String>> memberNames  = new ArrayList<>(24);
+            ArrayList<ArrayList<Long>> memberIds  = new ArrayList<>(24);
             for(int i=0; i<24; i++) {
-                membersName.add(new ArrayList<String>());
+                memberNames.add(new ArrayList<>());
+                memberIds.add(new ArrayList<>());
             }
 
             List<MemberPossibleTime> memberPossibleTimes = planDao.getMemberTime(planIdRequest.getPlanId(), date);
@@ -119,7 +122,8 @@ public class PlanService {
                         membersCount[intTime]++;
                         // [1, 0, 0, ... 0, 0]  각 시간에 가능한 구성원의 수
 
-                        membersName.get(intTime).add(userDao.getUserName(memberPossibleTime.getUserId()));
+                        memberNames.get(intTime).add(userDao.getUserName(memberPossibleTime.getUserId()));
+                        memberIds.get(intTime).add(memberPossibleTime.getUserId());
                         // [("정소민, "), (""), (""), ... , (""), ("")]  각 시간에 가능한 구성원
                         // [("정소민, 정경은, "), ("정소민, "), ("정소민, 이안진, "), ... , (""), ("정경은, 이안진, ")]  이렇게 채워질 것
                     }
@@ -144,27 +148,17 @@ public class PlanService {
                 }
             }
 
-            for(int i=0; i<membersCount.length; i++) {
+            for(int i=0; i<24; i++) {
                 if(membersCount[i] == 0) {
                     continue;
                 }
 
-                MemberResponse memberResponse = new MemberResponse(i, membersCount[i], membersName.get(i));
+                MemberResponse memberResponse = new MemberResponse(i, membersCount[i], memberNames.get(i), memberIds.get(i));
                 memberResponses.add(memberResponse);
             }
 
-            List<List<MemberResponse>> tempListMemberResponses = new ArrayList<>(7);
-
-            for(int i=0; i<7; i++) {
-                List<MemberResponse> tempMemberResponses = new ArrayList<>();
-                tempListMemberResponses.add(tempMemberResponses);
-            }
-
-            tempListMemberResponses.get(j).addAll(memberResponses);
-            memberResponses.clear();
-
-            MemberDateTimeResponse memberDateTimeResponse = new MemberDateTimeResponse(date, tempListMemberResponses.get(j));
-            memberDateTimeResponses.add(memberDateTimeResponse);
+            memberDateTimeResponses.add(new MemberDateTimeResponse(date, memberResponses));
+            /** 하루에 대한 가능한 구성원 정보 추가 완료*/
 
             // 약속 기간 시작 날짜에서 하루씩 더하기
             Calendar cal = Calendar.getInstance();
@@ -190,7 +184,7 @@ public class PlanService {
         Time time = Time.valueOf(strTime);
 
         if(planDao.isFixedPlan(fixPlanRequest.getPlanId())){
-            return "이미 확정된 약속입니다.";
+            throw new PlanException(ALREADY_FIXED_PLAN);
         }
         planDao.fixPlan(fixPlanRequest.getPlanId(), fixPlanRequest.getFixed_date(), time, fixPlanRequest.getUserId());
         return "약속 확정에 성공하였습니다.";
@@ -258,7 +252,7 @@ public class PlanService {
 
     public String updateWaitingPlan(UpdateWaitingPlanRequest planRequest) {
         if (!planDao.isWaitingPlan(planRequest.getPlanId())) {
-            return "대기 중인 약속이 아닙니다.";
+            throw new PlanException(NOT_WAITING_PLAN);
         }
 
         planDao.updateWaitingPlan(planRequest.getPlanId(), planRequest.getPlanName());
@@ -269,7 +263,7 @@ public class PlanService {
         Long planId = planRequest.getPlanId();
 
         if (!planDao.isFixedPlan(planId)) {
-            return "확정된 약속이 아닙니다.";
+            throw new PlanException(NOT_FIXED_PLAN);
         }
 
         // plan 테이블 정보 수정
@@ -293,10 +287,13 @@ public class PlanService {
                 planDao.setHistoryInactive(planId);
                 historyDao.deleteHistory(planId);
             } else {
-                // 저장할 파일명 만들기 - 받은 파일이 이미지 타입이 아닌 경우에 대한 유효성 검사 진행
-                String fileName = storageService.getFileName(file, StorageDomain.HISTORY, planId);
-                // 새로운 이미지 S3에 업로드
-                String imgUrl = storageService.uploadToS3(file, fileName);
+                String imgUrl = null;
+                if (!file.isEmpty()) {
+                    // 저장할 파일명 만들기 - 받은 파일이 이미지 타입이 아닌 경우에 대한 유효성 검사 진행
+                    String fileName = storageService.getFileName(file, StorageDomain.HISTORY, planId);
+                    // 새로운 이미지 S3에 업로드
+                    imgUrl = storageService.uploadToS3(file, fileName);
+                }
 
                 History newHistory = new History(imgUrl, planRequest.getHistoryDescription());
 

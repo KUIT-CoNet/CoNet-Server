@@ -14,5 +14,6 @@ import java.util.List;
 public class MemberResponse {
     private int time;
     private int section;
-    private List<String> memberName;
+    private List<String> memberNames;
+    private List<Long> memberIds;
 }
