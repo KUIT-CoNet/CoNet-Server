@@ -94,8 +94,12 @@ public class HistoryDao {
             plan.setPlanId(rs.getLong("plan_id"));
             plan.setPlanName(rs.getString("plan_name"));
             plan.setPlanDate(date);
-            plan.setHistoryImgUrl(rs.getString("history_image_url"));
-            plan.setHistoryDescription(rs.getString("history_description"));
+            String historyImgUrl = rs.getString("history_image_url");
+            if (historyImgUrl.equals("")) historyImgUrl = null;
+            plan.setHistoryImgUrl(historyImgUrl);
+            String description = rs.getString("history_description");
+            if (description.equals("")) description = null;
+            plan.setHistoryDescription(description);
             return plan;
         };
 
