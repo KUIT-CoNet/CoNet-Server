@@ -1,7 +1,6 @@
 package com.kuit.conet.service;
 
 import com.kuit.conet.common.exception.PlanException;
-import com.kuit.conet.common.exception.TeamException;
 import com.kuit.conet.dao.HistoryDao;
 import com.kuit.conet.dao.PlanDao;
 import com.kuit.conet.dao.TeamDao;
@@ -39,10 +38,9 @@ public class PlanService {
     private final StorageService storageService;
 
     public CreatePlanResponse createPlan(CreatePlanRequest createPlanRequest) {
-        LocalDate endDate = createPlanRequest.getPlanStartPeriod().toLocalDate();
-        endDate = endDate.plusDays(6);
-        Date date = java.sql.Date.valueOf(endDate);
-        Plan plan = new Plan(createPlanRequest.getTeamId(), createPlanRequest.getPlanName(), createPlanRequest.getPlanStartPeriod(), date);
+        LocalDate date = createPlanRequest.getPlanStartPeriod().toLocalDate().plusDays(6);
+        Date endDate = Date.valueOf(date);
+        Plan plan = new Plan(createPlanRequest.getTeamId(), createPlanRequest.getPlanName(), createPlanRequest.getPlanStartPeriod(), endDate);
 
         Long planId = planDao.savePlan(plan);
 
@@ -52,24 +50,22 @@ public class PlanService {
     public void saveTime(PossibleTimeRequest possibleTimeRequest, HttpServletRequest httpRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
-        String strTime = "";
-        for(Integer time : possibleTimeRequest.getPossibleTime()) {
-            strTime += time.toString() + ", ";
+        // 대기 중인 약속일 때만 시간 저장
+        if (planDao.isWaitingPlan(possibleTimeRequest.getPlanId())) {
+            throw new PlanException(NOT_WAITING_PLAN);
         }
 
-        strTime = strTime.trim().substring(0, strTime.length()-2);
+        StringBuilder sb = new StringBuilder();
+        for (Integer time : possibleTimeRequest.getPossibleTime()) {
+            sb.append(time).append(", ");
+        }
+
+        String strTime = sb.toString().trim().substring(0, sb.length()-2);
 
         PlanMemberTime planMemberTime = new PlanMemberTime(possibleTimeRequest.getPlanId(), userId, possibleTimeRequest.getPossibleDate(), strTime);
 
-        // 대기 중인 약속일 때만 시간 저장
-        if(planDao.isWaitingPlan(possibleTimeRequest.getPlanId())) {
-            // 이미 저장되어 있는 날짜이면 삭제 후 저장
-            if(planDao.isExistingUserDate(planMemberTime)) {
-                planDao.deletePossibleDate(planMemberTime);
-            }
-
-            planDao.saveTime(planMemberTime);
-        }
+        planDao.deletePossibleDate(planMemberTime); // 기존 데이터 삭제
+        planDao.saveTime(planMemberTime);
     }
 
     public UserTimeResponse getUserTime(PlanIdRequest planIdRequest, HttpServletRequest httpRequest) {
@@ -187,6 +183,8 @@ public class PlanService {
             throw new PlanException(ALREADY_FIXED_PLAN);
         }
         planDao.fixPlan(fixPlanRequest.getPlanId(), fixPlanRequest.getFixed_date(), time, fixPlanRequest.getUserId());
+        planDao.deletePlanMemberTime(fixPlanRequest.getPlanId());
+
         return "약속 확정에 성공하였습니다.";
     }
 
@@ -229,24 +227,21 @@ public class PlanService {
 
     public String deletePlan(PlanIdRequest planRequest) {
         Long planId = planRequest.getPlanId();
+        Boolean isFixedPlan;
 
-        if(planDao.isFixedPlan(planId)) {
-            if(planDao.isRegisteredToHistory(planId)) {
-                String imgUrl = historyDao.getHistoryImgUrl(planId);
-                if(imgUrl != null) {
-                    String deleteFileName = storageService.getFileNameFromUrl(imgUrl);
-                    if(storageService.isExistImage(deleteFileName)) {
-                        storageService.deleteImage(deleteFileName);
-                    }
-                }
-            }
-            planDao.deleteFixedPlan(planId);
+        if (planDao.isFixedPlan(planId)) isFixedPlan = true;
+        else isFixedPlan = false;
+
+        if (planDao.isRegisteredToHistory(planId)) { // 히스토리 등록된 약속
+            // 이미지 객체 삭제
+            String imgUrl = historyDao.getHistoryImgUrl(planId);
+            String deleteFileName = storageService.getFileNameFromUrl(imgUrl);
+            storageService.deleteImage(deleteFileName);
+
+            historyDao.deleteHistory(planId);
         }
 
-        if(planDao.isWaitingPlan(planId)) {
-            planDao.deleteWaitingPlan(planId);
-        }
-
+        planDao.deletePlan(planId, isFixedPlan);
         return "약속 삭제에 성공하였습니다.";
     }
 

@@ -329,32 +329,20 @@ public class PlanDao {
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 
-    public void deleteFixedPlan(Long planId) {
+    public void deletePlan(Long planId, Boolean isFixedPlan) {
         Map<String, Object> param = Map.of("plan_id", planId);
-        if(isRegisteredToHistory(planId)) {
-            // history 삭제
-            String historySql = "delete from history where plan_id=:plan_id";
-            jdbcTemplate.update(historySql, param);
+
+        if (isFixedPlan) {
+            // plan_member 삭제
+            String planMemberSql = "delete from plan_member where plan_id=:plan_id";
+            jdbcTemplate.update(planMemberSql, param);
         }
 
-        //plan_member_time 삭제
-        String planMemberTimeSql = "delete from plan_member_time where plan_id=:plan_id";
-        jdbcTemplate.update(planMemberTimeSql, param);
-
-        // plan_member 삭제
-        String planMemberSql = "delete from plan_member where plan_id=:plan_id";
-        jdbcTemplate.update(planMemberSql, param);
-
-        // plan 삭제
-        String planSql = "delete from plan where plan_id=:plan_id";
-        jdbcTemplate.update(planSql, param);
-    }
-
-    public void deleteWaitingPlan(Long planId) {
-        //plan_member_time 삭제
-        String planMemberTimeSql = "delete from plan_member_time where plan_id=:plan_id";
-        Map<String, Object> param = Map.of("plan_id", planId);
-        jdbcTemplate.update(planMemberTimeSql, param);
+        if (!isFixedPlan) {
+            // plan_member_time 삭제
+            String planMemberTimeSql = "delete from plan_member_time where plan_id=:plan_id";
+            jdbcTemplate.update(planMemberTimeSql, param);
+        }
 
         // plan 삭제
         String planSql = "delete from plan where plan_id=:plan_id";
@@ -434,7 +422,7 @@ public class PlanDao {
         String sql = "select plan_id, fixed_date, fixed_time, plan_name, history " +
                 "from plan " +
                 "where team_id=:team_id and status=2 " +
-                "and (fixed_date > current_date() or (fixed_date = current_date() and fixed_time >= current_time()))";
+                "and (fixed_date > current_date() or (fixed_date = current_date() and fixed_time > current_time()))";
         Map<String, Object> param = Map.of("team_id", teamId);
 
         RowMapper<FixedPlan> mapper = (rs, rowNum) -> {
@@ -482,15 +470,6 @@ public class PlanDao {
         return jdbcTemplate.query(sql, param, mapper);
     }
 
-    public Boolean isExistingUserDate(PlanMemberTime planMemberTime) {
-        String isExistingSql = "select exists(select * from plan_member_time where plan_id=:plan_id and user_id=:user_id and possible_date=:possible_date)";
-        Map<String, Object> isExistingParam = Map.of("plan_id", planMemberTime.getPlanId(),
-                "user_id", planMemberTime.getUserId(),
-                "possible_date", planMemberTime.getPossibleDate());
-
-        return jdbcTemplate.queryForObject(isExistingSql, isExistingParam, Boolean.class);
-    }
-
     public void deletePossibleDate(PlanMemberTime planMemberTime) {
         String sql = "delete from plan_member_time where plan_id=:plan_id and user_id=:user_id and possible_date=:possible_date";
         Map<String, Object> param = Map.of("plan_id", planMemberTime.getPlanId(),
@@ -502,6 +481,12 @@ public class PlanDao {
 
     public void setHistoryInactive(Long planId) {
         String sql = "update plan set history=0 where plan_id=:plan_id and status=2 and history=1";
+        Map<String, Object> param = Map.of("plan_id", planId);
+        jdbcTemplate.update(sql, param);
+    }
+
+    public void deletePlanMemberTime(Long planId) {
+        String sql = "delete from plan_member_time where plan_id=:plan_id";
         Map<String, Object> param = Map.of("plan_id", planId);
         jdbcTemplate.update(sql, param);
     }

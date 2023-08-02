@@ -4,7 +4,6 @@ import com.kuit.conet.common.response.BaseResponse;
 import com.kuit.conet.domain.plan.FixedPlan;
 import com.kuit.conet.domain.plan.PastPlan;
 import com.kuit.conet.domain.plan.PlanDetail;
-import com.kuit.conet.dto.request.history.HistoryRegisterRequest;
 import com.kuit.conet.dto.request.plan.*;
 import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.response.plan.*;

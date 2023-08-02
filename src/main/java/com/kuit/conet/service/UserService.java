@@ -28,7 +28,6 @@ public class UserService {
         String imgUrl = userDao.getUserImgUrl(userId);
         String deleteFileName = storageService.getFileNameFromUrl(imgUrl);
         if (!userDao.isDefaultImage(userId)) {
-            log.info("S3에서 유저의 프로필 이미지 객체를 삭제합니다.");
             storageService.deleteImage(deleteFileName);
         }
 
