@@ -71,10 +71,9 @@ public class TeamService {
     }
 
     public RegenerateCodeResponse regenerateCode(TeamIdRequest request) {
-        // 초대 코드 생성
         String inviteCode;
 
-        // 코드 중복 확인
+        // 초대 코드 생성 및 중복 확인
         do {
             inviteCode = generateInviteCode();
         } while(teamDao.validateDuplicateCode(inviteCode));  // 중복되면 true 반환
@@ -98,14 +97,14 @@ public class TeamService {
 
     public String generateInviteCode() {
         int leftLimit = 48;
-        int rigntLimit = 122;
-        int targetStirngLength = 8;
+        int rightLimit = 122;
+        int targetStringLength = 8;
 
         Random random = new Random();
 
-        String generatedString = random.ints(leftLimit, rigntLimit+1)
+        String generatedString = random.ints(leftLimit, rightLimit+1)
                 .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-                .limit(targetStirngLength)
+                .limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
 
@@ -124,7 +123,7 @@ public class TeamService {
 
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
-        String userName = userDao.findById(userId).getName();
+        String userName = userDao.getUserName(userId);
 
         Team team = teamDao.getTeamFromInviteCode(inviteCode);
 
@@ -137,13 +136,13 @@ public class TeamService {
         LocalDateTime generatedTime = team.getCodeGeneratedTime().toLocalDateTime();
         LocalDateTime expirationDateTime = generatedTime.plusDays(1);
 
-        log.info("generatedTime: {}", generatedTime);
-        log.info("expirationDateTime: {}", expirationDateTime);
-        log.info("participateRequestTime: {}", participateRequestTime);
+        //log.info("Team invite code generated time: {}", generatedTime);
+        log.info("Team invite code expiration date time: {}", expirationDateTime);
+        log.info("Team participation requested time: {}", participateRequestTime);
 
         if (participateRequestTime.isAfter(expirationDateTime)) {
             // 초대 코드 생성 시간으로부터 1일이 지났으면 exception
-            log.info("유효 기간 만료: {}", EXPIRED_INVITE_CODE.getMessage());
+            log.error("유효 기간 만료: {}", EXPIRED_INVITE_CODE.getMessage());
             throw new TeamException(EXPIRED_INVITE_CODE);
         }
 
