@@ -12,6 +12,5 @@ import java.util.List;
 @Setter
 public class PossibleTimeRequest {
     private Long planId;
-    //private Boolean hasPossibleTime;
     private List<PossibleDateTime> possibleDateTimes; // 7개 날짜에 대한
 }

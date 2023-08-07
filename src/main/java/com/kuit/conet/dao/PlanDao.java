@@ -76,9 +76,17 @@ public class PlanDao {
             possibleTime.setDate(rs.getDate("possible_date"));
 
             String time = rs.getString("possible_time");
-            String[] timeStrList = time.split(",");
+
             List<Integer> timeIntList = new ArrayList<>();
 
+            log.info(time);
+
+            if (time.isEmpty()) {
+                possibleTime.setTime(timeIntList);
+                return possibleTime;
+            }
+
+            String[] timeStrList = time.split(",");
             for(String str : timeStrList) {
                 timeIntList.add(Integer.parseInt(str.trim()));
             }
@@ -89,7 +97,13 @@ public class PlanDao {
 
         List<UserPossibleTimeResponse> response = jdbcTemplate.query(sql, param, mapper);
 
-        return new UserTimeResponse(planId, userId, response);
+        Boolean hasPossibleTime = false;
+        for (UserPossibleTimeResponse possibleTime : response) {
+            if (!possibleTime.getTime().isEmpty()) {
+                hasPossibleTime = true;
+            }
+        }
+        return new UserTimeResponse(planId, userId, true, hasPossibleTime, response);
     }
 
     public List<MemberPossibleTime> getMemberTime(Long planId, Date planStartPeriod) {

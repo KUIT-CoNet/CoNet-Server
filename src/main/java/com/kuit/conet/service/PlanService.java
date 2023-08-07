@@ -55,61 +55,6 @@ public class PlanService {
             throw new PlanException(NOT_WAITING_PLAN);
         }
 
-//        // 한번이라도 입력한 적이 있는지 검사
-//        if (planDao.isRegisteredToPlanMemberTime(userId, possibleTimeRequest.getPlanId())) {
-//            // update
-//            if (possibleTimeRequest.getHasPossibleTime()) {
-//                // 해당 기간에 되는 시간이 아예 없을 때
-//                for (PossibleDateTime possibleDateTime : possibleTimeRequest.getPossibleDateTimes()) {
-//                    // 7개의 날에 대하여 빈 문자열("") 저장
-//                    Date possibleDate = possibleDateTime.getDate();
-//                    String possibleTimes = setPossibleTimeToString(possibleDateTime);
-//
-//                    PlanMemberTime planMemberTime = new PlanMemberTime(possibleTimeRequest.getPlanId(), userId, possibleDate, possibleTimes);
-//                    planDao.deletePossibleDate(planMemberTime); // 기존 데이터 삭제
-//                    planDao.saveTime(planMemberTime);
-//                }
-//            } else {
-//                // 해당 기간에 되는 시간이 하나라도 있을 때
-//                for (PossibleDateTime possibleDateTime : possibleTimeRequest.getPossibleDateTimes()) {
-//                    // 7개의 날에 대하여 가능한 시간 저장
-//                    Date possibleDate = possibleDateTime.getDate();
-//
-//                    // 7개의 날에 대하여 가능한 시간을 문자열로 변환
-//                    String possibleTimes = setPossibleTimeToString(possibleDateTime);
-//
-//                    PlanMemberTime planMemberTime = new PlanMemberTime(possibleTimeRequest.getPlanId(), userId, possibleDate, possibleTimes);
-//                    planDao.deletePossibleDate(planMemberTime); // 기존 데이터 삭제
-//                    planDao.saveTime(planMemberTime);
-//                }
-//            }
-//
-//            for (PossibleDateTime possibleDateTime : possibleTimeRequest.getPossibleDateTimes()) {
-//                // 7개의 날에 대하여 가능한 시간 저장
-//                Date possibleDate = possibleDateTime.getDate();
-//
-//                // 7개의 날에 대하여 가능한 시간을 문자열로 변환
-//                String possibleTimes = setPossibleTimeToString(possibleDateTime);
-//
-//                PlanMemberTime planMemberTime = new PlanMemberTime(possibleTimeRequest.getPlanId(), userId, possibleDate, possibleTimes);
-//                planDao.deletePossibleDate(planMemberTime); // 기존 데이터 삭제
-//                planDao.saveTime(planMemberTime);
-//            }
-//
-//        } else {
-//            // insert
-//            if (possibleTimeRequest.getHasPossibleTime()) {
-//                // 해당 기간에 되는 시간이 아예 없을 때
-//
-//            } else {
-//                // 해당 기간에 되는 시간이 하나라도 있을 때
-//                for (PossibleDateTime possibleDateTime : possibleTimeRequest.getPossibleDateTimes()) {
-//                    // 7개의 날에 대하여 가능한 시간을 문자열로 변환
-//                    String possibleTimes = setPossibleTimeToString(possibleDateTime);
-//                }
-//            }
-//        }
-
         for (PossibleDateTime possibleDateTime : possibleTimeRequest.getPossibleDateTimes()) {
             // 7개의 날에 대하여 가능한 시간 저장
             Date possibleDate = possibleDateTime.getDate();
@@ -141,10 +86,8 @@ public class PlanService {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
         if(!planDao.isExistingUserTime(planIdRequest.getPlanId(), userId)) {
-            return new UserTimeResponse(planIdRequest.getPlanId(), userId, null);
+            return new UserTimeResponse(planIdRequest.getPlanId(), userId, false, false, null);
         }
-
-
 
         return planDao.getUserTime(planIdRequest.getPlanId(), userId);
     }
