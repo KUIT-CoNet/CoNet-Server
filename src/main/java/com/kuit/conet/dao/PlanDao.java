@@ -488,4 +488,11 @@ public class PlanDao {
         Map<String, Object> param = Map.of("plan_id", planId);
         jdbcTemplate.update(sql, param);
     }
+
+    public Boolean isRegisteredToPlanMemberTime(Long userId, Long planId) {
+        String sql = "select exists(select * from plan_member_time where user_id=:user_id and plan_id=:plan_id)";
+        Map<String, Object> param = Map.of("plan_id", planId,
+                "user_id", userId);
+        return jdbcTemplate.queryForObject(sql, param, Boolean.class);
+    }
 }
