@@ -79,8 +79,6 @@ public class PlanDao {
 
             List<Integer> timeIntList = new ArrayList<>();
 
-            log.info(time);
-
             if (time.isEmpty()) {
                 possibleTime.setTime(timeIntList);
                 return possibleTime;
@@ -107,7 +105,7 @@ public class PlanDao {
     }
 
     public List<MemberPossibleTime> getMemberTime(Long planId, Date planStartPeriod) {
-        String sql = "select user_id, possible_time from plan_member_time where plan_id=:plan_id and possible_date=:possible_date";
+        String sql = "select user_id, possible_time from plan_member_time where plan_id=:plan_id and possible_date=:possible_date order by user_id";
         Map<String, Object> param = Map.of("plan_id", planId,
                 "possible_date", planStartPeriod);
 

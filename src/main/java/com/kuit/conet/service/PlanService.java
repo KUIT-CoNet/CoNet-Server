@@ -51,7 +51,7 @@ public class PlanService {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
         // 대기 중인 약속일 때만 시간 저장
-        if (planDao.isWaitingPlan(possibleTimeRequest.getPlanId())) {
+        if (!planDao.isWaitingPlan(possibleTimeRequest.getPlanId())) {
             throw new PlanException(NOT_WAITING_PLAN);
         }
 
@@ -85,6 +85,11 @@ public class PlanService {
     public UserTimeResponse getUserTime(PlanIdRequest planIdRequest, HttpServletRequest httpRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
+        // 대기 중인 약속일 때만 나의 가능한 시간 조회
+        if (!planDao.isWaitingPlan(planIdRequest.getPlanId())) {
+            throw new PlanException(NOT_WAITING_PLAN);
+        }
+
         if(!planDao.isExistingUserTime(planIdRequest.getPlanId(), userId)) {
             return new UserTimeResponse(planIdRequest.getPlanId(), userId, false, false, null);
         }
@@ -93,6 +98,11 @@ public class PlanService {
     }
 
     public MemberPossibleTimeResponse getMemberTime(PlanIdRequest planIdRequest) {
+        // 대기 중인 약속일 때만 구성원의 가능한 시간 조회
+        if (!planDao.isWaitingPlan(planIdRequest.getPlanId())) {
+            throw new PlanException(NOT_WAITING_PLAN);
+        }
+
         Plan plan = planDao.getWaitingPlan(planIdRequest.getPlanId());
 
         if(plan == null) {
@@ -123,6 +133,11 @@ public class PlanService {
 
             for(MemberPossibleTime memberPossibleTime : memberPossibleTimes) {
                 String possibleTime = memberPossibleTime.getPossibleTime();  // "1, 2, 3, 4"
+
+                if (possibleTime.isEmpty()) {
+                    continue;
+                }
+
                 possibleTime = possibleTime.replaceAll(" ", "");  // "1,2,3,4"
                 String[] possibleTimes = possibleTime.split(",");  // ["1", "2", "3", "4"]
 
