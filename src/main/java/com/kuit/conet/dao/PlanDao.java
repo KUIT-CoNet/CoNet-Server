@@ -275,37 +275,58 @@ public class PlanDao {
 
         PlanDetail detail = jdbcTemplate.queryForObject(sql, param, mapper);
 
-        List<String> members = getMemberInPlan(planId);
-        List<Long> memberIds = getMemberIdInPlan(planId);
-        detail.setMembers(members);
-        detail.setMembersId(memberIds);
+        detail.setMembers(getPlanMember(planId));
+
+//        List<String> members = getMemberInPlan(planId);
+//        List<Long> memberIds = getMemberIdInPlan(planId);
+//        detail.setMembers(members);
+//        detail.setMembersId(memberIds);
 
         return detail;
     }
 
-    public List<String> getMemberInPlan(Long planId) {
-        String sql = "select u.name as user_name " +
-                        "from plan_member pm, user u " +
-                        "where pm.user_id=u.user_id " +
-                        "  and pm.plan_id=:plan_id"; // user status 필터링 안 하는 이유: 탈퇴한 유저도 이름이 서치되어야 함
-        Map<String, Object> param = Map.of("plan_id", planId);
-
-        RowMapper<String> mapper = new SingleColumnRowMapper<>(String.class);
-
-        return jdbcTemplate.query(sql, param, mapper);
-    }
-
-    public List<Long> getMemberIdInPlan(Long planId) {
-        String sql = "select u.user_id as user_id " +
+    // 약속 상세 정보 조회의 참여자 정
+    private List<PlanMember> getPlanMember(Long planId) {
+        String sql = "select u.user_id as id, u.name as name, u.img_url as img_url " +
                 "from plan_member pm, user u " +
                 "where pm.user_id=u.user_id " +
                 "  and pm.plan_id=:plan_id"; // user status 필터링 안 하는 이유: 탈퇴한 유저도 이름이 서치되어야 함
         Map<String, Object> param = Map.of("plan_id", planId);
 
-        RowMapper<Long> mapper = new SingleColumnRowMapper<>(Long.class);
+        RowMapper<PlanMember> mapper = (rs, rowNum) -> {
+            PlanMember member = new PlanMember();
+            member.setId(rs.getLong("id"));
+            member.setName(rs.getString("name"));
+            member.setImage(rs.getString("img_url"));
+            return member;
+        };
 
         return jdbcTemplate.query(sql, param, mapper);
     }
+
+//    public List<String> getMemberInPlan(Long planId) {
+//        String sql = "select u.name as user_name " +
+//                        "from plan_member pm, user u " +
+//                        "where pm.user_id=u.user_id " +
+//                        "  and pm.plan_id=:plan_id"; // user status 필터링 안 하는 이유: 탈퇴한 유저도 이름이 서치되어야 함
+//        Map<String, Object> param = Map.of("plan_id", planId);
+//
+//        RowMapper<String> mapper = new SingleColumnRowMapper<>(String.class);
+//
+//        return jdbcTemplate.query(sql, param, mapper);
+//    }
+//
+//    public List<Long> getMemberIdInPlan(Long planId) {
+//        String sql = "select u.user_id as user_id " +
+//                "from plan_member pm, user u " +
+//                "where pm.user_id=u.user_id " +
+//                "  and pm.plan_id=:plan_id"; // user status 필터링 안 하는 이유: 탈퇴한 유저도 이름이 서치되어야 함
+//        Map<String, Object> param = Map.of("plan_id", planId);
+//
+//        RowMapper<Long> mapper = new SingleColumnRowMapper<>(Long.class);
+//
+//        return jdbcTemplate.query(sql, param, mapper);
+//    }
 
     public Boolean isRegisteredToHistory(Long planId) {
         String sqlPlan = "select exists(select * from plan where plan_id=:plan_id and status=2 and history=1)";
