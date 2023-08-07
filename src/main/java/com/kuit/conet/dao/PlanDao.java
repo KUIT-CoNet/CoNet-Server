@@ -182,17 +182,21 @@ public class PlanDao {
         return jdbcTemplate.query(sql, param, mapper);
     }
 
-    public List<FixedPlan> getPlanOnDay(Long teamId, String searchDate) {
+    /**
+     * 모임 내 특정 날짜 확정 약속 조회
+     * */
+    public List<TeamFixedPlanOnDay> getPlanOnDay(Long teamId, String searchDate) {
         String sql = "select p.plan_id as plan_id, p.fixed_time as fixed_time, p.plan_name as plan_name " +
                 "from plan p, team t " +
                 "where p.team_id = t.team_id " +
                 "and p.team_id=:team_id " +
-                "and p.status=2 and date_format(p.fixed_date,'%Y-%m-%d')=:search_date"; // plan status 확정 : 2
+                "and p.status=2 and date_format(p.fixed_date,'%Y-%m-%d')=:search_date " + // plan status 확정 : 2
+                "order by p.fixed_time";
         Map<String, Object> param = Map.of("team_id", teamId,
                 "search_date", searchDate);
 
-        RowMapper<FixedPlan> mapper = (rs, rowNum) -> {
-            FixedPlan plan = new FixedPlan();
+        RowMapper<TeamFixedPlanOnDay> mapper = (rs, rowNum) -> {
+            TeamFixedPlanOnDay plan = new TeamFixedPlanOnDay();
             plan.setPlanId(rs.getLong("plan_id"));
             String fixedTime = rs.getString("fixed_time");
             int timeEndIndex = fixedTime.length()-3;
@@ -213,7 +217,8 @@ public class PlanDao {
                         "from plan p, team t " +
                         "where p.team_id = t.team_id " +
                         "and p.team_id=:team_id and p.status=1 " + // plan status 대기 : 1
-                        "  and p.plan_start_period >= current_date()";
+                        "  and p.plan_start_period >= current_date() " +
+                        "order by p.plan_start_period";
         Map<String, Object> param = Map.of("team_id", teamId);
 
         RowMapper<WaitingPlan> mapper = (rs, rowNum) -> {
@@ -277,11 +282,6 @@ public class PlanDao {
 
         detail.setMembers(getPlanMember(planId));
 
-//        List<String> members = getMemberInPlan(planId);
-//        List<Long> memberIds = getMemberIdInPlan(planId);
-//        detail.setMembers(members);
-//        detail.setMembersId(memberIds);
-
         return detail;
     }
 
@@ -303,30 +303,6 @@ public class PlanDao {
 
         return jdbcTemplate.query(sql, param, mapper);
     }
-
-//    public List<String> getMemberInPlan(Long planId) {
-//        String sql = "select u.name as user_name " +
-//                        "from plan_member pm, user u " +
-//                        "where pm.user_id=u.user_id " +
-//                        "  and pm.plan_id=:plan_id"; // user status 필터링 안 하는 이유: 탈퇴한 유저도 이름이 서치되어야 함
-//        Map<String, Object> param = Map.of("plan_id", planId);
-//
-//        RowMapper<String> mapper = new SingleColumnRowMapper<>(String.class);
-//
-//        return jdbcTemplate.query(sql, param, mapper);
-//    }
-//
-//    public List<Long> getMemberIdInPlan(Long planId) {
-//        String sql = "select u.user_id as user_id " +
-//                "from plan_member pm, user u " +
-//                "where pm.user_id=u.user_id " +
-//                "  and pm.plan_id=:plan_id"; // user status 필터링 안 하는 이유: 탈퇴한 유저도 이름이 서치되어야 함
-//        Map<String, Object> param = Map.of("plan_id", planId);
-//
-//        RowMapper<Long> mapper = new SingleColumnRowMapper<>(Long.class);
-//
-//        return jdbcTemplate.query(sql, param, mapper);
-//    }
 
     public Boolean isRegisteredToHistory(Long planId) {
         String sqlPlan = "select exists(select * from plan where plan_id=:plan_id and status=2 and history=1)";
@@ -439,15 +415,16 @@ public class PlanDao {
         return jdbcTemplate.query(sql, param, mapper);
     }
 
-    public List<FixedPlan> getFixedPlan(Long teamId) {
+    public List<SideMenuFixedPlan> getFixedPlan(Long teamId) {
         String sql = "select plan_id, fixed_date, fixed_time, plan_name, history " +
-                "from plan " +
-                "where team_id=:team_id and status=2 " +
-                "and (fixed_date > current_date() or (fixed_date = current_date() and fixed_time > current_time()))";
+                        "from plan " +
+                        "where team_id=:team_id and status=2 " +
+                        "  and (fixed_date > current_date() or (fixed_date = current_date() and fixed_time > current_time())) " +
+                        "order by fixed_date, fixed_time";
         Map<String, Object> param = Map.of("team_id", teamId);
 
-        RowMapper<FixedPlan> mapper = (rs, rowNum) -> {
-            FixedPlan plan = new FixedPlan();
+        RowMapper<SideMenuFixedPlan> mapper = (rs, rowNum) -> {
+            SideMenuFixedPlan plan = new SideMenuFixedPlan();
             LocalDate fixedDate = LocalDate.parse(rs.getString("fixed_date"));
             LocalDate now = LocalDate.now();
             Long dDay = ChronoUnit.DAYS.between(now, fixedDate);

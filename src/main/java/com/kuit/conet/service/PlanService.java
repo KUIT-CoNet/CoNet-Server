@@ -200,10 +200,10 @@ public class PlanService {
         return new MonthPlanResponse(planDates.size(), planDates);
     }
 
-    public DayPlanResponse getPlanOnDay(TeamFixedPlanRequest planRequest) {
-        List<FixedPlan> plans = planDao.getPlanOnDay(planRequest.getTeamId(), planRequest.getSearchDate()); // yyyy-MM-dd
+    public TeamPlanOnDayResponse getPlanOnDay(TeamFixedPlanRequest planRequest) {
+        List<TeamFixedPlanOnDay> plans = planDao.getPlanOnDay(planRequest.getTeamId(), planRequest.getSearchDate()); // yyyy-MM-dd
 
-        return new DayPlanResponse(plans.size(), plans);
+        return new TeamPlanOnDayResponse(plans.size(), plans);
     }
 
     public WaitingPlanResponse getWaitingPlan(TeamWaitingPlanRequest planRequest) {
@@ -304,7 +304,8 @@ public class PlanService {
         return planDao.getPastPlan(teamId);
     }
 
-    public List<FixedPlan> getFixedPlan(TeamIdRequest planRequest) {
+    // 팀 사이드바 - 지나지 않은 확정 약속 조회
+    public List<SideMenuFixedPlan> getFixedPlan(TeamIdRequest planRequest) {
         Long teamId = planRequest.getTeamId();
         return planDao.getFixedPlan(teamId);
     }

@@ -7,11 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FixedPlan {
+public class HomeFixedPlanOnDay {
     private Long planId;
-    private String date; // yyyy-MM-dd
     private String time; // hh-mm
-    private Long dDay;
     private String teamName;
     private String planName;
 }
