@@ -1,6 +1,6 @@
 package com.kuit.conet.dao;
 
-import com.kuit.conet.domain.plan.FixedPlan;
+import com.kuit.conet.domain.plan.HomeFixedPlanOnDay;
 import com.kuit.conet.domain.plan.WaitingPlan;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -36,19 +36,19 @@ public class HomeDao {
         return jdbcTemplate.query(sql, param, mapper);
     }
 
-    public List<FixedPlan> getPlanOnDay(Long userId, String searchDate) {
+    public List<HomeFixedPlanOnDay> getPlanOnDay(Long userId, String searchDate) {
         String sql = "select p.plan_id as plan_id, p.fixed_date as fixed_date, p.fixed_time as fixed_time, p.plan_name as plan_name, t.team_name as team_name " +
                 "from team_member tm, plan p, team t " +
                 "where tm.team_id = p.team_id and p.team_id = t.team_id " +
                 "and tm.user_id=:user_id " +
-                "and p.status=2 and date_format(p.fixed_date,'%Y-%m-%d')=:search_date"; // plan status 확정 : 2
+                "and p.status=2 and date_format(p.fixed_date,'%Y-%m-%d')=:search_date " + // plan status 확정 : 2
+                "order by p.fixed_time";
         Map<String, Object> param = Map.of("user_id", userId,
                 "search_date", searchDate);
 
-        RowMapper<FixedPlan> mapper = (rs, rowNum) -> {
-            FixedPlan plan = new FixedPlan();
+        RowMapper<HomeFixedPlanOnDay> mapper = (rs, rowNum) -> {
+            HomeFixedPlanOnDay plan = new HomeFixedPlanOnDay();
             plan.setPlanId(rs.getLong("plan_id"));
-            plan.setDate(rs.getString("fixed_date"));
             String fixedTime = rs.getString("fixed_time");
             int timeEndIndex = fixedTime.length()-3;
             plan.setTime(fixedTime.substring(0, timeEndIndex));
@@ -69,7 +69,8 @@ public class HomeDao {
                 "from team_member tm, plan p, team t\n" +
                 "where tm.team_id = p.team_id and p.team_id = t.team_id\n" +
                 "and tm.user_id=:user_id\n" +
-                "  and p.status=1 and p.plan_start_period >= current_date();"; // plan status 대기 : 1
+                "  and p.status=1 and p.plan_start_period >= current_date() " + // plan status 대기 : 1
+                "order by p.plan_start_period";
         Map<String, Object> param = Map.of("user_id", userId);
 
         RowMapper<WaitingPlan> mapper = (rs, rowNum) -> {

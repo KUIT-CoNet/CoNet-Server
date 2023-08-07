@@ -1,7 +1,7 @@
 package com.kuit.conet.controller;
 
 import com.kuit.conet.common.response.BaseResponse;
-import com.kuit.conet.domain.plan.FixedPlan;
+import com.kuit.conet.domain.plan.SideMenuFixedPlan;
 import com.kuit.conet.domain.plan.PastPlan;
 import com.kuit.conet.domain.plan.PlanDetail;
 import com.kuit.conet.dto.request.plan.*;
@@ -55,7 +55,7 @@ public class PlanController {
     }
 
     /**
-     * 모임 내 약속 - 날짜 (dd)
+     * 모임 내 특정 달의 약속 조회 - 날짜 (dd)
      * */
     @GetMapping("/month")
     public BaseResponse<MonthPlanResponse> getPlanInMonth(@ModelAttribute @Valid TeamFixedPlanRequest planRequest) {
@@ -64,18 +64,17 @@ public class PlanController {
     }
 
     /**
-     * 모임 내 약속 - 날짜(yyyy-MM-dd) / 시각(hh-mm) / 약속 명
+     * 모임 내 특정 날짜 확정 약속 조회 - 날짜(yyyy-MM-dd) / 시각(hh-mm)
      * - '나'의 직접적인 참여 여부와 무관
-     * - 모임 명은 필요 없지만 하나의 dto 를 공유하기 위하여 반환함
      * */
     @GetMapping("/day")
-    public BaseResponse<DayPlanResponse> getPlanOnDay(@ModelAttribute @Valid TeamFixedPlanRequest planRequest) {
-        DayPlanResponse response = planService.getPlanOnDay(planRequest);
+    public BaseResponse<TeamPlanOnDayResponse> getPlanOnDay(@ModelAttribute @Valid TeamFixedPlanRequest planRequest) {
+        TeamPlanOnDayResponse response = planService.getPlanOnDay(planRequest);
         return new BaseResponse<>(response);
     }
 
     /**
-     * 모임 내 약속 - 날짜(yyyy-MM-dd) / 시각(hh-mm) / 약속 명
+     * 모임 내 대기 중인 약속 조회 - 날짜(yyyy-MM-dd) / 시각(hh-mm) / 약속 명 / 모임 명
      * - '나'의 직접적인 참여 여부와 무관
      * - 모임 명은 필요 없지만 하나의 dto 를 공유하기 위하여 반환함
      * */
@@ -86,7 +85,7 @@ public class PlanController {
     }
 
     /**
-     * 모임 내 약속 - 날짜(yyyy-MM-dd) / 시각(hh-mm) / 약속 명
+     * 약속 상세 정보 조회 - 날짜(yyyy-MM-dd) / 시각(hh-mm) / 약속 명
      * - '나'의 직접적인 참여 여부와 무관
      * - 모임 명은 필요 없지만 하나의 dto 를 공유하기 위하여 반환함
      * */
@@ -127,8 +126,8 @@ public class PlanController {
      * 확정 약속 - 모임 내 사이드바 메뉴
      * */
     @GetMapping("/fixed")
-    public BaseResponse<List<FixedPlan>> getFixedPlan(@ModelAttribute @Valid TeamIdRequest planRequest) {
-        List<FixedPlan> response = planService.getFixedPlan(planRequest);
+    public BaseResponse<List<SideMenuFixedPlan>> getFixedPlan(@ModelAttribute @Valid TeamIdRequest planRequest) {
+        List<SideMenuFixedPlan> response = planService.getFixedPlan(planRequest);
         return new BaseResponse<>(response);
     }
 

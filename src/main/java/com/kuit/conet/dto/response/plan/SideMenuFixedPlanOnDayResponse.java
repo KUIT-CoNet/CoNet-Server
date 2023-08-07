@@ -1,6 +1,6 @@
 package com.kuit.conet.dto.response.plan;
 
-import com.kuit.conet.domain.plan.FixedPlan;
+import com.kuit.conet.domain.plan.SideMenuFixedPlan;
 import lombok.*;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class DayPlanResponse {
+public class SideMenuFixedPlanOnDayResponse {
     int count;
-    List<FixedPlan> plans;
+    List<SideMenuFixedPlan> plans;
 }
