@@ -85,9 +85,7 @@ public class PlanController {
     }
 
     /**
-     * 약속 상세 정보 조회 - 날짜(yyyy-MM-dd) / 시각(hh-mm) / 약속 명
-     * - '나'의 직접적인 참여 여부와 무관
-     * - 모임 명은 필요 없지만 하나의 dto 를 공유하기 위하여 반환함
+     * 약속 상세 정보 조회
      * */
     @GetMapping("/detail")
     public BaseResponse<PlanDetail> getPlanDetail(@ModelAttribute @Valid PlanIdRequest planRequest) {
