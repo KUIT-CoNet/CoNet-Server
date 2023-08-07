@@ -13,6 +13,7 @@ import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.response.plan.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +23,7 @@ import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -174,10 +176,6 @@ public class PlanService {
             }
 
             for(int i=0; i<24; i++) {
-                if(membersCount[i] == 0) {
-                    continue;
-                }
-
                 MemberResponse memberResponse = new MemberResponse(i, membersCount[i], memberNames.get(i), memberIds.get(i));
                 memberResponses.add(memberResponse);
             }
@@ -194,9 +192,53 @@ public class PlanService {
             date = java.sql.Date.valueOf(formattedDate);  // Calender -> java.sql.Date 타입 변경
         }
 
+        List<SectionMemberCount> sectionMemberCounts = new ArrayList<>(3);
+        if (3 < count) {
+            Long countLong = count/3;
+            Integer countInt = countLong.intValue();
+
+            SectionMemberCount sectionMemberCount = new SectionMemberCount();
+            sectionMemberCount.setSection(1);
+            List<Integer> memberCount = new ArrayList<>();
+            for (int i=1; i<countInt+1; i++) {
+                memberCount.add(i);
+            }
+            sectionMemberCount.setMemberCount(memberCount);
+            sectionMemberCounts.add(sectionMemberCount);
+
+
+            sectionMemberCount = new SectionMemberCount();
+            sectionMemberCount.setSection(2);
+            memberCount = new ArrayList<>();
+            for (int i=countInt+1; i<(countInt*2)+1; i++) {
+                memberCount.add(i);
+            }
+            sectionMemberCount.setMemberCount(memberCount);
+            sectionMemberCounts.add(sectionMemberCount);
+
+
+            sectionMemberCount = new SectionMemberCount();
+            sectionMemberCount.setSection(3);
+            memberCount = new ArrayList<>();
+            for (int i=(countInt*2)+1; i<=count; i++) {
+                memberCount.add(i);
+            }
+            sectionMemberCount.setMemberCount(memberCount);
+            sectionMemberCounts.add(sectionMemberCount);
+        } else {
+            for (int i=1; i<=count; i++) {
+                SectionMemberCount sectionMemberCount = new SectionMemberCount();
+                sectionMemberCount.setSection(i);
+                List<Integer> memberCount = new ArrayList<>();
+                memberCount.add(i);
+                sectionMemberCount.setMemberCount(memberCount);
+                sectionMemberCounts.add(sectionMemberCount);
+            }
+        }
+
         MemberPossibleTimeResponse memberPossibleTimeResponse =
                 new MemberPossibleTimeResponse(teamId, planIdRequest.getPlanId(), plan.getPlanName(),
-                        plan.getPlanStartPeriod(), plan.getPlanEndPeriod(), memberDateTimeResponses);
+                        plan.getPlanStartPeriod(), plan.getPlanEndPeriod(), sectionMemberCounts, memberDateTimeResponses);
 
         return memberPossibleTimeResponse;
     }
