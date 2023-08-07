@@ -76,9 +76,15 @@ public class PlanDao {
             possibleTime.setDate(rs.getDate("possible_date"));
 
             String time = rs.getString("possible_time");
-            String[] timeStrList = time.split(",");
+
             List<Integer> timeIntList = new ArrayList<>();
 
+            if (time.isEmpty()) {
+                possibleTime.setTime(timeIntList);
+                return possibleTime;
+            }
+
+            String[] timeStrList = time.split(",");
             for(String str : timeStrList) {
                 timeIntList.add(Integer.parseInt(str.trim()));
             }
@@ -89,11 +95,17 @@ public class PlanDao {
 
         List<UserPossibleTimeResponse> response = jdbcTemplate.query(sql, param, mapper);
 
-        return new UserTimeResponse(planId, userId, response);
+        Boolean hasPossibleTime = false;
+        for (UserPossibleTimeResponse possibleTime : response) {
+            if (!possibleTime.getTime().isEmpty()) {
+                hasPossibleTime = true;
+            }
+        }
+        return new UserTimeResponse(planId, userId, true, hasPossibleTime, response);
     }
 
     public List<MemberPossibleTime> getMemberTime(Long planId, Date planStartPeriod) {
-        String sql = "select user_id, possible_time from plan_member_time where plan_id=:plan_id and possible_date=:possible_date";
+        String sql = "select user_id, possible_time from plan_member_time where plan_id=:plan_id and possible_date=:possible_date order by user_id";
         Map<String, Object> param = Map.of("plan_id", planId,
                 "possible_date", planStartPeriod);
 
@@ -487,5 +499,12 @@ public class PlanDao {
         String sql = "delete from plan_member_time where plan_id=:plan_id";
         Map<String, Object> param = Map.of("plan_id", planId);
         jdbcTemplate.update(sql, param);
+    }
+
+    public Boolean isRegisteredToPlanMemberTime(Long userId, Long planId) {
+        String sql = "select exists(select * from plan_member_time where user_id=:user_id and plan_id=:plan_id)";
+        Map<String, Object> param = Map.of("plan_id", planId,
+                "user_id", userId);
+        return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 }

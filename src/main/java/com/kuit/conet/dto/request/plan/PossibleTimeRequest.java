@@ -1,8 +1,8 @@
 package com.kuit.conet.dto.request.plan;
 
+import com.kuit.conet.domain.plan.PossibleDateTime;
 import lombok.*;
 
-import java.sql.Date;
 import java.util.List;
 
 @Getter
@@ -12,6 +12,5 @@ import java.util.List;
 @Setter
 public class PossibleTimeRequest {
     private Long planId;
-    private Date possibleDate;
-    private List<Integer> possibleTime;
+    private List<PossibleDateTime> possibleDateTimes; // 7개 날짜에 대한
 }

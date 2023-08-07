@@ -13,6 +13,7 @@ import com.kuit.conet.dto.request.team.TeamIdRequest;
 import com.kuit.conet.dto.response.plan.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +23,7 @@ import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -51,34 +53,58 @@ public class PlanService {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
         // 대기 중인 약속일 때만 시간 저장
-        if (planDao.isWaitingPlan(possibleTimeRequest.getPlanId())) {
+        if (!planDao.isWaitingPlan(possibleTimeRequest.getPlanId())) {
             throw new PlanException(NOT_WAITING_PLAN);
         }
 
+        for (PossibleDateTime possibleDateTime : possibleTimeRequest.getPossibleDateTimes()) {
+            // 7개의 날에 대하여 가능한 시간 저장
+            Date possibleDate = possibleDateTime.getDate();
+
+            // 7개의 날에 대하여 가능한 시간을 문자열로 변환
+            String possibleTimes = setPossibleTimeToString(possibleDateTime);
+
+            PlanMemberTime planMemberTime = new PlanMemberTime(possibleTimeRequest.getPlanId(), userId, possibleDate, possibleTimes);
+            planDao.deletePossibleDate(planMemberTime); // 기존 데이터 삭제
+            planDao.saveTime(planMemberTime);
+        }
+    }
+
+    // 특정 날짜에 가능한 시간을 문자열로 변환
+    private String setPossibleTimeToString(PossibleDateTime possibleDateTime) {
         StringBuilder sb = new StringBuilder();
-        for (Integer time : possibleTimeRequest.getPossibleTime()) {
+        List<Integer> times = possibleDateTime.getTime();
+        if (times.isEmpty()) return "";
+
+        for (Integer time : times) {
             sb.append(time).append(", ");
         }
 
         String strTime = sb.toString().trim().substring(0, sb.length()-2);
-
-        PlanMemberTime planMemberTime = new PlanMemberTime(possibleTimeRequest.getPlanId(), userId, possibleTimeRequest.getPossibleDate(), strTime);
-
-        planDao.deletePossibleDate(planMemberTime); // 기존 데이터 삭제
-        planDao.saveTime(planMemberTime);
+        return strTime;
     }
 
     public UserTimeResponse getUserTime(PlanIdRequest planIdRequest, HttpServletRequest httpRequest) {
         Long userId = Long.parseLong((String) httpRequest.getAttribute("userId"));
 
+        // 대기 중인 약속일 때만 나의 가능한 시간 조회
+        if (!planDao.isWaitingPlan(planIdRequest.getPlanId())) {
+            throw new PlanException(NOT_WAITING_PLAN);
+        }
+
         if(!planDao.isExistingUserTime(planIdRequest.getPlanId(), userId)) {
-            return new UserTimeResponse(planIdRequest.getPlanId(), userId, null);
+            return new UserTimeResponse(planIdRequest.getPlanId(), userId, false, false, null);
         }
 
         return planDao.getUserTime(planIdRequest.getPlanId(), userId);
     }
 
     public MemberPossibleTimeResponse getMemberTime(PlanIdRequest planIdRequest) {
+        // 대기 중인 약속일 때만 구성원의 가능한 시간 조회
+        if (!planDao.isWaitingPlan(planIdRequest.getPlanId())) {
+            throw new PlanException(NOT_WAITING_PLAN);
+        }
+
         Plan plan = planDao.getWaitingPlan(planIdRequest.getPlanId());
 
         if(plan == null) {
@@ -109,6 +135,11 @@ public class PlanService {
 
             for(MemberPossibleTime memberPossibleTime : memberPossibleTimes) {
                 String possibleTime = memberPossibleTime.getPossibleTime();  // "1, 2, 3, 4"
+
+                if (possibleTime.isEmpty()) {
+                    continue;
+                }
+
                 possibleTime = possibleTime.replaceAll(" ", "");  // "1,2,3,4"
                 String[] possibleTimes = possibleTime.split(",");  // ["1", "2", "3", "4"]
 
@@ -145,10 +176,6 @@ public class PlanService {
             }
 
             for(int i=0; i<24; i++) {
-                if(membersCount[i] == 0) {
-                    continue;
-                }
-
                 MemberResponse memberResponse = new MemberResponse(i, membersCount[i], memberNames.get(i), memberIds.get(i));
                 memberResponses.add(memberResponse);
             }
@@ -165,9 +192,53 @@ public class PlanService {
             date = java.sql.Date.valueOf(formattedDate);  // Calender -> java.sql.Date 타입 변경
         }
 
+        List<SectionMemberCount> sectionMemberCounts = new ArrayList<>(3);
+        if (3 < count) {
+            Long countLong = count/3;
+            Integer countInt = countLong.intValue();
+
+            SectionMemberCount sectionMemberCount = new SectionMemberCount();
+            sectionMemberCount.setSection(1);
+            List<Integer> memberCount = new ArrayList<>();
+            for (int i=1; i<countInt+1; i++) {
+                memberCount.add(i);
+            }
+            sectionMemberCount.setMemberCount(memberCount);
+            sectionMemberCounts.add(sectionMemberCount);
+
+
+            sectionMemberCount = new SectionMemberCount();
+            sectionMemberCount.setSection(2);
+            memberCount = new ArrayList<>();
+            for (int i=countInt+1; i<(countInt*2)+1; i++) {
+                memberCount.add(i);
+            }
+            sectionMemberCount.setMemberCount(memberCount);
+            sectionMemberCounts.add(sectionMemberCount);
+
+
+            sectionMemberCount = new SectionMemberCount();
+            sectionMemberCount.setSection(3);
+            memberCount = new ArrayList<>();
+            for (int i=(countInt*2)+1; i<=count; i++) {
+                memberCount.add(i);
+            }
+            sectionMemberCount.setMemberCount(memberCount);
+            sectionMemberCounts.add(sectionMemberCount);
+        } else {
+            for (int i=1; i<=count; i++) {
+                SectionMemberCount sectionMemberCount = new SectionMemberCount();
+                sectionMemberCount.setSection(i);
+                List<Integer> memberCount = new ArrayList<>();
+                memberCount.add(i);
+                sectionMemberCount.setMemberCount(memberCount);
+                sectionMemberCounts.add(sectionMemberCount);
+            }
+        }
+
         MemberPossibleTimeResponse memberPossibleTimeResponse =
                 new MemberPossibleTimeResponse(teamId, planIdRequest.getPlanId(), plan.getPlanName(),
-                        plan.getPlanStartPeriod(), plan.getPlanEndPeriod(), memberDateTimeResponses);
+                        plan.getPlanStartPeriod(), plan.getPlanEndPeriod(), sectionMemberCounts, memberDateTimeResponses);
 
         return memberPossibleTimeResponse;
     }
