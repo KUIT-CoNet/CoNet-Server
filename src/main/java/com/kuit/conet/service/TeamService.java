@@ -248,7 +248,7 @@ public class TeamService {
         return response;
     }
 
-    public GetTeamMemberResponse getTeamMembers(TeamIdRequest teamIdRequest) {
+    public List<GetTeamMemberResponse> getTeamMembers(TeamIdRequest teamIdRequest) {
         return teamDao.getTeamMembers(teamIdRequest.getTeamId());
     }
 
