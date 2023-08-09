@@ -136,7 +136,7 @@ public class PlanController {
     }
 
     @GetMapping("/member-plan")
-    public BaseResponse<List<MemberIsInPlanResponse>> getMemberIsInPlan(@ModelAttribute @Valid MemberIsInPlanRequest planRequest) {
+    public BaseResponse<List<MemberIsInPlanResponse>> getMemberIsInPlan(@ModelAttribute @Valid PlanIdRequest planRequest) {
         List<MemberIsInPlanResponse> responses = planService.getMemberIsInPlan(planRequest);
         return new BaseResponse<>(responses);
     }
