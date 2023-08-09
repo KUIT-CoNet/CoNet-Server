@@ -134,4 +134,10 @@ public class PlanController {
         List<PastPlan> response = planService.getNotRegisteredToHistoryPlan(planRequest);
         return new BaseResponse<>(response);
     }
+
+    @GetMapping("/member-plan")
+    public BaseResponse<List<MemberIsInPlanResponse>> getMemberIsInPlan(@ModelAttribute @Valid MemberIsInPlanRequest planRequest) {
+        List<MemberIsInPlanResponse> responses = planService.getMemberIsInPlan(planRequest);
+        return new BaseResponse<>(responses);
+    }
 }
