@@ -510,7 +510,12 @@ public class PlanDao {
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 
-    public List<MemberIsInPlanResponse> getMemberIsInPlanId(Long teamId, Long planId) {
+    public List<MemberIsInPlanResponse> getMemberIsInPlanId(Long planId) {
+        String sql = "select team_id from plan where plan_id=:plan_id";
+        Map<String, Object> param = Map.of("plan_id", planId);
+
+        Long teamId = jdbcTemplate.queryForObject(sql, param, Long.class);
+
         String teamMemberSql = "select u.name, u.user_id, u.img_url from team_member tm, user u " +
                 "where tm.user_id=u.user_id " +
                 "and u.status=1 and tm.team_id=:team_id order by tm.user_id";

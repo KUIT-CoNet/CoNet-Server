@@ -386,10 +386,9 @@ public class PlanService {
         return planDao.getNotRegisteredToHistoryPlan(teamId);
     }
 
-    public List<MemberIsInPlanResponse> getMemberIsInPlan(MemberIsInPlanRequest memberIsInPlanRequest) {
-        Long teamId = memberIsInPlanRequest.getTeamId();
-        Long planId = memberIsInPlanRequest.getPlanId();
+    public List<MemberIsInPlanResponse> getMemberIsInPlan(PlanIdRequest planIdRequest) {
+        Long planId = planIdRequest.getPlanId();
 
-        return planDao.getMemberIsInPlanId(teamId, planId);
+        return planDao.getMemberIsInPlanId(planId);
     }
 }
