@@ -3,8 +3,10 @@ package com.kuit.conet.dao;
 import com.kuit.conet.domain.plan.*;
 import com.kuit.conet.domain.plan.PastPlan;
 import com.kuit.conet.dto.request.plan.UpdatePlanRequest;
+import com.kuit.conet.dto.response.plan.MemberIsInPlanResponse;
 import com.kuit.conet.dto.response.plan.UserPossibleTimeResponse;
 import com.kuit.conet.dto.response.plan.UserTimeResponse;
+import com.kuit.conet.dto.response.team.GetTeamMemberResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -506,5 +508,32 @@ public class PlanDao {
         Map<String, Object> param = Map.of("plan_id", planId,
                 "user_id", userId);
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
+    }
+
+    public List<MemberIsInPlanResponse> getMemberIsInPlanId(Long teamId, Long planId) {
+        String teamMemberSql = "select u.name, u.user_id, u.img_url from team_member tm, user u " +
+                "where tm.user_id=u.user_id " +
+                "and u.status=1 and tm.team_id=:team_id order by tm.user_id";
+        Map<String, Object> teamMemberParam = Map.of("team_id", teamId);
+
+        RowMapper<MemberIsInPlanResponse> mapper = (rs, rowNum) -> {
+            MemberIsInPlanResponse response = new MemberIsInPlanResponse();
+            response.setUserId(rs.getLong("user_id"));
+            response.setName(rs.getString("name"));
+            response.setUserImgUrl(rs.getString("img_url"));
+            return response;
+        };
+
+        List<MemberIsInPlanResponse> memberIsInPlanResponses = jdbcTemplate.query(teamMemberSql, teamMemberParam, mapper);
+
+        for (MemberIsInPlanResponse response : memberIsInPlanResponses) {
+            String planMemberSql = "select exists(select * from plan_member where user_id=:user_id and plan_id=:plan_id)";
+            Map<String, Object> planMemberParam = Map.of("user_id", response.getUserId(),
+                        "plan_id", planId);
+
+            response.setIsInPlan(jdbcTemplate.queryForObject(planMemberSql, planMemberParam, Boolean.class));
+        }
+
+        return memberIsInPlanResponses;
     }
 }
