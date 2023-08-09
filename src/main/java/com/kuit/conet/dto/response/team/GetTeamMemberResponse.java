@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class GetTeamMemberResponse {
-    private List<Long> userId;
-    private List<String> userName;
+    private Long userId;
+    private String name;
+    private String userImgUrl;
 }

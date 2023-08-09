@@ -251,34 +251,22 @@ public class TeamDao {
         return jdbcTemplate.queryForObject(sql, param, Boolean.class);
     }
 
-    public GetTeamMemberResponse getTeamMembers(Long teamId) {
-        String sql = "select u.name, u.user_id from team_member tm, user u " +
+    public List<GetTeamMemberResponse> getTeamMembers(Long teamId) {
+        String sql = "select u.name, u.user_id, u.img_url from team_member tm, user u " +
                 "where tm.user_id=u.user_id " +
                 "and u.status=1 and tm.team_id=:team_id order by tm.user_id";
         log.info("{}", teamId);
         Map<String, Object> param = Map.of("team_id", teamId);
 
-        RowMapper<User> mapper = (rs, rowNum) -> {
-            User user = new User();
-            user.setUserId(rs.getLong("user_id"));
-            user.setName(rs.getString("name"));
-            return user;
+        RowMapper<GetTeamMemberResponse> mapper = (rs, rowNum) -> {
+            GetTeamMemberResponse response = new GetTeamMemberResponse();
+            response.setUserId(rs.getLong("user_id"));
+            response.setName(rs.getString("name"));
+            response.setUserImgUrl(rs.getString("img_url"));
+            return response;
         };
 
-        List<User> userList = jdbcTemplate.query(sql, param, mapper);
-
-        List<String> name = new ArrayList<>();
-        List<Long> userId = new ArrayList<>();
-        GetTeamMemberResponse teamMemberResponse = new GetTeamMemberResponse();
-        teamMemberResponse.setUserName(name);
-        teamMemberResponse.setUserId(userId);
-
-        for(User user : userList) {
-            teamMemberResponse.getUserId().add(user.getUserId());
-            teamMemberResponse.getUserName().add(user.getName());
-        }
-
-        return teamMemberResponse;
+        return jdbcTemplate.query(sql, param, mapper);
     }
 
     public void bookmarkTeam(Long userId, Long teamId) {
