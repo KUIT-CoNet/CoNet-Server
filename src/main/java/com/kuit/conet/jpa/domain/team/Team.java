@@ -1,5 +1,6 @@
 package com.kuit.conet.jpa.domain.team;
 
+import com.kuit.conet.jpa.domain.plan.Plan;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,9 @@ public class Team {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+
+    @OneToMany(mappedBy = "team") // 다대일 양방향 연관 관계 / 연관 관계 주인의 반대편
+    private List<Plan> plans = new ArrayList<>();
 
     @OneToMany(mappedBy = "team") // 다대다(다대일, 일대다) 양방향 연관 관계 / 연관 관계 주인의 반대편
     private List<TeamMember> teamMembers = new ArrayList<>();
