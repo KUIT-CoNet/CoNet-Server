@@ -50,6 +50,13 @@ spring:
     redis:
       host: ${DATA_REDIS_HOST}
       port: ${DATA_REDIS_PORT}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
   servlet:
     multipart:
       max-file-size: 100MB
@@ -82,6 +89,13 @@ spring:
     redis:
       host: ${DATA_REDIS_HOST}
       port: ${DATA_REDIS_PORT}
+  jpa:
+    hibernate:
+      ddl-auto: update #create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
   servlet:
     multipart:
       max-file-size: 100MB
@@ -115,6 +129,13 @@ spring:
     redis:
       host: ${DATA_REDIS_HOST}
       port: ${DATA_REDIS_PORT}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
   servlet:
     multipart:
       max-file-size: 100MB
